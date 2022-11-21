@@ -1,13 +1,13 @@
 import { Row, RowProps, styled, Typography } from "@ecoinc/ecomponents";
-import React from "react";
+import React, { ReactElement } from "react";
 import { useCommunity } from "../../../providers";
 import { ProposalsTab } from "../../../providers/ProposalTabProvider";
 import { GenerationStage } from "../../../types";
 
 interface HeaderTapProps {
-  active?: ProposalsTab;
+  active?: boolean;
   count?: number;
-  name: string;
+  name: ProposalsTab;
   label: string;
 
   onClick?(): void;
@@ -16,6 +16,12 @@ interface HeaderTapProps {
 interface TapsProps extends Omit<RowProps, "onSelect"> {
   active: ProposalsTab;
   onSelect(active: ProposalsTab): void;
+}
+
+function isHeaderTab(
+  child: ReactElement
+): child is ReactElement<HeaderTapProps> {
+  return child.props.name !== undefined;
 }
 
 export const HeaderTaps: React.FC<React.PropsWithChildren<TapsProps>> = ({
@@ -27,8 +33,8 @@ export const HeaderTaps: React.FC<React.PropsWithChildren<TapsProps>> = ({
   return (
     <Row css={{ gap: 64 }} {...props}>
       {React.Children.map(children, (child) => {
-        if (!React.isValidElement(child)) return null;
-        return React.cloneElement(child, {
+        if (!React.isValidElement(child) || !isHeaderTab(child)) return null;
+        return React.cloneElement<HeaderTapProps>(child, {
           active: active === child.props.name,
           onClick: () => onSelect(child.props.name),
         });

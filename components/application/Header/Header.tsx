@@ -150,6 +150,7 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
           if (item.external) {
             return (
               <HeaderItem
+                key={item.name}
                 active={item.name === current}
                 href={item.href}
                 target="_blank"

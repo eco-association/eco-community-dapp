@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { useState } from "react";
 import { toast as nativeToast } from "react-toastify";
 import { useContractAddresses, useWallet } from "../../providers";

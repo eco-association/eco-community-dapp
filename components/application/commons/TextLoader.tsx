@@ -49,7 +49,7 @@ const TextLoader = ({ phrases = defaultPhrases }: TextLoaderProps) => {
     return () => {
       window.clearInterval(timer);
     };
-  }, []);
+  }, [phrases.length]);
 
   const measureRef = useRef<HTMLDivElement>(null);
 

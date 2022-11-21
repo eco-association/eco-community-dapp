@@ -34,7 +34,7 @@ const card = css({
   padding: "24px 8px",
 });
 
-const inner = css({
+const WhiteBox = styled.div({
   padding: 8,
   background: "white",
 });
@@ -218,9 +218,9 @@ const CreateProposal: React.FC = () => {
               </Typography>
             </Column>
           </Card>
-          <div css={inner}>
+          <WhiteBox>
             <CodeMirror value={code} setValue={setCode} />
-          </div>
+          </WhiteBox>
         </Column>
       </Grid>
     </Content>

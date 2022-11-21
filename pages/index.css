@@ -1,0 +1,14 @@
+/** Override CodeMirror styles 
+ * List of options can be found here: https://codemirror.net/doc/manual.html#styling
+ */
+
+ .CodeMirror {
+    height: auto !important;
+    text-align: left;
+    z-index: 0;
+}
+
+/* IDE height */
+.CodeMirror-scroll {
+    max-height: 900px;
+}

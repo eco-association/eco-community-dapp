@@ -1,0 +1,35 @@
+{
+  "containerDefinitions": [
+    {
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/ecs/applications/governance",
+          "awslogs-region": "us-east-2"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "containerPort": 3000
+        }
+      ],
+      "cpu": 15,
+      "memory": 1000,
+      "image": "786579492423.dkr.ecr.us-east-2.amazonaws.com/governance:latest",
+      "essential": true,
+      "name": "governance"
+    }
+  ],
+  "family": "production-currency-governance-srv",
+  "networkMode": "awsvpc",
+  "volumes": [
+    {
+      "name": "service-storage",
+      "host": {
+        "sourcePath": "/ecs/service-storage"
+      }
+    }
+  ]
+}

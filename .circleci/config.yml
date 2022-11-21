@@ -1,0 +1,128 @@
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@8.1.3
+  aws-ecs: circleci/aws-ecs@3.2.0
+
+jobs:
+  build-staging:
+    docker:
+      - image: 'cimg/base:2021.04'
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Authenticate with NPM
+          command: |
+            echo "//registry.npmjs.org/:_authToken=${NPM_AUTH}" > .npmrc
+            printenv > .env
+      - aws-ecr/build-and-push-image:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-cli-version: latest
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          create-repo: true
+          dockerfile: Dockerfile
+          extra-build-args: '--compress'
+          no-output-timeout: 20m
+          path: .
+          platform: linux/amd64
+          public-registry: false
+          push-image: true
+          region: '${AWS_REGION}'
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: governance
+          repo-scan-on-push: true
+          skip-when-tags-exist: false
+          tag: 'latest,${CIRCLE_SHA1}'
+      - run:
+          name: 'Update image tag'
+          command: |
+            sed -i "s/latest/${CIRCLE_SHA1}/g" .circleci/staging_task.json
+      - aws-ecs/update-task-definition-from-json:
+          task-definition-json: .circleci/staging_task.json
+
+  build-production:
+    docker:
+      - image: 'cimg/base:2021.04'
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Authenticate with NPM
+          command: |
+            echo "//registry.npmjs.org/:_authToken=${NPM_AUTH}" > .npmrc
+            printenv > .env
+      - aws-ecr/build-and-push-image:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-cli-version: latest
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          create-repo: true
+          dockerfile: Dockerfile
+          extra-build-args: '--compress'
+          no-output-timeout: 20m
+          path: .
+          platform: linux/amd64
+          public-registry: false
+          push-image: true
+          region: '${AWS_REGION}'
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: governance
+          repo-scan-on-push: true
+          skip-when-tags-exist: false
+          tag: 'latest,${CIRCLE_SHA1}'
+      - run:
+          name: 'Update image tag'
+          command: |
+            sed -i "s/latest/${CIRCLE_SHA1}/g" .circleci/production_task.json
+      - aws-ecs/update-task-definition-from-json:
+          task-definition-json: .circleci/production_task.json
+  
+workflows:
+  governance-dapp-deploy:
+    jobs:
+      - build-staging:
+          context: governance-dapp-staging
+          filters:
+            branches:
+              only:
+                - staging
+      - build-production:
+          context: governance-dapp-production
+          filters:
+            branches:
+              only:
+                - production
+                
+      - aws-ecs/deploy-service-update:
+          cluster: 'staging-currency-default'
+          family: 'staging-currency-governance-srv'
+          service-name: 'governance'
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          force-new-deployment: true
+          aws-region: AWS_REGION
+          context: governance-dapp-staging
+          filters:
+            branches:
+              only:
+                - staging
+          requires:
+            - build-staging
+      - aws-ecs/deploy-service-update:
+          cluster: 'production-currency-default'
+          family: 'production-currency-governance-srv'
+          service-name: 'governance'
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          force-new-deployment: true
+          aws-region: AWS_REGION
+          context: governance-dapp-production
+          filters:
+            branches:
+              only:
+                - production
+          requires:
+            - build-production

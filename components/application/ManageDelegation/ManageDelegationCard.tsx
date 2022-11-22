@@ -85,19 +85,13 @@ const ManageDelegationCard = () => {
         </Column>
         {extendedDisplay ? <VotingSources /> : null}
         <Row items="center" css={customRow}>
-          <Row gap="md" items="center" style={{ opacity: 0.5 }}>
-            <Button
-              disabled
-              variant="outline"
-              color="secondary"
-              onClick={() => setModalOpen(true)}
-            >
-              Manage Delegation
-            </Button>
-            <Typography variant="body1" color="secondary">
-              coming soon
-            </Typography>
-          </Row>
+          <Button
+            variant="outline"
+            color="secondary"
+            onClick={() => setModalOpen(true)}
+          >
+            Manage Delegation
+          </Button>
           <Image
             css={chevron}
             onClick={() => setExtendedDisplay(!extendedDisplay)}

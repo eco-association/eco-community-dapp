@@ -1,4 +1,4 @@
-import { Column, Typography } from "@ecoinc/ecomponents";
+import { Column, Grid, Typography } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import AccountInfoBar from "../components/application/Account/AccountInfoBar";
 import StakingCard from "../components/application/Account/StakingCard";
@@ -6,6 +6,7 @@ import { Header } from "../components/application/Header/Header";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useWallet } from "../providers";
+import ManageDelegationCard from "../components/application/ManageDelegation/ManageDelegationCard";
 
 const headerStyle = { scrollHeader: { padding: "8px 64px 0 64px" } };
 
@@ -34,21 +35,9 @@ const Account = () => {
         </Column>
       }
     >
-      {/*<Grid*/}
-      {/*  columns="calc(50% - 12px) calc(50% - 12px)"*/}
-      {/*  gap="24px"*/}
-      {/*  style={{*/}
-      {/*    maxWidth: 980,*/}
-      {/*    margin: "-48px auto 0 auto",*/}
-      {/*    alignItems: "flex-start",*/}
-      {/*    justifyContent: "space-between",*/}
-      {/*  }}*/}
-      {/*>*/}
-      {/*  <ManageDelegationCard />*/}
-      {/*  <StakingCard balances={wallet} />*/}
-      {/*</Grid>*/}
-
-      <div
+      <Grid
+        columns="calc(50% - 12px) calc(50% - 12px)"
+        gap="24px"
         style={{
           maxWidth: 980,
           margin: "-48px auto 0 auto",
@@ -56,8 +45,9 @@ const Account = () => {
           justifyContent: "space-between",
         }}
       >
+        <ManageDelegationCard />
         <StakingCard balances={wallet} />
-      </div>
+      </Grid>
     </Header>
   );
 };

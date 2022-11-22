@@ -27,6 +27,9 @@ import { ThemeProvider } from "../components/contexts/ThemeProvider";
 import { ConnectModalProvider } from "../providers/ConnectModalProvider";
 import { ProposalTabProvider } from "../providers/ProposalTabProvider";
 import { Notifications } from "../components/application/Notifications/Notifications";
+
+import Favicon from "../public/favicon.png";
+
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/neat.css";
 import "./index.css";
@@ -79,6 +82,7 @@ const App = ({ Component, pageProps }) => {
     <WagmiConfig client={wagmiClient}>
       <GoogleAnalytics gaMeasurementId="G-G60X13DNC2" />
       <Head>
+        <link rel="icon" type="image/png" href={Favicon.src} />
         <title>{PAGE_TITLE}</title>
       </Head>
       <RainbowKitProvider chains={chains}>

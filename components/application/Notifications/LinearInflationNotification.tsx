@@ -32,8 +32,7 @@ export const LinearInflationNotification = () => {
           {formatDate(currentGeneration.createdAt)}.{" "}
           <Typography css={{ fontSize: 13 }} variant="h5" inline>
             All ECO balances have been updated
-          </Typography>{" "}
-          accordingly.
+          </Typography>
         </Typography>
       </TopBar>
     </React.Fragment>

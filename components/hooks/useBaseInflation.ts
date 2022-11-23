@@ -31,7 +31,7 @@ export const useBaseInflation = (block: string | number) => {
         previous: [prev],
         current: [curr],
       } = data;
-      setPercentage(calcPercentage(prev?.value, curr?.value));
+      setPercentage(calcPercentage(curr?.value, prev?.value));
     }
   }, [data]);
 

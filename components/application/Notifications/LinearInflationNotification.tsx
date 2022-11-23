@@ -17,7 +17,7 @@ export const LinearInflationNotification = () => {
     else m = moment(date);
     return m.format("DD/MM/YYYY @hh:mma");
   }
-  console.log(formatDate(currentGeneration.createdAt));
+
   const handleDismiss = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
     setCookie("rebaseBannerDismiss", true);

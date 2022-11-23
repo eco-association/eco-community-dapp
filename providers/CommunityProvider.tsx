@@ -40,7 +40,11 @@ const defaultValue: CommunityInterface = {
   majorityReachedAt: null,
   nextGenerationStartsAt: new Date(Number.MAX_SAFE_INTEGER),
 
-  currentGeneration: { blockNumber: 0, number: 0 },
+  currentGeneration: {
+    blockNumber: 0,
+    number: 0,
+    createdAt: new Date(Number.MAX_SAFE_INTEGER),
+  },
   stage: { name: null, endsAt: null },
 };
 
@@ -191,6 +195,7 @@ class Community {
       currentGeneration: {
         blockNumber: parseInt(this.generation.blockNumber),
         number: parseInt(this.generation.number),
+        createdAt: Community.formatDate(this.generation.createdAt),
       },
     };
   }

@@ -47,6 +47,7 @@ export type Generation = {
   policyVote: SubgraphPolicyVote | null;
   communityProposals: SubgraphProposal[];
   nextGenerationStart: string | null;
+  createdAt: string;
 };
 
 export type CurrentGenerationQueryResult = {
@@ -64,6 +65,7 @@ export const CURRENT_GENERATION = gql`
       number
       blockNumber
       nextGenerationStart
+      createdAt
       policyProposal {
         id
         totalVotingPower

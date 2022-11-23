@@ -61,7 +61,7 @@ export const RefundNotification = () => {
 
   return (
     <React.Fragment>
-      <TopBar gap="sm" onClick={() => setOpen(true)}>
+      <TopBar onClick={() => setOpen(true)}>
         You have proposal refunds to claim.
       </TopBar>
       <Dialog isOpen={open} onRequestClose={() => setOpen(false)}>

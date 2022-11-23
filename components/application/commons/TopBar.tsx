@@ -1,39 +1,47 @@
-import { Color, Row, RowProps, styled } from "@ecoinc/ecomponents";
 import React from "react";
+import { Color, Grid, styled } from "@ecoinc/ecomponents";
 import { XIcon } from "./XIcon";
 
-interface TopBarProps extends RowProps {
+interface TopBarProps
+  extends Omit<React.HTMLProps<HTMLDivElement>, "as" | "rows"> {
   color?: Color;
+
   onRequestClose?(event: React.MouseEvent | React.KeyboardEvent): void;
 }
 
-const Content = styled(Row)<TopBarProps>(({ theme, color }) => ({
-  ...theme.typography.body3,
-  fontSize: 12,
-  width: "100%",
-  padding: "12px 8px",
-  cursor: "pointer",
-  background: theme.palette[color].main,
-}));
+const Content = styled(Grid)<TopBarProps & { clickable?: boolean }>(
+  ({ theme, color, clickable, onRequestClose }) => ({
+    ...theme.typography.body3,
+    fontSize: 12,
+    width: "100%",
+    padding: "12px 8px",
+    background: theme.palette[color].main,
+    ...(clickable ? { cursor: "pointer" } : {}),
+    ...(onRequestClose ? { gridTemplateColumns: "1fr 24px", gap: "8px" } : {}),
+  })
+);
 
-const Icon = styled.div({
-  top: 13,
-  right: 24,
-  position: "absolute",
-  cursor: "pointer",
-});
+const Icon = styled.div({ cursor: "pointer" });
 
 export const TopBar: React.FC<React.PropsWithChildren<TopBarProps>> = ({
   children,
   color = "success",
-  onRequestClose,
+  onClick,
   ...props
 }) => {
   return (
-    <Content color={color} items="center" justify="center" {...props}>
-      {children}
-      {onRequestClose && (
-        <Icon onClick={onRequestClose}>
+    <Content
+      color={color}
+      clickable={!!onClick}
+      alignItems="center"
+      justifyContent="center"
+      {...props}
+    >
+      <div onClick={onClick} style={{ justifySelf: "center" }}>
+        {children}
+      </div>
+      {props.onRequestClose && (
+        <Icon onClick={props.onRequestClose}>
           <XIcon />
         </Icon>
       )}

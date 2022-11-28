@@ -7,6 +7,7 @@ import { ActivityCard } from "../components/application/CommunityGovernance/Acti
 import { VotingCard } from "../components/application/CommunityGovernance/VotingCard/VotingCard";
 import { HeaderInfo } from "../components/application/Header/HeaderInfo";
 import { useCommunity } from "../providers";
+import StakeOrConvertCard from "../components/application/StakeOrConvert/StakeOrConvertCard";
 
 const Home: React.FC = () => {
   const { stage, nextGenerationStartsAt } = useCommunity();
@@ -46,7 +47,10 @@ const Home: React.FC = () => {
           }}
         >
           <MonetaryPolicyCard />
-          <ActivityCard />
+          <Column>
+            <ActivityCard />
+            <StakeOrConvertCard />
+          </Column>
         </Grid>
       </Column>
     </Header>

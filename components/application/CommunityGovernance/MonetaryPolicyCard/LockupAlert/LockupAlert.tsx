@@ -4,8 +4,6 @@ import { css } from "@emotion/react";
 import useLockups from "../../../../hooks/useLockups";
 import { LockupAlertContent } from "./LockupAlertContent";
 
-const fontWeight = css({ fontWeight: "bold", color: "#128264" });
-
 const formatter = new Intl.NumberFormat("en-US", {
   minimumSignificantDigits: 1,
   maximumSignificantDigits: 3,
@@ -30,8 +28,8 @@ export const LockupAlert = () => {
     <Alert
       color="transparent"
       title={
-        <Typography variant="body1" css={fontWeight}>
-          Base Interest Rate * {formatter.format(totalAPY)}%
+        <Typography variant="body1" color="active">
+          <b>Base Interest Rate * {formatter.format(totalAPY)}%</b>
         </Typography>
       }
     >

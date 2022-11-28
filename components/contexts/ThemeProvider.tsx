@@ -30,6 +30,9 @@ const ecoTheme: CustomEcoTheme = {
     background: {
       light: "#EFF8FE",
     },
+    active: {
+      main: "#128264",
+    },
   },
   typography: {
     subtitle1: {

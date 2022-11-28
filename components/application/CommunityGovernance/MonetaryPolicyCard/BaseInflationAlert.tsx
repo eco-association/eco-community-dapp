@@ -22,11 +22,10 @@ export const BaseInflationAlert = () => {
         <Typography
           variant="body1"
           css={fontWeight}
-          style={{ color: inflation === 0 ? "#5F869F" : "#128268" }}
+          color={inflation === 0 ? "secondary" : "primary"}
         >
           Base inflation rate{" "}
           <Typography
-            inline
             variant="body2"
             css={fontWeight}
             color={

@@ -5,15 +5,19 @@ import {
   Dialog,
   formatNumber,
   Input,
+  Row,
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 import { useMemo, useState } from "react";
 import { tokensToNumber } from "../../../utilities";
 import { useGasFee } from "../../hooks/useGasFee";
-import { Zero } from "@ethersproject/constants";
+import useConvertECOX from "../../hooks/useConvertECOX";
+import LoaderAnimation from "../Loader";
+import { useConnectContext } from "../../../providers/ConnectModalProvider";
+import TextLoader from "../commons/TextLoader";
 
 interface ConvertModalProps {
   ecoXBalance: BigNumberish;
@@ -52,13 +56,16 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   const [toConvert, setToConvert] = useState<string>();
   const [error, setError] = useState<boolean>(false);
   const gasFee = useGasFee(500_000);
+  const { convertEcoX, loading } = useConvertECOX();
+  const { preventUnauthenticatedActions } = useConnectContext();
 
   useMemo(() => {
     toConvert && setError(parseInt(toConvert) > tokensToNumber(ecoXBalance));
   }, [ecoXBalance, toConvert]);
 
-  const convertEcoX = () => {
-    console.log(toConvert);
+  const convert = () => {
+    preventUnauthenticatedActions();
+    convertEcoX(ethers.utils.parseUnits(toConvert), () => setOpen(false));
   };
   return (
     <Dialog
@@ -121,14 +128,17 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
               You don&apos;t have enough ECOX...
             </Typography>
           </Note>
-          <Button
-            color="success"
-            style={{ width: 107, marginTop: 16, marginBottom: 8 }}
-            onClick={convertEcoX}
-            disabled={!toConvert}
-          >
-            Convert
-          </Button>
+          <Row gap="md" items="center">
+            <Button
+              color="success"
+              style={{ width: 107, marginTop: 16, marginBottom: 8 }}
+              onClick={convert}
+              disabled={!toConvert || loading}
+            >
+              {loading ? <LoaderAnimation /> : "Convert"}
+            </Button>
+            {loading && <TextLoader />}
+          </Row>
           <Typography variant="body3">
             Estimated Gas Fee:{" "}
             <Typography variant="body3" color="secondary">

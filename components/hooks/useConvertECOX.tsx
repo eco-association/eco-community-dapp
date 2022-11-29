@@ -1,12 +1,10 @@
 import { BigNumber } from "ethers";
 import { useState } from "react";
 import { toast as nativeToast } from "react-toastify";
-import { useContractAddresses, useWallet } from "../../providers";
 import { tokensToNumber, txError } from "../../utilities";
 import { useECOx } from "./contract/useECOx";
 import { ToastOptions } from "react-toastify/dist/types";
-import { useAccount } from "wagmi";
-import { WalletActionType } from "../../providers/WalletProvider";
+import { formatNumber } from "@ecoinc/ecomponents";
 
 const successfulToastStyle: ToastOptions = {
   position: "top-center",
@@ -22,28 +20,27 @@ const successfulToastStyle: ToastOptions = {
 };
 
 const useConvertECOX = () => {
-  const wallet = useWallet();
-  const account = useAccount();
-
   const ecoX = useECOx();
-  const { sEcoX } = useContractAddresses();
 
   const [loading, setLoading] = useState(false);
 
   const convertEcoX = async (amount: BigNumber, onComplete: () => void) => {
     setLoading(true);
     try {
-      const tx = await //convert fx here
-      //await tx.wait();
+      const tx = await ecoX.exchange(amount);
+      await tx.wait(2);
 
       onComplete();
       nativeToast(
-        `🚀 Converted <insert amount here> ECOx to ECO successfully`,
+        `🚀 Converted ${formatNumber(
+          tokensToNumber(amount)
+        )} ECOx to ECO successfully`,
         successfulToastStyle
       );
       setLoading(false);
     } catch (err) {
       txError("Failed to convert ECOX", err);
+      setLoading(false);
     }
   };
 

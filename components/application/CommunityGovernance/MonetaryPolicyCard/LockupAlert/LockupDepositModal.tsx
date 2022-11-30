@@ -54,14 +54,6 @@ const MaxButton = styled(Button)({
   fontWeight: "initial",
 });
 
-const AlertsContainer = styled(Row)({
-  position: "absolute",
-  padding: "0 24px",
-  top: "calc(100% + 16px)",
-  left: 0,
-  right: 0,
-});
-
 const formatDate = (date: Date) => moment(date).format("MMM DD, YYYY");
 
 const LockupDepositModal: React.FC<LockupModalProps> = ({
@@ -121,11 +113,6 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}
       onRequestClose={onRequestClose}
-      contentElement={(props, children) => (
-        <div {...props} style={{ ...props.style, overflow: "initial" }}>
-          {children}
-        </div>
-      )}
     >
       <Column gap="xl">
         <Column gap="lg" style={{ padding: "0 24px" }}>
@@ -206,8 +193,6 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
             <GasFee gasLimit={500_000} />
           </Column>
         </Container>
-      </Column>
-      <AlertsContainer items="center">
         {wallet.ecoBalance.isZero() ? (
           <Alert
             color="error"
@@ -222,7 +207,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
             </Typography>
           </Alert>
         ) : null}
-      </AlertsContainer>
+      </Column>
     </Dialog>
   );
 };

@@ -1,7 +1,7 @@
 import { Block } from "./Block";
 import { Row, TokenAmount } from "@ecoinc/ecomponents";
 import Image from "next/image";
-import EcoLogoWhiteNew from "../../../public/images/eco-logo-white-new.png";
+import EcoLogoWhiteOutline from "../../../public/images/eco-logo/eco-logo-white-outline.svg";
 import EcoXLogo from "../../../public/images/ecox-logo.png";
 import React from "react";
 import { css } from "@emotion/react";
@@ -20,7 +20,7 @@ export const InfoBlocks = () => {
           <Row gap="sm" items="center">
             <Image
               alt="Eco Logo"
-              src={EcoLogoWhiteNew}
+              src={EcoLogoWhiteOutline}
               layout="fixed"
               width={18}
               height={18}

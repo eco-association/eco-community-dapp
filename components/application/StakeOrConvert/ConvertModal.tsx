@@ -71,9 +71,9 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
     <Dialog
       isOpen={open}
       style={{ card: { maxWidth: 540 } }}
-      // shouldCloseOnEsc={!loading}
-      // shouldShowCloseButton={!loading}
-      // shouldCloseOnOverlayClick={!loading}
+      shouldCloseOnEsc={!loading}
+      shouldShowCloseButton={!loading}
+      shouldCloseOnOverlayClick={!loading}
       onRequestClose={() => setOpen(false)}
     >
       <Column gap="xl">

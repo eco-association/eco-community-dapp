@@ -12,6 +12,8 @@ import { useWallet } from "../../../providers";
 import { tokensToNumber } from "../../../utilities";
 import StakingModal from "../Account/StakingModal";
 import ConvertModal from "./ConvertModal";
+import { ethers } from "ethers";
+import useConvertECOX from "../../hooks/useConvertECOX";
 
 const TopRow = styled(Row)({
   borderBottom: `1px solid #DCE9F0`,
@@ -23,17 +25,11 @@ const StakeOrConvertCard = () => {
   const [ratio, setRatio] = useState<string>();
   const [convertOpen, setConvertOpen] = useState<boolean>(false);
   const [stakeOpen, setStakeOpen] = useState<boolean>(false);
-
+  const { getValueOfEcoX } = useConvertECOX();
   const wallet = useWallet();
-  useMemo(() => {
-    const formatter = new Intl.NumberFormat("en-US", {
-      minimumSignificantDigits: 1,
-      maximumSignificantDigits: 1,
-    });
-    const r =
-      parseInt(wallet.ecoBalance.toString()) /
-      parseInt(wallet.ecoXBalance.toString());
-    setRatio(`${formatter.format(r)}:1`);
+  useMemo(async () => {
+    const value = await getValueOfEcoX(ethers.utils.parseUnits("1"));
+    setRatio(`${value}:1`);
   }, [wallet]);
 
   return (

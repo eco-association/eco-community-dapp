@@ -3,6 +3,10 @@ import {
   CommunityProposalFragment,
   CommunityProposalFragmentResult,
 } from "./fragments/CommunityProposalFragment";
+import {
+  LockupFragment,
+  LockupFragmentResult,
+} from "./fragments/LockupFragment";
 
 export type SubgraphPolicyProposal = {
   id: string;
@@ -47,6 +51,7 @@ export type Generation = {
   policyVote: SubgraphPolicyVote | null;
   communityProposals: SubgraphProposal[];
   nextGenerationStart: string | null;
+  lockup?: LockupFragmentResult;
 };
 
 export type CurrentGenerationQueryResult = {
@@ -98,7 +103,11 @@ export const CURRENT_GENERATION = gql`
           createdAt
         }
       }
+      lockup {
+        ...LockupFragment
+      }
     }
   }
   ${CommunityProposalFragment}
+  ${LockupFragment}
 `;

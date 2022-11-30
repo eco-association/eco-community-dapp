@@ -5,13 +5,15 @@ import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 import { useLazyQuery, useQuery } from "@apollo/client";
 
-import { Address, Approval, WalletInterface } from "../types";
+import { WalletInterface } from "../types";
 import { WALLET, WalletQueryResult } from "../queries";
 
 import { toast } from "@ecoinc/ecomponents-old";
-import { isNullAddress } from "../utilities";
-import { WeiPerEther, Zero } from "@ethersproject/constants";
+import { formatLockup, isNullAddress } from "../utilities";
+import { One, WeiPerEther, Zero } from "@ethersproject/constants";
 import { TOKENS_QUERY, TokensQueryResult } from "../queries/TOKENS_QUERY";
+import { FundsLockupWithDeposit } from "../types/FundsLockup";
+import { convertDate } from "../utilities/convertDate";
 
 /**
  * Wallet provider
@@ -27,9 +29,10 @@ const DEFAULT_WALLET: WalletInterface = {
   ecoXTotalSupply: Zero,
   sEcoXTotalSupply: Zero,
   wEcoTotalSupply: Zero,
+  inflationMultiplier: WeiPerEther,
   ECODelegator: null,
   sECOxDelegator: null,
-  ecoApprovals: [],
+  lockups: [],
 };
 
 const DEFAULT_INFLATION = WeiPerEther;
@@ -43,6 +46,24 @@ export const WalletContext = createContext<WalletContextState>({
   ...DEFAULT_WALLET,
   dispatch: () => ({}),
 });
+
+function getLockups(data?: WalletQueryResult): FundsLockupWithDeposit[] {
+  if (!data?.account?.fundsLockupDeposits.length) return [];
+
+  return data.account.fundsLockupDeposits.map((lockupDeposit) => {
+    const generation = parseInt(lockupDeposit.lockup.generation.number);
+    return {
+      ...formatLockup(generation, lockupDeposit.lockup),
+      id: lockupDeposit.id,
+      delegate: lockupDeposit.delegate,
+      amount: BigNumber.from(lockupDeposit.amount),
+      reward: BigNumber.from(lockupDeposit.reward),
+      lockupEndsAt: convertDate(lockupDeposit.lockupEndsAt),
+      withdrawnAt:
+        lockupDeposit.withdrawnAt && convertDate(lockupDeposit.withdrawnAt),
+    };
+  });
+}
 
 function getWalletBalances(
   address?: string,
@@ -61,6 +82,7 @@ function getWalletBalances(
     ecoXTotalSupply: BigNumber.from(tokens?.ecox?.totalSupply || 0),
     sEcoXTotalSupply: BigNumber.from(tokens?.secox?.totalSupply || 0),
     wEcoTotalSupply: BigNumber.from(tokens?.weco?.totalSupply || 0),
+    inflationMultiplier: currentInflationMultiplier,
   };
 
   // wallet has current balances of eco, ecox, secox, and approved eco.
@@ -68,23 +90,17 @@ function getWalletBalances(
   if (isNullAddress(address) || !data?.account)
     return {
       ...tokensData,
-      ecoBalance: BigNumber.from(0),
-      ecoXBalance: BigNumber.from(0),
-      sEcoXBalance: BigNumber.from(0),
-      wEcoBalance: BigNumber.from(0),
+      ecoBalance: Zero,
+      ecoXBalance: Zero,
+      sEcoXBalance: Zero,
+      wEcoBalance: Zero,
+      inflationMultiplier: WeiPerEther,
       ECODelegator: null,
       sECOxDelegator: null,
-      ecoApprovals: [],
+      lockups: [],
     };
 
   const balances = data.account;
-  const ecoApprovals = balances.approvedECO.map(
-    (approval): Approval => ({
-      owner: new Address(address),
-      spender: new Address(approval.spender),
-      value: BigNumber.from(approval.value),
-    })
-  );
 
   return {
     ...tokensData,
@@ -94,7 +110,7 @@ function getWalletBalances(
     wEcoBalance: BigNumber.from(balances.wECO),
     ECODelegator: data.account.ECODelegator?.address || null,
     sECOxDelegator: data.account.sECOxDelegator?.address || null,
-    ecoApprovals,
+    lockups: getLockups(data),
   };
 }
 

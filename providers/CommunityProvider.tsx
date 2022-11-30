@@ -26,6 +26,7 @@ import { adjustVotingPower } from "../utilities/adjustVotingPower";
 import { convertDate } from "../utilities/convertDate";
 import { PastProposalsQuery } from "../queries/PAST_PROPOSALS_QUERY";
 import { ProposalQueryResult } from "../queries/PROPOSAL_QUERY";
+import { formatLockup } from "../utilities";
 
 const defaultValue: CommunityInterface = {
   generation: null,
@@ -252,6 +253,7 @@ function getCommunityData(
 
   return {
     generation,
+    lockup: formatLockup(parseInt(generation.number), generation.lockup),
     proposals: getProposals(generation),
     ...Community.getData(generation),
   };

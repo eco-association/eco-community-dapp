@@ -78,7 +78,7 @@ export const ActiveProposals: React.FC<ActiveProposalsProps> = ({
             In the meantime, you can{" "}
             <Link
               href={{
-                pathname: "/proposal/[id]",
+                pathname: "/proposal",
                 query: { id: votingProposal?.id },
               }}
             >

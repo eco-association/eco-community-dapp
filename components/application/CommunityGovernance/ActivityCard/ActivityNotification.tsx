@@ -36,7 +36,7 @@ const ProposalName: React.FC<{ id: string; name: string }> = ({ id, name }) => {
   return (
     <Link
       href={{
-        pathname: "/proposal/[id]",
+        pathname: "/proposal",
         query: { id },
       }}
     >

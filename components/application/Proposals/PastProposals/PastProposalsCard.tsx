@@ -163,7 +163,7 @@ const PastProposalsCard: React.FC<PastProposalsCardProps> = ({ proposal }) => {
         <Row items="center" justify="space-between">
           <Link
             href={{
-              pathname: "/proposal/[id]",
+              pathname: "/proposal",
               query: { id: proposal?.id },
             }}
           >

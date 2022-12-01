@@ -86,7 +86,6 @@ const Proposals: React.FC = () => {
   return (
     <Header
       current="proposals"
-      height={0}
       breakpoint={breakpoint}
       scrollHeader={scrollHeader}
       styles={headerStyles}

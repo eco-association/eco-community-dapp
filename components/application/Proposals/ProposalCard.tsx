@@ -76,7 +76,7 @@ export const ProposalCard: React.FC<ProposalCardProps> = ({
         <Row items="center" gap="sm">
           <Link
             href={{
-              pathname: "/proposal/[id]",
+              pathname: "/proposal",
               query: { id: proposal.id },
             }}
           >

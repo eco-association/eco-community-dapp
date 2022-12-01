@@ -4,6 +4,7 @@ import { LockupFragmentResult } from "../queries/fragments/LockupFragment";
 import { BigNumber, utils } from "ethers";
 import { convertDate } from "./convertDate";
 import { FundsLockupWithDeposit } from "../types/FundsLockup";
+import moment from "moment";
 
 function isLockupDeposit(
   lockup: FundsLockup | FundsLockupWithDeposit
@@ -62,3 +63,6 @@ export function getLockupClaimAmount(
 ) {
   return lockup.amount.div(inflationMultiplier).add(lockup.reward);
 }
+
+export const lockupFormatDate = (date: Date) =>
+  moment(date).format("MMM DD, YYYY");

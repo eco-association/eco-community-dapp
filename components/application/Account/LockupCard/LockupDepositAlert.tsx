@@ -1,11 +1,11 @@
-import { Alert, Button, Typography } from "@ecoinc/ecomponents";
 import React, { useState } from "react";
 import { css } from "@emotion/react";
-import { FundsLockup } from "../../../../../types";
-import { LockupDescription } from "./LockupDescription";
 import ReactCountdown from "react-countdown";
-import { CountdownRenderProps } from "react-countdown/dist/Countdown";
-import LockupDepositModal from "./LockupDepositModal";
+import { Alert, Button, Typography } from "@ecoinc/ecomponents";
+import { FundsLockup } from "../../../../types";
+import { LockupDescription } from "../../CommunityGovernance/MonetaryPolicyCard/LockupAlert/LockupDescription";
+import LockupDepositModal from "../../CommunityGovernance/MonetaryPolicyCard/LockupAlert/LockupDepositModal";
+import { formatCountdown } from "../../../../utilities";
 
 const fontWeight = css({ fontSize: 13, fontWeight: "bold", lineHeight: 1 });
 
@@ -13,22 +13,13 @@ interface StakeVaultAlertProps {
   lockup: FundsLockup;
 }
 
-function getCountdown(countdown: CountdownRenderProps): {
-  amount: number;
-  unit: string;
-} {
-  if (countdown.days > 0) return { amount: countdown.days + 1, unit: "days" };
-  if (countdown.hours > 0)
-    return { amount: countdown.hours + 1, unit: "hours" };
-  if (countdown.minutes > 0)
-    return { amount: countdown.minutes + 1, unit: "minutes" };
-  return { amount: countdown.seconds, unit: "seconds" };
-}
-
 export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
   const { depositWindowEndsAt: endsAt } = lockup;
 
+  const [active, setActive] = useState(endsAt.getTime() > Date.now());
   const [open, setOpen] = useState(false);
+
+  if (!active) return null;
 
   return (
     <Alert
@@ -36,6 +27,7 @@ export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
       title={
         <ReactCountdown
           date={endsAt}
+          onComplete={() => setActive(false)}
           renderer={(countdownData) => {
             if (countdownData.completed)
               return (
@@ -43,7 +35,7 @@ export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
                   You can&apos;t participate now
                 </Typography>
               );
-            const remaining = getCountdown(countdownData);
+            const remaining = formatCountdown(countdownData);
             return (
               <Typography variant="h5" color="active" css={fontWeight}>
                 {remaining.amount} {remaining.unit} remain to participate

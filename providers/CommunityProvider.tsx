@@ -250,10 +250,14 @@ function getCommunityData(
   if (!data) return defaultValue;
 
   const generation = data.generations[0];
+  const pastGeneration = data.pastGeneration[0];
 
   return {
     generation,
-    lockup: formatLockup(parseInt(generation.number), generation.lockup),
+    lockup: formatLockup(
+      parseInt(pastGeneration?.number),
+      pastGeneration?.lockup
+    ),
     proposals: getProposals(generation),
     ...Community.getData(generation),
   };

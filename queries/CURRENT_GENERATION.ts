@@ -47,15 +47,21 @@ export type Generation = {
   id: string;
   number: string;
   blockNumber: string;
+  nextGenerationStart: string | null;
   policyProposal: SubgraphPolicyProposal;
   policyVote: SubgraphPolicyVote | null;
   communityProposals: SubgraphProposal[];
-  nextGenerationStart: string | null;
+};
+
+export type PastGeneration = {
+  id: string;
+  number: string;
   lockup?: LockupFragmentResult;
 };
 
 export type CurrentGenerationQueryResult = {
   generations: Generation[];
+  pastGeneration: PastGeneration[];
 };
 
 export type CurrentGenerationQueryVariables = {
@@ -103,6 +109,15 @@ export const CURRENT_GENERATION = gql`
           createdAt
         }
       }
+    }
+    pastGeneration: generations(
+      orderBy: number
+      orderDirection: desc
+      first: 1
+      skip: 1
+    ) {
+      id
+      number
       lockup {
         ...LockupFragment
       }

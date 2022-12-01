@@ -1,21 +1,24 @@
-import { LockupTableRow } from "./LockupTableRow";
-import { Column, formatNumber, Typography } from "@ecoinc/ecomponents";
 import React from "react";
+import moment from "moment";
+import { Column, formatNumber, Typography } from "@ecoinc/ecomponents";
 import {
   getLockupAPY,
   getLockupDates,
   numberFormatter,
   tokensToNumber,
 } from "../../../../utilities";
-import moment from "moment";
-import { FundsLockupWithDeposit } from "../../../../types/FundsLockup";
+import { LockupTableRow } from "./LockupTableRow";
 import { LockupClaimAlert } from "./LockupClaimAlert";
+import { FundsLockupWithDeposit } from "../../../../types/FundsLockup";
+import { Arrow } from "../../commons/Arrow";
 
 interface LockupRowProps {
   lockup: FundsLockupWithDeposit;
+
+  onClick(): void;
 }
 
-export const LockupRow: React.FC<LockupRowProps> = ({ lockup }) => {
+export const LockupRow: React.FC<LockupRowProps> = ({ lockup, onClick }) => {
   const dates = getLockupDates(lockup);
 
   const ended = Boolean(lockup.withdrawnAt);
@@ -29,7 +32,7 @@ export const LockupRow: React.FC<LockupRowProps> = ({ lockup }) => {
   const amount = lockup.reward.mul(1e9).div(lockup.interest * 1e7);
 
   const row = (
-    <LockupTableRow>
+    <LockupTableRow clickable={!ended} onClick={() => !ended && onClick()}>
       <Typography variant="body2" color={color}>
         {formatNumber(tokensToNumber(amount))}
       </Typography>
@@ -42,6 +45,7 @@ export const LockupRow: React.FC<LockupRowProps> = ({ lockup }) => {
       <Typography variant="body2" color={color}>
         {duration}
       </Typography>
+      {!ended ? <Arrow color="primary" /> : null}
     </LockupTableRow>
   );
 

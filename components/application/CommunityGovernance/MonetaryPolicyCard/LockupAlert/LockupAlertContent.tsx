@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Column, Typography } from "@ecoinc/ecomponents";
-import { LockupDepositAlert } from "./LockupDepositAlert";
+import { LockupDepositAlert } from "../../../Account/LockupCard/LockupDepositAlert";
 import { FundsLockup } from "../../../../../types";
 import { LockupDescription } from "./LockupDescription";
+import { useTimeFlag } from "../../../../hooks/useTimeFlag";
 
 interface LockupAlertContentProps {
   lockup: FundsLockup;
@@ -11,17 +12,7 @@ interface LockupAlertContentProps {
 export const LockupAlertContent: React.FC<LockupAlertContentProps> = ({
   lockup,
 }) => {
-  const [isDepositOpen, setDepositOpen] = useState(
-    lockup.depositWindowEndsAt.getTime() > Date.now()
-  );
-
-  useEffect(() => {
-    if (isDepositOpen) {
-      const remaining = lockup.depositWindowEndsAt.getTime() - Date.now();
-      const timeout = setTimeout(() => setDepositOpen(false), remaining);
-      return () => clearTimeout(timeout);
-    }
-  }, [isDepositOpen, lockup.depositWindowEndsAt]);
+  const isDepositOpen = !useTimeFlag(lockup.depositWindowEndsAt);
 
   if (!isDepositOpen) {
     return <LockupDescription lockup={lockup} />;

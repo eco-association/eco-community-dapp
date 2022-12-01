@@ -17,10 +17,11 @@ import { FundsLockup } from "../../../../../types";
 import { GasFee } from "../../../commons/GasFee";
 import { useBlockExit } from "../../../../hooks/useBlockExit";
 import {
-  tokensToNumber,
-  getLockupDates,
   formatDuration,
+  getLockupDates,
+  lockupFormatDate,
   numberFormatter,
+  tokensToNumber,
   txError,
 } from "../../../../../utilities";
 import LoaderAnimation from "../../../Loader";
@@ -29,12 +30,13 @@ import { useWallet } from "../../../../../providers";
 import EcoLogoMedGray from "../../../../../public/images/eco-logo/eco-logo-gray-med.svg";
 import Image from "next/image";
 import { useLockup } from "../../../../hooks/contract/useLockup";
-import moment from "moment";
 import { useAccount } from "wagmi";
 import { useECO } from "../../../../hooks/contract/useECO";
+import { ModalTextItem } from "../../../Account/LockupCard/ModalTextItem";
 
 interface LockupModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockup;
+
   onRequestClose(): void;
 }
 
@@ -53,8 +55,6 @@ const MaxButton = styled(Button)({
   minWidth: "initial",
   fontWeight: "initial",
 });
-
-const formatDate = (date: Date) => moment(date).format("MMM DD, YYYY");
 
 const LockupDepositModal: React.FC<LockupModalProps> = ({
   isOpen,
@@ -124,19 +124,13 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
             result in a penalty of xyz.
           </Typography>
 
-          <Column>
-            <Typography variant="subtitle1" color="secondary">
-              DURATION
-            </Typography>
-            <Row gap="sm">
-              <Typography>
-                {duration.amount} {duration.unit}
-              </Typography>
-              <Typography color="secondary">
-                {formatDate(startDate)} - {formatDate(endDate)}
-              </Typography>
-            </Row>
-          </Column>
+          <ModalTextItem
+            title="DURATION"
+            text={`${duration.amount} ${duration.unit}`}
+            subtitle={
+              lockupFormatDate(startDate) + " - " + lockupFormatDate(endDate)
+            }
+          />
         </Column>
         <Container gap="lg">
           <Typography variant="h5" style={{ lineHeight: 1 }}>

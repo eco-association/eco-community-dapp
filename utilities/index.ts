@@ -6,6 +6,7 @@ export { default as txError } from "./txError";
 export { default as randomInflationTools } from "./randomInflationTools";
 export { tokensToNumber } from "./tokensToNumber";
 export * from "./formatDuration";
+export * from "./formatCountdown";
 export * from "./lockup";
 export * from "./formatTime";
 export * from "./truncateText";

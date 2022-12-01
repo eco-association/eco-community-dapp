@@ -1,4 +1,4 @@
-import { GenerationStage, ProposalType, Stage } from "./";
+import { FundsLockup, GenerationStage, ProposalType, Stage } from "./";
 import { BigNumber } from "ethers";
 import { Generation } from "../queries/CURRENT_GENERATION";
 import { Vote } from "../providers/CommunityProvider";
@@ -21,6 +21,7 @@ interface CommunityInterface extends PolicyVote {
   proposals: ProposalType[];
   stage: Stage;
   nextGenerationStartsAt: Date | null;
+  lockup?: FundsLockup;
   currentGeneration: {
     number: number;
     blockNumber: number;

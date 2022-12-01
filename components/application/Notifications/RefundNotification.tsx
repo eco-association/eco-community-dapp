@@ -64,7 +64,13 @@ export const RefundNotification = () => {
       <TopBar onClick={() => setOpen(true)}>
         You have proposal refunds to claim.
       </TopBar>
-      <Dialog isOpen={open} onRequestClose={() => setOpen(false)}>
+      <Dialog
+        isOpen={open}
+        shouldCloseOnEsc={!loading}
+        shouldShowCloseButton={!loading}
+        shouldCloseOnOverlayClick={!loading}
+        onRequestClose={() => setOpen(false)}
+      >
         <Column gap="xl">
           <Content gap="lg">
             <Typography variant="h2">Claim your ECO refund</Typography>

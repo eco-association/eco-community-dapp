@@ -18,7 +18,7 @@ import { useConnectContext } from "../../../../providers/ConnectModalProvider";
 import { useAccount } from "wagmi";
 import { useCommunity, useWallet } from "../../../../providers";
 import { GenerationStage } from "../../../../types";
-import EcoLogo from "../../../../public/images/eco-logo-grey.svg";
+import EcoLogo from "../../../../public/images/eco-logo/eco-logo-grey.svg";
 import { WeiPerEther } from "@ethersproject/constants";
 import { tokensToNumber } from "../../../../utilities";
 

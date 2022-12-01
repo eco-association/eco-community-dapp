@@ -1,14 +1,13 @@
 import { Column, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import React from "react";
-import { formatTime } from "../../../../utilities/formatTime";
+import { formatTime, truncateText } from "../../../../utilities";
 import {
   Activity,
   ActivityNotificationType,
 } from "../../../../queries/ACTIVITY_QUERY";
 import Link from "next/link";
 import { SubgraphVoteResult } from "../../../../queries/CURRENT_GENERATION";
-import { truncateText } from "../../../../utilities/truncateText";
 
 interface ActivityNotificationProps {
   activity: Activity;

@@ -1,7 +1,6 @@
 export { GenerationStage } from "./GenerationStage";
 export type { ProposalType } from "./Proposal";
 export type { Stage } from "./Stage";
-export type { Approval } from "./Approval";
 export type { ProposalSupport } from "./ProposalSupport";
 export type { ProposalVote } from "./ProposalVote";
 export type { CommunityInterface } from "./CommunityInterface";

@@ -12,7 +12,13 @@ import {
   WalletProvider,
 } from "../providers";
 
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import {
+  chain,
+  configureChains,
+  createClient,
+  WagmiConfig,
+  defaultChains,
+} from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
@@ -37,7 +43,7 @@ import "./index.css";
 const PAGE_TITLE = process.env.NEXT_PUBLIC_DAPP_NAME;
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [chain[process.env.NEXT_PUBLIC_CHAIN]],
+  [chain[process.env.NEXT_PUBLIC_CHAIN], chain["mainnet"]],
   [
     infuraProvider({
       apiKey: process.env.NEXT_PUBLIC_INFURA_ID,

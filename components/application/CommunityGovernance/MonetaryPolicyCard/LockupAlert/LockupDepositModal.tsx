@@ -33,6 +33,7 @@ import { useLockup } from "../../../../hooks/contract/useLockup";
 import { useAccount } from "wagmi";
 import { useECO } from "../../../../hooks/contract/useECO";
 import { ModalTextItem } from "../../../Account/LockupCard/ModalTextItem";
+import { WalletActionType } from "../../../../../providers/WalletProvider";
 
 interface LockupModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockup;
@@ -64,10 +65,11 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
   const account = useAccount();
   const wallet = useWallet();
   const eco = useECO();
+
   const lockupContract = useLockup(lockup.address);
 
-  const [depositAmount, setDepositAmount] = useState(Zero);
   const [loading, setLoading] = useState(false);
+  const [depositAmount, setDepositAmount] = useState(Zero);
 
   useBlockExit(loading);
 
@@ -81,6 +83,17 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
       }
       const tx = await lockupContract.deposit(depositAmount);
       await tx.wait();
+
+      const reward = depositAmount.mul(lockup.interest * 1e7).div(1e9);
+      wallet.dispatch({
+        type: WalletActionType.LockupDeposit,
+        lockup,
+        reward,
+        amount: depositAmount,
+        address: account.address,
+        inflationMultiplier: wallet.inflationMultiplier,
+      });
+
       setDepositAmount(Zero);
       onRequestClose();
     } catch (error) {

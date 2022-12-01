@@ -59,9 +59,11 @@ export function formatLockup(
 
 export function getLockupClaimAmount(
   lockup: FundsLockupWithDeposit,
-  inflationMultiplier: BigNumber
+  inflationMultiplier: BigNumber,
+  early = false
 ) {
-  return lockup.amount.div(inflationMultiplier).add(lockup.reward);
+  const amount = lockup.amount.div(inflationMultiplier);
+  return !early ? amount.add(lockup.reward) : amount.sub(lockup.reward);
 }
 
 export const lockupFormatDate = (date: Date) =>

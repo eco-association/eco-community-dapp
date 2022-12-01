@@ -22,11 +22,13 @@ export const LockupCard = () => {
   const { lockup } = useCommunity();
   const { lockups, inflationMultiplier } = useWallet();
 
-  const [selected, setSelected] = useState<FundsLockupWithDeposit>();
+  const [selected, setSelected] = useState<FundsLockupWithDeposit["id"]>();
 
   const amountLocked = lockups
     .reduce((acc, lockup) => acc.add(lockup.amount), Zero)
     .div(inflationMultiplier);
+
+  const selectedLockup = lockups.find((lockup) => lockup.id === selected);
 
   return (
     <Card>
@@ -74,13 +76,13 @@ export const LockupCard = () => {
           <LockupRow
             key={lockupDeposit.id}
             lockup={lockupDeposit}
-            onClick={() => setSelected(lockupDeposit)}
+            onClick={() => setSelected(lockupDeposit.id)}
           />
         ))}
-        {selected ? (
+        {selected && selectedLockup ? (
           <LockupClaimModal
             isOpen
-            lockup={selected}
+            lockup={selectedLockup}
             onRequestClose={() => setSelected(undefined)}
           />
         ) : null}

@@ -32,6 +32,7 @@ import { ModalTextItem } from "./ModalTextItem";
 import { useLockup } from "../../../hooks/contract/useLockup";
 import { useTimeFlag } from "../../../hooks/useTimeFlag";
 import { useAccount } from "wagmi";
+import { WalletActionType } from "../../../../providers/WalletProvider";
 
 interface LockupClaimModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockupWithDeposit;
@@ -156,7 +157,7 @@ const LockupEnded: React.FC<ContentProps> = ({ lockup, onClaim, loading }) => {
       <Column gap="lg" style={{ padding: "0 24px" }}>
         <Typography variant="h2">
           Lockup{" "}
-          <Typography inline variant="h2" color="info">
+          <Typography inline variant="h2" color="active">
             • Completed
           </Typography>
         </Typography>
@@ -216,6 +217,7 @@ export const LockupClaimModal: React.FC<LockupClaimModalProps> = ({
   lockup,
   onRequestClose,
 }) => {
+  const wallet = useWallet();
   const hasEnded = useTimeFlag(lockup.lockupEndsAt);
   const lockupContract = useLockup(lockup.address);
 
@@ -228,6 +230,14 @@ export const LockupClaimModal: React.FC<LockupClaimModalProps> = ({
     try {
       const tx = await lockupContract.withdraw();
       await tx.wait();
+
+      wallet.dispatch({
+        type: WalletActionType.LockupWithdrawal,
+        lockup,
+        early: !hasEnded,
+        inflationMultiplier: wallet.inflationMultiplier,
+      });
+
       onRequestClose();
     } catch (error) {
       txError("Failed to claim", error);
@@ -244,7 +254,7 @@ export const LockupClaimModal: React.FC<LockupClaimModalProps> = ({
       shouldCloseOnOverlayClick={!loading}
       onRequestClose={onRequestClose}
     >
-      {hasEnded ? (
+      {!hasEnded ? (
         <ClaimEarly lockup={lockup} onClaim={claim} loading={loading} />
       ) : (
         <LockupEnded lockup={lockup} onClaim={claim} loading={loading} />

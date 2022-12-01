@@ -5,12 +5,16 @@ import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 import { useLazyQuery, useQuery } from "@apollo/client";
 
-import { WalletInterface } from "../types";
+import { FundsLockup, WalletInterface } from "../types";
 import { WALLET, WalletQueryResult } from "../queries";
 
 import { toast } from "@ecoinc/ecomponents-old";
-import { formatLockup, isNullAddress } from "../utilities";
-import { One, WeiPerEther, Zero } from "@ethersproject/constants";
+import {
+  formatLockup,
+  getLockupClaimAmount,
+  isNullAddress,
+} from "../utilities";
+import { WeiPerEther, Zero } from "@ethersproject/constants";
 import { TOKENS_QUERY, TokensQueryResult } from "../queries/TOKENS_QUERY";
 import { FundsLockupWithDeposit } from "../types/FundsLockup";
 import { convertDate } from "../utilities/convertDate";
@@ -118,6 +122,8 @@ export enum WalletActionType {
   SetState,
   Stake,
   Unstake,
+  LockupDeposit,
+  LockupWithdrawal,
 }
 
 type WalletAction =
@@ -128,6 +134,20 @@ type WalletAction =
   | {
       type: WalletActionType.SetState;
       state: WalletInterface;
+    }
+  | {
+      type: WalletActionType.LockupDeposit;
+      lockup: FundsLockup;
+      address: string;
+      amount: BigNumber;
+      reward: BigNumber;
+      inflationMultiplier: BigNumber;
+    }
+  | {
+      type: WalletActionType.LockupWithdrawal;
+      early: boolean;
+      lockup: FundsLockupWithDeposit;
+      inflationMultiplier: BigNumber;
     };
 
 const delegateReducer: React.Reducer<WalletInterface, WalletAction> = (
@@ -149,6 +169,62 @@ const delegateReducer: React.Reducer<WalletInterface, WalletAction> = (
           action.type === WalletActionType.Stake
             ? state.ecoXBalance.sub(action.amount)
             : state.ecoXBalance.add(action.amount),
+      };
+    case WalletActionType.LockupDeposit:
+      let lockups;
+      const depositLockups = state.lockups.filter(
+        (lockup) => lockup.address === action.lockup.address
+      );
+      const currentDeposit = depositLockups.find(
+        (lockup) => !lockup.withdrawnAt
+      );
+
+      if (currentDeposit) {
+        // Depositing more tokens
+        lockups = state.lockups.map((lockup) => {
+          if (lockup.id !== currentDeposit.id) return lockup;
+          return {
+            ...currentDeposit,
+            amount: currentDeposit.amount.add(
+              action.amount.mul(action.inflationMultiplier)
+            ),
+            reward: currentDeposit.reward.add(action.reward),
+            lockupEndsAt: new Date(Date.now() + action.lockup.duration),
+          };
+        });
+      } else {
+        // Log funds lockup deposit
+        const id = `${action.lockup.address}-${action.address}-${depositLockups.length}.0`;
+        const amount = action.amount.mul(action.inflationMultiplier);
+        lockups = [
+          ...state.lockups,
+          {
+            ...action.lockup,
+            id,
+            withdrawnAt: null,
+            delegate: action.address,
+            amount,
+            reward: action.reward,
+            lockupEndsAt: new Date(Date.now() + action.lockup.duration),
+          },
+        ];
+      }
+
+      return { ...state, lockups };
+    case WalletActionType.LockupWithdrawal:
+      return {
+        ...state,
+        ecoBalance: state.ecoBalance.add(
+          getLockupClaimAmount(
+            action.lockup,
+            action.inflationMultiplier,
+            action.early
+          )
+        ),
+        lockups: state.lockups.map((lockup) => {
+          if (lockup.id !== action.lockup.id) return lockup;
+          return { ...lockup, withdrawnAt: new Date() };
+        }),
       };
   }
 };

@@ -27,6 +27,9 @@ const ecoTheme: CustomEcoTheme = {
       bgDark: "#F6F9FB",
       contrastText: "#5F869F",
     },
+    error: {
+      contrastText: "#510408",
+    },
     background: {
       light: "#EFF8FE",
     },

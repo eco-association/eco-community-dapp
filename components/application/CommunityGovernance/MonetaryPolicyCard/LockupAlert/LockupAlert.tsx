@@ -1,10 +1,7 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Alert, Typography } from "@ecoinc/ecomponents";
-import { css } from "@emotion/react";
-import useLockups from "../../../../hooks/useLockups";
 import { LockupAlertContent } from "./LockupAlertContent";
-
-const fontWeight = css({ fontWeight: "bold", color: "#128264" });
+import { useCommunity } from "../../../../../providers";
 
 const formatter = new Intl.NumberFormat("en-US", {
   minimumSignificantDigits: 1,
@@ -12,14 +9,15 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 export const LockupAlert = () => {
-  const { active, current, lockups } = useLockups();
-  const totalAPY = useMemo(() => {
-    return lockups.reduce((acc, lockup) => lockup.interest + acc, 0);
-  }, [lockups]);
+  const { lockup } = useCommunity();
 
-  if (!active.length)
+  if (!lockup)
     return (
-      <Alert css={{ border: 0 }} color="secondary" title="Lockups • Inactive">
+      <Alert
+        css={{ border: 0 }}
+        color="secondary"
+        title="Base Interest Rate • Inactive"
+      >
         <Typography variant="body2" color="secondary">
           Deposit your ECO into a lockup to earn interest.
         </Typography>
@@ -30,12 +28,12 @@ export const LockupAlert = () => {
     <Alert
       color="transparent"
       title={
-        <Typography variant="body1" css={fontWeight}>
-          Base Interest Rate * {formatter.format(totalAPY)}%
+        <Typography variant="body1" color="active">
+          <b>Base Interest Rate * {formatter.format(lockup.interest)}%</b>
         </Typography>
       }
     >
-      <LockupAlertContent current={current} lockups={active} />
+      <LockupAlertContent lockup={lockup} />
     </Alert>
   );
 };

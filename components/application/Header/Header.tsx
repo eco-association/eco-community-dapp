@@ -9,16 +9,17 @@ import { WalletItem } from "./WalletItem";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { css } from "@emotion/react";
+import HeaderBackground from "./HeaderBackground";
 
 const linearGradient = (color: string) => `linear-gradient(${color}, ${color})`;
 
 const PageContainer = styled.div<{ height: number }>(({ theme, height }) => ({
   backgroundRepeat: "no-repeat",
-  backgroundImage: [
-    `url(${DotsBg.src})`,
-    linearGradient(theme.palette.primary.main),
-    linearGradient(theme.palette.background.paper),
-  ].join(", "),
+  // backgroundImage: [
+  //   `url(${DotsBg.src})`,
+  //   linearGradient(theme.palette.primary.main),
+  //   linearGradient(theme.palette.background.paper),
+  // ].join(", "),
   backgroundSize: [`auto ${height}px`, `100% ${height}px`, "auto"].join(", "),
   backgroundPosition: "top center",
   minHeight: "100vh",
@@ -26,10 +27,10 @@ const PageContainer = styled.div<{ height: number }>(({ theme, height }) => ({
 
 const TopContent = styled.div(({ theme }) => ({
   backgroundRepeat: "no-repeat",
-  backgroundImage: [
-    `url(${DotsBg.src})`,
-    linearGradient(theme.palette.primary.main),
-  ].join(", "),
+  // backgroundImage: [
+  //   `url(${DotsBg.src})`,
+  //   linearGradient(theme.palette.primary.main),
+  // ].join(", "),
   backgroundSize: [`auto 100%`, `100% 100%`].join(", "),
   backgroundPosition: "top center",
 }));
@@ -189,16 +190,18 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
   if (content) {
     return (
       <React.Fragment>
-        <TopContent
-          ref={topRef}
-          css={styles.pageStyle}
-          style={{ minHeight: styles.height }}
-        >
-          {header}
-          {overlayHeader}
-          {content}
-        </TopContent>
-        <BottomContent css={styles.bodyStyle}>{children}</BottomContent>
+        <HeaderBackground styles={styles}>
+          <TopContent
+            ref={topRef}
+            css={styles.pageStyle}
+            style={{ minHeight: styles.height }}
+          >
+            {header}
+            {overlayHeader}
+            {content}
+          </TopContent>
+          <BottomContent css={styles.bodyStyle}>{children}</BottomContent>
+        </HeaderBackground>
       </React.Fragment>
     );
   }

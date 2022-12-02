@@ -9,13 +9,12 @@ import moment from "moment";
 function isLockupDeposit(
   lockup: FundsLockup | FundsLockupWithDeposit
 ): lockup is FundsLockupWithDeposit {
-  return "lockupEndsAt" in lockup;
+  return "reward" in lockup;
 }
 
 function wasLockupWithdrawnEarly(lockup: FundsLockupWithDeposit): boolean {
   return Boolean(
-    lockup.withdrawnAt &&
-      lockup.lockupEndsAt.getTime() > lockup.withdrawnAt.getTime()
+    lockup.withdrawnAt && lockup.endsAt.getTime() > lockup.withdrawnAt.getTime()
   );
 }
 
@@ -29,10 +28,8 @@ export function getLockupDates(lockup: FundsLockup | FundsLockupWithDeposit) {
   const start = new Date(endsAt.getTime() - depositDuration);
   let end = new Date(endsAt.getTime() + duration);
 
-  if (isLockupDeposit(lockup)) {
-    end = wasLockupWithdrawnEarly(lockup)
-      ? lockup.withdrawnAt
-      : lockup.lockupEndsAt;
+  if (isLockupDeposit(lockup) && wasLockupWithdrawnEarly(lockup)) {
+    end = lockup.withdrawnAt;
   }
 
   return { end, start };
@@ -47,13 +44,15 @@ export function formatLockup(
   lockup?: LockupFragmentResult
 ): FundsLockup {
   if (!lockup) return;
+  const duration = parseInt(lockup.duration) * 1000;
   return {
+    duration,
     generation,
     address: lockup.id,
-    duration: parseInt(lockup.duration) * 1000,
     interest: parseFloat(utils.formatUnits(lockup.interest, 7)),
     depositWindowEndsAt: convertDate(lockup.depositWindowEndsAt),
     depositWindowDuration: parseInt(lockup.depositWindowDuration) * 1000,
+    endsAt: new Date(lockup.depositWindowEndsAt + duration),
   };
 }
 

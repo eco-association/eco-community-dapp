@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Column, Typography } from "@ecoinc/ecomponents";
 import { LockupDepositAlert } from "../../../Account/LockupCard/LockupDepositAlert";
 import { FundsLockup } from "../../../../../types";

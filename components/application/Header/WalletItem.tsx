@@ -13,23 +13,21 @@ import {
 } from "@ecoinc/ecomponents";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { css } from "@emotion/react";
-import CopyIcon from "../../../public/images/copyIcon.svg";
-import ExternalIcon from "../../../public/images/external-icon.svg";
+import Copy from "../../../public/images/Copy.svg";
+import Share from "../../../public/images/Share.svg";
 import Link from "next/link";
 
 const DropdownContainer = styled(Column)(({ theme }) => ({
-  height: 300,
-  width: 300,
   backgroundColor: theme.palette.background.paper,
-  padding: 16,
   borderRadius: 8,
+  paddingTop: 16,
+  paddingLeft: 16,
+  paddingRight: 16,
 }));
 
-const Section = styled(Column)(({ theme }) => ({
-  padding: 16,
+const Section = styled(Column)(() => ({
+  paddingBottom: 16,
   width: "100%",
-  borderTop: `2px solid `,
-  borderBottom: `2px solid`,
 }));
 
 const buttonVariant = css({
@@ -39,6 +37,16 @@ const buttonVariant = css({
   opacity: "0.6",
   padding: 0,
   fontSize: "13px",
+});
+
+const disconnectButton = css({
+  height: "36px",
+  width: "100%",
+  color: "#22313A",
+  opacity: "0.6",
+  padding: 0,
+  fontSize: "13px",
+  marginTop: 12,
 });
 
 export const WalletItem = () => {
@@ -62,59 +70,48 @@ export const WalletItem = () => {
           {displayAddress(address)}
         </HeaderItem>
         <Dropdown open={disconnectOpen} setOpen={setDisconnectOpen}>
-          <DropdownContainer items="center">
+          <DropdownContainer items="left">
             <Row>
-              <Typography variant="h2" color="secondary">
-                {displayAddress(address)}
+              <Typography variant="body1" color="secondary">
+                {displayAddress(address, 8).toLowerCase()}{" "}
+                <Image
+                  src={Copy}
+                  alt=""
+                  height={15}
+                  width={13.1}
+                  onClick={copyAddress}
+                />
               </Typography>
             </Row>
-            <Row style={{ marginTop: 16, marginBottom: 16 }}>
-              <Button
-                css={{ height: 40, padding: 0, marginRight: 8 }}
-                color="secondary"
-              >
-                Switch Wallet
-              </Button>
-              <Button color="secondary" onClick={() => disconnect()}>
-                Disconnect
-              </Button>
+            <Row items="center" css={{ marginTop: 14, marginBottom: 13 }}>
+              <Image src={Share} alt="" height={20} width={20} />
+              <Link href={`https://www.etherscan.io/address/${address}`}>
+                <Typography variant="body2" css={{ marginLeft: 12.5 }}>
+                  View on Explorer
+                </Typography>
+              </Link>
             </Row>
             <Section items="left">
-              <Typography variant="body1" color="secondary">
-                Network
-              </Typography>
-              <Typography variant="h4">
+              <Typography variant="body2">
                 {" "}
                 <Typography inline color={correctChain ? "success" : "error"}>
                   •
                 </Typography>{" "}
-                {chain.name}
-              </Typography>
-            </Section>
-            <Column css={{ width: "100%", padding: 16 }}>
-              <Row items="left" css={{ marginBottom: 16 }}>
-                <Image src={CopyIcon} alt="" height={20} width={20} />
-                <Typography variant="body1" onClick={copyAddress}>
-                  Copy address
+                {chain.name === "Ethereum" ? "ETH" : chain.name}{" "}
+                <Typography variant="body2" color="secondary" inline>
+                  Network
                 </Typography>
-              </Row>
-              <Row>
-                <Image src={ExternalIcon} alt="" height={20} width={20} />
-                <Link href={`https://www.etherscan.io/address/${address}`}>
-                  <Typography variant="body2">View on Explorer</Typography>
-                </Link>
-              </Row>
-            </Column>
+              </Typography>
+              <Button
+                variant="fill"
+                color="disabled"
+                css={disconnectButton}
+                onClick={() => disconnect()}
+              >
+                Disconnect
+              </Button>
+            </Section>
           </DropdownContainer>
-          {/* <DropdownItem
-            onClick={() => {
-              disconnect();
-              localStorage.clear();
-              setDisconnectOpen(false);
-            }}
-          >
-            Disconnect Wallet
-          </DropdownItem> */}
         </Dropdown>
       </Row>
     );

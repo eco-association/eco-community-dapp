@@ -50,7 +50,7 @@ const HeaderBackground = ({ styles, children }) => {
         init={particlesInit}
         loaded={particlesLoaded}
         css={{
-          height: 600,
+          height: 400,
           position: "absolute",
           "z-index": "-1",
           width: "100%",

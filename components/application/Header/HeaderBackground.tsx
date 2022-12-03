@@ -49,11 +49,16 @@ const HeaderBackground = ({ styles, children }) => {
         id="tsparticles"
         init={particlesInit}
         loaded={particlesLoaded}
-        css={{ height: 600 }}
+        css={{
+          height: 600,
+          position: "absolute",
+          "z-index": "-1",
+          width: "100%",
+        }}
         options={{
           fullScreen: {
             enable: false,
-            zIndex: 0,
+            zIndex: -1,
           },
           particles: {
             number: {
@@ -108,7 +113,7 @@ const HeaderBackground = ({ styles, children }) => {
             },
           },
           interactivity: {
-            detect_on: "canvas",
+            detect_on: "window",
             events: {
               onhover: {
                 enable: true,

@@ -1,35 +1,10 @@
-import { CSSProperties, useCallback } from "react";
+import { useCallback } from "react";
 import type { Container, Engine } from "tsparticles-engine";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
-import { css } from "@emotion/react";
-import styled from "@emotion/styled";
-import { particlesConfig } from "./ParticlesConfig";
-
-interface HeaderBackgroundProps {
-  styles?: {
-    pageStyle?: CSSProperties;
-    bodyStyle?: CSSProperties;
-    headerStyle?: CSSProperties;
-    scrollHeader?: CSSProperties;
-  };
-}
-
-const TopContent = styled.div(({ theme }) => ({
-  backgroundRepeat: "no-repeat",
-  // backgroundImage: [
-  //   `url(${DotsBg.src})`,
-  //   linearGradient(theme.palette.primary.main),
-  // ].join(", "),
-  backgroundSize: [`auto 100%`, `100% 100%`].join(", "),
-  backgroundPosition: "top center",
-  backgroundColor: "#112632",
-}));
 
 const HeaderBackground = ({ styles, children }) => {
   const particlesInit = useCallback(async (engine: Engine) => {
-    console.log(engine);
-
     // you can initialize the tsParticles instance (engine) here, adding custom shapes or presets
     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
     // starting from v2 you can add only the features you need reducing the bundle size
@@ -43,7 +18,6 @@ const HeaderBackground = ({ styles, children }) => {
     []
   );
   return (
-    // <TopContent css={styles.pageStyle} style={{ minHeight: styles.height }}>
     <div>
       <Particles
         id="tsparticles"
@@ -62,7 +36,7 @@ const HeaderBackground = ({ styles, children }) => {
           },
           particles: {
             number: {
-              value: 160,
+              value: 110,
               density: {
                 enable: true,
                 value_area: 800,

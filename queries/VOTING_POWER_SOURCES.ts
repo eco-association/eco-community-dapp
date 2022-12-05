@@ -15,12 +15,14 @@ export type VotingPowerSourceQueryResult = {
     fundsLockupDepositsDelegatedToMe: {
       id: string;
       amount: string;
-      lockupEndsAt: string;
+      duration: string;
+      depositWindowEndsAt: string;
     }[];
     fundsLockupDeposits: {
       id: string;
       amount: string;
-      lockupEndsAt: string;
+      duration: string;
+      depositWindowEndsAt: string;
       delegate: {
         id: string;
       };
@@ -51,12 +53,14 @@ export const VOTING_POWER_SOURCES = gql`
       fundsLockupDepositsDelegatedToMe {
         id
         amount
-        lockupEndsAt
+        duration
+        depositWindowEndsAt
       }
       fundsLockupDeposits {
         id
         amount
-        lockupEndsAt
+        duration
+        depositWindowEndsAt
         delegate {
           id
         }

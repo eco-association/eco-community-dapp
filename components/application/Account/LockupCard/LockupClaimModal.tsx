@@ -80,7 +80,7 @@ const ClaimEarly: React.FC<ContentProps> = ({ lockup, onClaim, loading }) => {
           title="DURATION"
           text={
             <ReactCountdown
-              date={lockup.lockupEndsAt}
+              date={lockup.endsAt}
               renderer={(countdownData) => {
                 const remaining = formatCountdown(countdownData);
                 return `${remaining.amount} ${remaining.unit} remain`;
@@ -218,7 +218,7 @@ export const LockupClaimModal: React.FC<LockupClaimModalProps> = ({
   onRequestClose,
 }) => {
   const wallet = useWallet();
-  const hasEnded = useTimeFlag(lockup.lockupEndsAt);
+  const hasEnded = useTimeFlag(lockup.endsAt);
   const lockupContract = useLockup(lockup.address);
 
   const [loading, setLoading] = useState(false);

@@ -54,19 +54,20 @@ export const WalletContext = createContext<WalletContextState>({
 function getLockups(data?: WalletQueryResult): FundsLockupWithDeposit[] {
   if (!data?.account?.fundsLockupDeposits.length) return [];
 
-  return data.account.fundsLockupDeposits.map((lockupDeposit) => {
-    const generation = parseInt(lockupDeposit.lockup.generation.number);
-    return {
-      ...formatLockup(generation, lockupDeposit.lockup),
-      id: lockupDeposit.id,
-      delegate: lockupDeposit.delegate,
-      amount: BigNumber.from(lockupDeposit.amount),
-      reward: BigNumber.from(lockupDeposit.reward),
-      lockupEndsAt: convertDate(lockupDeposit.lockupEndsAt),
-      withdrawnAt:
-        lockupDeposit.withdrawnAt && convertDate(lockupDeposit.withdrawnAt),
-    };
-  });
+  return data.account.fundsLockupDeposits.map(
+    (lockupDeposit): FundsLockupWithDeposit => {
+      const generation = parseInt(lockupDeposit.lockup.generation.number);
+      return {
+        ...formatLockup(generation, lockupDeposit.lockup),
+        id: lockupDeposit.id,
+        delegate: lockupDeposit.delegate,
+        amount: BigNumber.from(lockupDeposit.amount),
+        reward: BigNumber.from(lockupDeposit.reward),
+        withdrawnAt:
+          lockupDeposit.withdrawnAt && convertDate(lockupDeposit.withdrawnAt),
+      };
+    }
+  );
 }
 
 function getWalletBalances(
@@ -181,33 +182,30 @@ const delegateReducer: React.Reducer<WalletInterface, WalletAction> = (
 
       if (currentDeposit) {
         // Depositing more tokens
-        lockups = state.lockups.map((lockup) => {
+        lockups = state.lockups.map((lockup): FundsLockupWithDeposit => {
           if (lockup.id !== currentDeposit.id) return lockup;
           return {
             ...currentDeposit,
+            reward: currentDeposit.reward.add(action.reward),
             amount: currentDeposit.amount.add(
               action.amount.mul(action.inflationMultiplier)
             ),
-            reward: currentDeposit.reward.add(action.reward),
-            lockupEndsAt: new Date(Date.now() + action.lockup.duration),
           };
         });
       } else {
         // Log funds lockup deposit
         const id = `${action.lockup.address}-${action.address}-${depositLockups.length}.0`;
         const amount = action.amount.mul(action.inflationMultiplier);
-        lockups = [
-          ...state.lockups,
-          {
-            ...action.lockup,
-            id,
-            withdrawnAt: null,
-            delegate: action.address,
-            amount,
-            reward: action.reward,
-            lockupEndsAt: new Date(Date.now() + action.lockup.duration),
-          },
-        ];
+        const lockupDeposit: FundsLockupWithDeposit = {
+          ...action.lockup,
+          id,
+          amount,
+          withdrawnAt: null,
+          reward: action.reward,
+          delegate: action.address,
+        };
+
+        lockups = [...state.lockups, lockupDeposit];
       }
 
       return { ...state, lockups };

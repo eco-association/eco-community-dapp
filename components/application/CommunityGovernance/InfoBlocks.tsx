@@ -2,7 +2,7 @@ import { Block } from "./Block";
 import { Row, TokenAmount } from "@ecoinc/ecomponents";
 import Image from "next/image";
 import EcoLogoWhiteOutline from "../../../public/images/eco-logo/eco-logo-white-outline.svg";
-import EcoXLogo from "../../../public/images/ecox-logo.png";
+import EcoXLogo from "../../../public/images/ecox-logo.svg";
 import React from "react";
 import { css } from "@emotion/react";
 import { useWallet } from "../../../providers";
@@ -44,8 +44,8 @@ export const InfoBlocks = () => {
               alt="Ecox Logo"
               src={EcoXLogo}
               layout="fixed"
-              width={20}
-              height={20}
+              width={18}
+              height={18}
             />
             <TokenAmount
               color="white"

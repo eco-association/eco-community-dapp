@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import { Block } from "../CommunityGovernance/Block";
 import Image from "next/image";
 import EcoLogo from "../../../public/images/eco-logo/eco-logo-white.svg";
-import EcoXLogo from "../../../public/images/ecox-logo.png";
+import EcoXLogo from "../../../public/images/ecox-logo.svg";
 import { useCommunity } from "../../../providers";
 import { useVotingPower } from "../../hooks/useVotingPower";
 import { tokensToNumber } from "../../../utilities";

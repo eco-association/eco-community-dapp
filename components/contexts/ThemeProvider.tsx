@@ -8,8 +8,11 @@ const IBMPlexMonoFontCss = css`
 
 const BackgroundColor = css`
   body {
-    background-color: #f6f9fb !important;
+    background-color: #f6f9fb00 !important;
     min-height: 100vh;
+  }
+  html {
+    background-color: #f6f9fb !important;
   }
 `;
 

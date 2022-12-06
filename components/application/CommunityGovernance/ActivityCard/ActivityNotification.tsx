@@ -121,19 +121,20 @@ export const ActivityNotification: React.FC<ActivityNotificationProps> = ({
         </CardBase>
       );
     }
-
-    return (
-      <CardBase time={activity.timestamp}>
-        <Typography variant="body1">
-          Proposal{" "}
-          <ProposalName
-            id={proposalId}
-            name={activity.communityProposal.name}
-          />{" "}
-          failed.
-        </Typography>
-      </CardBase>
-    );
+    if (result === SubgraphVoteResult.Failed) {
+      return (
+        <CardBase time={activity.timestamp}>
+          <Typography variant="body1">
+            Proposal{" "}
+            <ProposalName
+              id={proposalId}
+              name={activity.communityProposal.name}
+            />{" "}
+            failed.
+          </Typography>
+        </CardBase>
+      );
+    }
   }
 
   if (activity.type === ActivityNotificationType.PROPOSAL_EXECUTED) {

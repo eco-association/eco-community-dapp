@@ -1,8 +1,8 @@
 import { BigNumber } from "ethers";
-import { Address, RandomInflationClaim } from ".";
+import { RandomInflationClaim } from ".";
 
 export type RandomInflation = {
-  address: Address;
+  address: string;
   numRecipients: BigNumber;
   reward: BigNumber;
   claimPeriodStarts: BigNumber;
@@ -10,7 +10,7 @@ export type RandomInflation = {
   claims: RandomInflationClaim[];
   seedCommit: BigNumber;
   seedReveal: string; // bytes
-  blockNumber: BigNumber;
+  blockNumber: number;
   acceptedRootHash: string | null;
   inflationRootHashAccepted: boolean;
 };

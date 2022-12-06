@@ -3,7 +3,7 @@ import { Address } from ".";
 
 export type RandomInflationRecipient = {
   sequenceNumber: number;
-  recipient: Address;
+  recipient: string;
   proof: string[];
   leafSum: BigNumber;
   index: number;

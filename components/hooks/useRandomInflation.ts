@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import { RANDOM_INFLATION, RandomInflationQueryResult } from "../../queries";
 import {
@@ -20,7 +20,10 @@ export const useRandomInflation = () => {
     return () => stopPolling();
   }, [startPolling, stopPolling]);
 
-  return parseRandomInflationQuery(randomInflationQuery);
+  return useMemo(
+    () => parseRandomInflationQuery(randomInflationQuery),
+    [randomInflationQuery]
+  );
 };
 
 function parseRandomInflationQuery(
@@ -43,7 +46,7 @@ function parseRandomInflationQuery(
   );
 
   return {
-    address: new Address(randomInflation.address),
+    address: randomInflation.address,
     numRecipients: BigNumber.from(randomInflation.numRecipients),
     reward: BigNumber.from(randomInflation.reward),
     claimPeriodStarts: BigNumber.from(randomInflation.claimPeriodStarts),
@@ -52,7 +55,7 @@ function parseRandomInflationQuery(
     seedCommit:
       randomInflation.seedCommit && BigNumber.from(randomInflation.seedCommit),
     seedReveal: randomInflation.seedReveal,
-    blockNumber: BigNumber.from(randomInflation.blockNumber),
+    blockNumber: parseInt(randomInflation.blockNumber),
     acceptedRootHash:
       randomInflation.inflationRootHashProposal.acceptedRootHash,
     inflationRootHashAccepted:

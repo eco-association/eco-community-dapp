@@ -40,7 +40,7 @@ export const HeaderInfo: React.FC<HeaderInfoProps> = ({
     return (
       <Row gap="sm" items="center">
         <MonoText inline variant="body3" color="success">
-          Voting stage staring soon...
+          Voting stage starting soon...
         </MonoText>
       </Row>
     );

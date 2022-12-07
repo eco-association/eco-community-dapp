@@ -81,8 +81,7 @@ const DropdownBox: React.FC<React.PropsWithChildren<DropdownBoxProps>> = ({
           </Typography>
           <Typography
             variant="h5"
-            color={red ? "error" : "primary"}
-            css={red ? {} : darkGreenColor}
+            color={red ? "error" : "active"}
             style={{ lineHeight: 1 }}
           >
             &#x2022; {title}
@@ -110,8 +109,6 @@ const DropdownBox: React.FC<React.PropsWithChildren<DropdownBoxProps>> = ({
     </DropdownBoxStyle>
   );
 };
-
-const darkGreenColor = css({ color: "#128264" });
 
 const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   open,

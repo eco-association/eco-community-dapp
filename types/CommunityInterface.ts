@@ -25,6 +25,7 @@ interface CommunityInterface extends PolicyVote {
   currentGeneration: {
     number: number;
     blockNumber: number;
+    createdAt: Date;
   };
 }
 

@@ -13,7 +13,7 @@ const fontWeight = css({ fontWeight: "bold" });
 
 export const BaseInflationAlert = () => {
   const { currentGeneration } = useCommunity();
-  const inflation = useBaseInflation(currentGeneration.blockNumber) * 100;
+  const inflation = useBaseInflation(currentGeneration.blockNumber);
   return (
     <Alert
       color={inflation === 0 ? "secondary" : "transparent"}
@@ -22,23 +22,17 @@ export const BaseInflationAlert = () => {
         <Typography
           variant="body1"
           css={fontWeight}
-          style={{ color: inflation === 0 ? "#5F869F" : "#128268" }}
+          color={inflation === 0 ? "secondary" : "primary"}
         >
           Base inflation rate{" "}
           <Typography
-            inline
             variant="body2"
             css={fontWeight}
-            style={{
-              color:
-                inflation < 0
-                  ? "#ED575F"
-                  : inflation === 0
-                  ? "#5F869F"
-                  : "#128269",
-            }}
+            color={
+              inflation === 0 ? "secondary" : inflation < 0 ? "error" : "active"
+            }
           >
-            • {format(inflation)}%
+            • {format(inflation * 100)}%
           </Typography>
         </Typography>
       }

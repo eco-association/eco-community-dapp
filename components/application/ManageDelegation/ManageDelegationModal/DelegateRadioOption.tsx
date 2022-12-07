@@ -1,4 +1,4 @@
-import { Row, styled, Typography } from "@ecoinc/ecomponents";
+import { Row, styled, Typography, useTheme } from "@ecoinc/ecomponents";
 import React from "react";
 import Loader from "../../Loader";
 
@@ -14,6 +14,7 @@ interface RadioProps {
 }
 
 const Radio: React.FC<RadioProps> = ({ checked, onChange }) => {
+  const theme = useTheme();
   if (checked) {
     return (
       <svg
@@ -26,8 +27,14 @@ const Radio: React.FC<RadioProps> = ({ checked, onChange }) => {
         onClick={() => onChange && onChange(false)}
       >
         <g clipPath="url(#clip0_1869_88999)">
-          <circle cx="12" cy="12" r="11" stroke="#128264" strokeWidth="2" />
-          <circle cx="12" cy="12" r="4" fill="#128264" />
+          <circle
+            cx="12"
+            cy="12"
+            r="11"
+            stroke={theme.palette.active.main}
+            strokeWidth="2"
+          />
+          <circle cx="12" cy="12" r="4" fill={theme.palette.active.main} />
         </g>
         <defs>
           <clipPath id="clip0_1869_88999">

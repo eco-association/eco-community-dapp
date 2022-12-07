@@ -43,7 +43,7 @@ export const RandomInflationAlert = () => {
       title={
         <Typography variant="body1" css={fontWeight}>
           Random inflation{" "}
-          <Typography inline variant="body2" color="active">
+          <Typography variant="body2" css={fontWeight} color="active">
             • {percent}%
           </Typography>
         </Typography>

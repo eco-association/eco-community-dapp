@@ -99,7 +99,7 @@ export const RandomInflationNotification = () => {
 
   return (
     <React.Fragment>
-      <TopBar gap="sm" onClick={() => setOpen(true)}>
+      <TopBar onClick={() => setOpen(true)}>
         <b>
           Congratulations! You’ve received{" "}
           {formatNumber(tokensToNumber(amount))} ECO

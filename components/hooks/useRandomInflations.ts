@@ -136,7 +136,7 @@ function formatRandomInflationWithClaims(
     isClaimPeriod:
       inflationRootHashProposal.acceptedRootHash &&
       now >= ri.claimPeriodStarts.getTime() &&
-      now < ri.claimPeriodStarts.getTime() + ri.claimPeriodDuration,
+      claims.length !== ri.numRecipients,
   };
 }
 

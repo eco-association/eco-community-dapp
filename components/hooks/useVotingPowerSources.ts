@@ -75,15 +75,19 @@ function formatSourceData(
     (lockup) => ({
       id: lockup.id,
       amount: BigNumber.from(lockup.amount).div(inflationMultiplier).div(10),
-      endsAt: convertDate(lockup.lockupEndsAt),
+      endsAt: convertDate(
+        parseInt(lockup.depositWindowEndsAt) + parseInt(lockup.duration)
+      ),
     })
   );
 
   const fundsLockedUp = fundsLockupDeposits.map((lockup) => ({
     id: lockup.id,
     amount: BigNumber.from(lockup.amount).div(inflationMultiplier).div(10),
-    endsAt: convertDate(lockup.lockupEndsAt),
     delegate: lockup.delegate?.id,
+    endsAt: convertDate(
+      parseInt(lockup.depositWindowEndsAt) + parseInt(lockup.duration)
+    ),
   }));
 
   return {

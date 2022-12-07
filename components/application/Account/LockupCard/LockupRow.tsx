@@ -49,7 +49,7 @@ export const LockupRow: React.FC<LockupRowProps> = ({ lockup, onClick }) => {
     </LockupTableRow>
   );
 
-  if (Date.now() > lockup.lockupEndsAt.getTime() && !lockup.withdrawnAt) {
+  if (Date.now() > lockup.endsAt.getTime() && !lockup.withdrawnAt) {
     return (
       <Column gap="lg">
         {row}

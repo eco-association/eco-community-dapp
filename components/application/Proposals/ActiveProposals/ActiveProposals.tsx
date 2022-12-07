@@ -55,7 +55,7 @@ export const ActiveProposals: React.FC<ActiveProposalsProps> = ({
           <React.Fragment>
             In the meantime, you can browse proposals on the{" "}
             <a
-              href="https://forums.localecos.com/login"
+              href="https://forums.eco.org/"
               target="_blank"
               style={{ textDecoration: "underline" }}
               rel="noreferrer"
@@ -78,7 +78,7 @@ export const ActiveProposals: React.FC<ActiveProposalsProps> = ({
             In the meantime, you can{" "}
             <Link
               href={{
-                pathname: "/proposal/[id]",
+                pathname: "/proposal",
                 query: { id: votingProposal?.id },
               }}
             >

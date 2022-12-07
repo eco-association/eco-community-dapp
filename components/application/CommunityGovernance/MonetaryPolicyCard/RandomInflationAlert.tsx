@@ -7,7 +7,6 @@ import { numberFormatter } from "../../../../utilities/numberFormatter";
 import { css } from "@emotion/react";
 
 const fontWeight = css({ fontWeight: "bold" });
-const contrastGreen = css({ color: "#128264" });
 
 export const RandomInflationAlert = () => {
   const inflation = useRandomInflation();
@@ -43,7 +42,7 @@ export const RandomInflationAlert = () => {
       title={
         <Typography variant="body1" css={fontWeight}>
           Random inflation{" "}
-          <Typography inline variant="body2" css={contrastGreen}>
+          <Typography variant="body2" css={fontWeight} color="active">
             • {percent}%
           </Typography>
         </Typography>

@@ -8,7 +8,6 @@ export type { VotingPowerInterface } from "./VotingPowerInterface";
 export type { ContractAddressesInterface } from "./ContractAddressesInterface";
 export type { WalletInterface } from "./WalletInterface";
 export type { FundsLockup } from "./FundsLockup";
-export type { FundsLockupDeposit } from "./FundsLockupDeposit";
 export type { RandomInflation } from "./RandomInflation";
 export type { RandomInflationClaim } from "./RandomInflationClaim";
 export type { RandomInflationRecipient } from "./RandomInflationRecipient";

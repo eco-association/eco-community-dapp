@@ -2,6 +2,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import "@ecoinc/ecomponents-old/lib/styles.css";
 import "rc-tooltip/assets/bootstrap.css";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";

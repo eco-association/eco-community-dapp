@@ -1,19 +1,17 @@
 import React from "react";
-import { Alert, Typography } from "@ecoinc/ecomponents";
-import { useRandomInflation } from "../../../hooks/useRandomInflation";
 import { ethers } from "ethers";
-import { useWallet } from "../../../../providers";
-import { numberFormatter } from "../../../../utilities/numberFormatter";
 import { css } from "@emotion/react";
+import { Alert, Typography } from "@ecoinc/ecomponents";
+import { useCommunity, useWallet } from "../../../../providers";
+import { numberFormatter } from "../../../../utilities";
 
 const fontWeight = css({ fontWeight: "bold" });
-const contrastGreen = css({ color: "#128264" });
 
 export const RandomInflationAlert = () => {
-  const inflation = useRandomInflation();
+  const { randomInflation } = useCommunity();
   const { ecoTotalSupply } = useWallet();
 
-  if (!inflation)
+  if (!randomInflation)
     return (
       <Alert
         css={{ border: 0 }}
@@ -32,7 +30,9 @@ export const RandomInflationAlert = () => {
     );
 
   const rewards = parseFloat(
-    ethers.utils.formatUnits(inflation.reward.mul(inflation.numRecipients))
+    ethers.utils.formatUnits(
+      randomInflation.reward.mul(randomInflation.numRecipients)
+    )
   );
   const totalSupply = parseFloat(ethers.utils.formatUnits(ecoTotalSupply));
   const percent = numberFormatter((rewards / totalSupply) * 100);
@@ -43,7 +43,7 @@ export const RandomInflationAlert = () => {
       title={
         <Typography variant="body1" css={fontWeight}>
           Random inflation{" "}
-          <Typography inline variant="body2" css={contrastGreen}>
+          <Typography inline variant="body2" color="active">
             • {percent}%
           </Typography>
         </Typography>

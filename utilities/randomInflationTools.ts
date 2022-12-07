@@ -1,4 +1,8 @@
 import { BigNumber, ethers } from "ethers";
+import { RandomInflationRecipient, RandomInflationWithClaims } from "../types";
+import { RandomInflation } from "../types/RandomInflation";
+import { convertDate } from "./convertDate";
+import { RandomInflationFragmentResult } from "../queries/fragments/RandomInflationFragment";
 
 type MerkleTreeLeaf = {
   account: string;
@@ -86,8 +90,6 @@ function getTree(map: [string, BigNumber][]) {
       return _item;
     });
 
-  console.log({ accounts: items });
-
   const tree = arrayToTree(items, 0, wantitems - 1, items.length - 1);
   return { tree, len, total: sum };
 }
@@ -128,7 +130,7 @@ function getRecipient(
   return { index, address: addresses[index] };
 }
 
-export function getClaimParameters(
+function getClaimParameters(
   seed: string,
   tree: MerkleTree,
   treeLen: number,
@@ -152,7 +154,7 @@ export function getClaimParameters(
   return { answer: answer(tree, treeLen, index), index, recipient };
 }
 
-export function fromBalances(balancesMap: Record<string, BigNumber>) {
+function fromBalances(balancesMap: Record<string, BigNumber>) {
   const arrayOfMap = [];
   const balanceSums = [];
   let totalSum = ethers.constants.Zero;
@@ -166,4 +168,90 @@ export function fromBalances(balancesMap: Record<string, BigNumber>) {
 
   const tree = getTree(arrayOfMap);
   return { ...tree, addresses, balanceSums, totalSum };
+}
+
+function getSequenceClaimTime(
+  sequence: number,
+  randomInflation: RandomInflation
+) {
+  const {
+    numRecipients: num,
+    claimPeriodDuration,
+    claimPeriodStarts,
+  } = randomInflation;
+  if (!num) return claimPeriodStarts;
+  const time =
+    claimPeriodStarts.getTime() + (sequence * claimPeriodDuration) / num;
+  return new Date(time);
+}
+
+export function getRandomInflationRecipients(
+  randomInflation: RandomInflationWithClaims,
+  accounts: { address: string; balance: BigNumber }[]
+) {
+  const balancesMap: Record<string, BigNumber> = {};
+
+  for (let i = 0; i < accounts.length; ++i) {
+    const account = accounts[i];
+    balancesMap[account.address] = account.balance;
+  }
+
+  const {
+    tree,
+    len: treeLen,
+    addresses,
+    balanceSums,
+    totalSum,
+  } = fromBalances(balancesMap);
+
+  const recipients: RandomInflationRecipient[] = [];
+  const numRecipients = randomInflation.numRecipients;
+
+  for (let seqNo = 0; seqNo < numRecipients; seqNo++) {
+    const { answer, index, recipient } = getClaimParameters(
+      randomInflation.seedReveal,
+      tree,
+      treeLen,
+      seqNo,
+      totalSum,
+      balanceSums,
+      addresses
+    );
+    const proof = answer[1].reverse();
+    const leafSum = answer[0].sum;
+
+    const claimed = !!randomInflation.claims.find(
+      (claim) => claim.sequenceNumber === seqNo
+    );
+
+    const claimableAt = getSequenceClaimTime(seqNo, randomInflation);
+    recipients.push({
+      index,
+      proof,
+      leafSum,
+      claimed,
+      recipient,
+      claimableAt,
+      randomInflation,
+      sequenceNumber: seqNo,
+    });
+  }
+
+  return { recipients, tree };
+}
+
+export function formatRandomInflation(
+  randomInflation: RandomInflationFragmentResult
+): RandomInflation {
+  const { seedCommit } = randomInflation;
+  return {
+    address: randomInflation.address,
+    reward: BigNumber.from(randomInflation.reward),
+    blockNumber: parseInt(randomInflation.blockNumber),
+    numRecipients: parseInt(randomInflation.numRecipients),
+    claimPeriodStarts: convertDate(randomInflation.claimPeriodStarts),
+    claimPeriodDuration: parseInt(randomInflation.CLAIM_PERIOD) * 1000,
+    seedReveal: randomInflation.seedReveal,
+    seedCommit: seedCommit && BigNumber.from(seedCommit),
+  };
 }

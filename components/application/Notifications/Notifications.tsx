@@ -1,6 +1,6 @@
 import React from "react";
 import { RefundNotification } from "./RefundNotification";
-import { RandomInflationNotification } from "./RandomInflationNotification";
+import { RandomInflationNotification } from "./RandomInflation/RandomInflationNotification";
 
 export const Notifications = () => {
   return (

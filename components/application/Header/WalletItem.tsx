@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { HeaderItem } from "./HeaderItem";
 import { useAccount, useDisconnect, useNetwork } from "wagmi";
-import { displayAddress } from "../../../utilities";
+import { displayAddress, etherscanURL } from "../../../utilities";
 import {
   Button,
   Column,
@@ -85,7 +85,7 @@ export const WalletItem = () => {
             </Row>
             <Row items="center" css={{ marginTop: 14, marginBottom: 13 }}>
               <Image src={Share} alt="" height={20} width={20} />
-              <Link href={`https://www.etherscan.io/address/${address}`}>
+              <Link href={etherscanURL(address, "address")}>
                 <Typography variant="body2" css={{ marginLeft: 12.5 }}>
                   View on Explorer
                 </Typography>
@@ -97,7 +97,7 @@ export const WalletItem = () => {
                 <Typography inline color={correctChain ? "success" : "error"}>
                   •
                 </Typography>{" "}
-                {chain.name === "Ethereum" ? "ETH" : chain.name}{" "}
+                {chain.id === 1 ? "ETH" : chain.name}{" "}
                 <Typography variant="body2" color="secondary" inline>
                   Network
                 </Typography>

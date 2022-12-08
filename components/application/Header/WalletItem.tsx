@@ -71,46 +71,46 @@ export const WalletItem = () => {
         </HeaderItem>
         <Dropdown open={disconnectOpen} setOpen={setDisconnectOpen}>
           <DropdownContainer items="left">
-            <Row>
-              <Typography variant="body1" color="secondary">
-                {displayAddress(address, 8).toLowerCase()}{" "}
-                <Image
-                  src={Copy}
-                  alt=""
-                  height={15}
-                  width={13.1}
-                  onClick={copyAddress}
-                />
-              </Typography>
-            </Row>
-            <Row items="center" css={{ marginTop: 14, marginBottom: 13 }}>
-              <Image src={Share} alt="" height={20} width={20} />
-              <Link href={etherscanURL(address, "address")}>
-                <Typography variant="body2" css={{ marginLeft: 12.5 }}>
-                  View on Explorer
+            <Column gap="md">
+              <Row>
+                <Typography variant="body1" color="secondary">
+                  {displayAddress(address, 8).toLowerCase()}{" "}
+                  <Image
+                    src={Copy}
+                    alt=""
+                    height={15}
+                    width={13.1}
+                    onClick={copyAddress}
+                  />
                 </Typography>
-              </Link>
-            </Row>
-            <Section items="left">
-              <Typography variant="body2">
-                {" "}
-                <Typography inline color={correctChain ? "success" : "error"}>
-                  •
-                </Typography>{" "}
-                {chain.id === 1 ? "ETH" : chain.name}{" "}
-                <Typography variant="body2" color="secondary" inline>
-                  Network
+              </Row>
+              <Row items="center" gap="lg">
+                <Image src={Share} alt="" height={20} width={20} />
+                <Link href={etherscanURL(address, "address")}>
+                  <Typography variant="body2">View on Explorer</Typography>
+                </Link>
+              </Row>
+              <Section items="left">
+                <Typography variant="body2">
+                  {" "}
+                  <Typography inline color={correctChain ? "success" : "error"}>
+                    •
+                  </Typography>{" "}
+                  {chain.id === 1 ? "ETH" : chain.name}{" "}
+                  <Typography variant="body2" color="secondary" inline>
+                    Network
+                  </Typography>
                 </Typography>
-              </Typography>
-              <Button
-                variant="fill"
-                color="disabled"
-                css={disconnectButton}
-                onClick={() => disconnect()}
-              >
-                Disconnect
-              </Button>
-            </Section>
+                <Button
+                  variant="fill"
+                  color="disabled"
+                  css={disconnectButton}
+                  onClick={() => disconnect()}
+                >
+                  Disconnect
+                </Button>
+              </Section>
+            </Column>
           </DropdownContainer>
         </Dropdown>
       </Row>

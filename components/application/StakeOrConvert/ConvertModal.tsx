@@ -9,14 +9,15 @@ import {
   Typography,
 } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 import { useMemo, useState } from "react";
 import { tokensToNumber } from "../../../utilities";
 import { useGasFee } from "../../hooks/useGasFee";
 import { Zero } from "@ethersproject/constants";
+import { GasFee } from "../commons/GasFee";
 
 interface ConvertModalProps {
-  ecoXBalance: BigNumberish;
+  ecoXBalance: BigNumber;
   exchangeRate: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -49,12 +50,11 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   open,
   setOpen,
 }) => {
-  const [toConvert, setToConvert] = useState<string>();
+  const [toConvert, setToConvert] = useState<BigNumber>();
   const [error, setError] = useState<boolean>(false);
-  const gasFee = useGasFee(500_000);
 
   useMemo(() => {
-    toConvert && setError(parseInt(toConvert) > tokensToNumber(ecoXBalance));
+    toConvert && setError(toConvert.gt(ecoXBalance));
   }, [ecoXBalance, toConvert]);
 
   const convertEcoX = () => {
@@ -70,14 +70,14 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
       onRequestClose={() => setOpen(false)}
     >
       <Column gap="xl">
-        <Typography variant="h2" css={{ padding: "0px 16px" }}>
-          Convert ECOx to ECO
-        </Typography>
-        <Typography variant="body1" css={{ padding: "0px 16px" }}>
-          At any time, you can convert your ECOx into ECO. The current exchange
-          rate is {exchangeRate}. <b>Warning:</b> this action is irreversable,
-          and you cannot convert ECO back into ECOx
-        </Typography>
+        <Column gap="md" css={{ padding: "0px 16px" }}>
+          <Typography variant="h2">Convert ECOx to ECO</Typography>
+          <Typography variant="body1">
+            At any time, you can convert your ECOx into ECO. The current
+            exchange rate is {exchangeRate}. <b>Warning:</b> this action is
+            irreversable, and you cannot convert ECO back into ECOx
+          </Typography>
+        </Column>
         <Container>
           <Typography variant="h5">
             {formatNumber(tokensToNumber(ecoXBalance), false)} ECOx available to
@@ -90,9 +90,15 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
             type="number"
             min="0"
             css={inputStyle}
-            value={toConvert}
+            value={tokensToNumber(toConvert)}
             color={error ? "error" : "secondary"}
-            onChange={(e) => setToConvert(e.currentTarget.value)}
+            onChange={(e) =>
+              setToConvert(
+                e.currentTarget.value === ""
+                  ? Zero
+                  : ethers.utils.parseEther(e.currentTarget.value)
+              )
+            }
             placeholder={"0.000"}
             append={
               <ButtonGroup>
@@ -100,16 +106,14 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
                   style={{ maxWidth: 34, height: 27, padding: 0 }}
                   variant="outline"
                   color={error ? "error" : "active"}
-                  onClick={() =>
-                    setToConvert(tokensToNumber(ecoXBalance).toString())
-                  }
+                  onClick={() => setToConvert(ecoXBalance)}
                 >
                   All
                 </Button>
                 <Button
                   variant="outline"
                   color={error ? "error" : "active"}
-                  onClick={() => setToConvert("0")}
+                  onClick={() => setToConvert(Zero)}
                 >
                   Clear
                 </Button>
@@ -129,12 +133,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
           >
             Convert
           </Button>
-          <Typography variant="body3">
-            Estimated Gas Fee:{" "}
-            <Typography variant="body3" color="secondary">
-              {gasFee} ETH
-            </Typography>
-          </Typography>
+          <GasFee gasLimit={250_000} />
         </Container>
       </Column>
     </Dialog>

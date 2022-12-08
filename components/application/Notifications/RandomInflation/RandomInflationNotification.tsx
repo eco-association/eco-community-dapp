@@ -18,7 +18,7 @@ import { RIClaimRow } from "./RIClaimRow";
 import moment from "moment";
 import { RandomInflationRecipient } from "../../../../types";
 
-const Content = styled(Column)({ padding: "0 24px" });
+const Content = styled(Column)({ padding: "0 16px" });
 
 function formatDate(date: Date): string {
   return moment(date).format("MM.DD.YY");
@@ -30,7 +30,7 @@ export const RandomInflationNotification = () => {
 
   const [open, setOpen] = useState(false);
 
-  const address = account.address.toLowerCase();
+  const address = account.address?.toLowerCase();
   const claimRIs = randomInflations.filter((ri) =>
     ri.recipients.some(
       ({ recipient, claimed, claimableAt }) =>

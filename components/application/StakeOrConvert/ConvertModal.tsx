@@ -5,6 +5,7 @@ import {
   Dialog,
   formatNumber,
   Input,
+  Row,
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
@@ -12,7 +13,12 @@ import { css } from "@emotion/react";
 import { BigNumber, ethers } from "ethers";
 import { useMemo, useState } from "react";
 import { tokensToNumber } from "../../../utilities";
+import useConvertECOX from "../../hooks/useConvertECOX";
 import { Zero } from "@ethersproject/constants";
+
+import LoaderAnimation from "../Loader";
+import { useConnectContext } from "../../../providers/ConnectModalProvider";
+import TextLoader from "../commons/TextLoader";
 import { GasFee } from "../commons/GasFee";
 
 interface ConvertModalProps {
@@ -51,21 +57,24 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
 }) => {
   const [toConvert, setToConvert] = useState<BigNumber>();
   const [error, setError] = useState<boolean>(false);
+  const { convertEcoX, loading } = useConvertECOX();
+  const { preventUnauthenticatedActions } = useConnectContext();
 
   useMemo(() => {
     toConvert && setError(toConvert.gt(ecoXBalance));
   }, [ecoXBalance, toConvert]);
 
-  const convertEcoX = () => {
-    console.log(toConvert);
+  const convert = () => {
+    preventUnauthenticatedActions();
+    convertEcoX(toConvert, () => setOpen(false));
   };
   return (
     <Dialog
       isOpen={open}
       style={{ card: { maxWidth: 540 } }}
-      // shouldCloseOnEsc={!loading}
-      // shouldShowCloseButton={!loading}
-      // shouldCloseOnOverlayClick={!loading}
+      shouldCloseOnEsc={!loading}
+      shouldShowCloseButton={!loading}
+      shouldCloseOnOverlayClick={!loading}
       onRequestClose={() => setOpen(false)}
     >
       <Column gap="xl">
@@ -89,7 +98,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
             type="number"
             min="0"
             css={inputStyle}
-            value={tokensToNumber(toConvert)}
+            value={toConvert.eq(Zero) ? "" : tokensToNumber(toConvert)}
             color={error ? "error" : "secondary"}
             onChange={(e) =>
               setToConvert(
@@ -124,14 +133,17 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
               You don&apos;t have enough ECOX...
             </Typography>
           </Note>
-          <Button
-            color="success"
-            style={{ width: 107 }}
-            onClick={convertEcoX}
-            disabled={!toConvert}
-          >
-            Convert
-          </Button>
+          <Row gap="md" items="center">
+            <Button
+              color="success"
+              style={{ width: 107, marginTop: 16, marginBottom: 8 }}
+              onClick={convert}
+              disabled={!toConvert || loading}
+            >
+              {loading ? <LoaderAnimation /> : "Convert"}
+            </Button>
+            {loading && <TextLoader />}
+          </Row>
           <GasFee gasLimit={250_000} />
         </Container>
       </Column>

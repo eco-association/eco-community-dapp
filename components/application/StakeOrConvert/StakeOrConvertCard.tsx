@@ -17,8 +17,8 @@ import useConvertECOX from "../../hooks/useConvertECOX";
 
 const TopRow = styled(Row)({
   borderBottom: `1px solid #DCE9F0`,
-  paddingBottom: 10,
-  marginBottom: 19,
+  paddingBottom: 8,
+  marginBottom: 16,
 });
 
 const StakeOrConvertCard = () => {
@@ -33,7 +33,7 @@ const StakeOrConvertCard = () => {
   }, [wallet]);
 
   return (
-    <Card css={{ marginTop: 24 }}>
+    <Card>
       <ConvertModal
         ecoXBalance={wallet.ecoXBalance}
         exchangeRate={ratio}

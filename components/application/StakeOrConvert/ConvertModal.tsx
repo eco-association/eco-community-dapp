@@ -55,7 +55,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   open,
   setOpen,
 }) => {
-  const [toConvert, setToConvert] = useState<BigNumber>();
+  const [toConvert, setToConvert] = useState<BigNumber>(Zero);
   const [error, setError] = useState<boolean>(false);
   const { convertEcoX, loading } = useConvertECOX();
   const { preventUnauthenticatedActions } = useConnectContext();
@@ -144,7 +144,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
             </Button>
             {loading && <TextLoader />}
           </Row>
-          <GasFee gasLimit={250_000} />
+          <GasFee gasLimit={163_144} />
         </Container>
       </Column>
     </Dialog>

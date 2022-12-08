@@ -2,11 +2,12 @@ import { Column, Row } from "@ecoinc/ecomponents";
 import { MonoText } from "../commons/MonoText";
 import { Countdown } from "../Countdown";
 import { GenerationStage, Stage } from "../../../types";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   isSubmittingInProgress,
   isVotingInProgress,
 } from "../../../providers/CommunityProvider";
+import { useTimeFlag } from "../../hooks/useTimeFlag";
 
 interface HeaderInfoProps {
   stage?: Stage["name"];
@@ -23,24 +24,13 @@ export const HeaderInfo: React.FC<HeaderInfoProps> = ({
   subtitle,
   nextGenStartsAt,
 }) => {
-  const [nextGenReached, setReached] = useState(false);
-
-  useEffect(() => {
-    if (!nextGenStartsAt.getTime()) return;
-    if (nextGenStartsAt.getTime() < Date.now()) {
-      setReached(true);
-    } else {
-      const time = nextGenStartsAt.getTime() - Date.now();
-      const timeout = setTimeout(() => setReached(true), time);
-      return () => clearTimeout(timeout);
-    }
-  }, [nextGenReached, nextGenStartsAt]);
+  const nextGenReached = useTimeFlag(nextGenStartsAt);
 
   if (stage === GenerationStage.Quorum) {
     return (
       <Row gap="sm" items="center">
         <MonoText inline variant="body3" color="success">
-          Voting stage staring soon...
+          Voting stage starting soon...
         </MonoText>
       </Row>
     );

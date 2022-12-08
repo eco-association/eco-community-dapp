@@ -3,9 +3,10 @@ import React from "react";
 import { displayAddress, etherscanURL } from "../../../utilities";
 import copy from "copy-to-clipboard";
 import { ExternalButton } from "../commons/ExternalButton";
+import Skeleton from "react-loading-skeleton";
 
 interface ContractCardProps {
-  address: string;
+  address?: string;
 }
 
 export const ContractCard: React.FC<ContractCardProps> = ({ address }) => {
@@ -16,24 +17,32 @@ export const ContractCard: React.FC<ContractCardProps> = ({ address }) => {
           <Typography variant="body3" color="secondary">
             CONTRACT ADDRESS
           </Typography>
-          <Column gap="sm">
-            <Typography variant="body2">{displayAddress(address)}</Typography>
-            <Typography
-              link
-              variant="body3"
-              color="active"
-              href="#"
-              onClick={() => copy(address)}
-            >
-              copy address
-            </Typography>
-          </Column>
+          {address ? (
+            <Column gap="sm">
+              <Typography variant="body2">{displayAddress(address)}</Typography>
+              <Typography
+                link
+                href="#"
+                color="active"
+                variant="body3"
+                onClick={() => copy(address)}
+              >
+                copy address
+              </Typography>
+            </Column>
+          ) : (
+            <Skeleton count={2} />
+          )}
         </Column>
-        <ExternalButton
-          onClick={() => window.open(etherscanURL(address, "address"))}
-        >
-          View
-        </ExternalButton>
+        {address ? (
+          <ExternalButton
+            onClick={() =>
+              address && window.open(etherscanURL(address, "address"))
+            }
+          >
+            View
+          </ExternalButton>
+        ) : null}
       </Grid>
     </Card>
   );

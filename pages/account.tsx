@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useWallet } from "../providers";
 import ManageDelegationCard from "../components/application/ManageDelegation/ManageDelegationCard";
+import { LockupCard } from "../components/application/Account/LockupCard/LockupCard";
 
 const headerStyle = { scrollHeader: { padding: "8px 64px 0 64px" } };
 
@@ -46,7 +47,10 @@ const Account = () => {
         }}
       >
         <ManageDelegationCard />
-        <StakingCard balances={wallet} />
+        <Column gap="xl">
+          <StakingCard balances={wallet} />
+          <LockupCard />
+        </Column>
       </Grid>
     </Header>
   );

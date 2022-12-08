@@ -1,14 +1,13 @@
 import { Column, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import React from "react";
-import { formatTime } from "../../../../utilities/formatTime";
+import { formatTime, truncateText } from "../../../../utilities";
 import {
   Activity,
   ActivityNotificationType,
 } from "../../../../queries/ACTIVITY_QUERY";
 import Link from "next/link";
 import { SubgraphVoteResult } from "../../../../queries/CURRENT_GENERATION";
-import { truncateText } from "../../../../utilities/truncateText";
 
 interface ActivityNotificationProps {
   activity: Activity;
@@ -37,7 +36,7 @@ const ProposalName: React.FC<{ id: string; name: string }> = ({ id, name }) => {
   return (
     <Link
       href={{
-        pathname: "/proposal/[id]",
+        pathname: "/proposal",
         query: { id },
       }}
     >
@@ -122,19 +121,20 @@ export const ActivityNotification: React.FC<ActivityNotificationProps> = ({
         </CardBase>
       );
     }
-
-    return (
-      <CardBase time={activity.timestamp}>
-        <Typography variant="body1">
-          Proposal{" "}
-          <ProposalName
-            id={proposalId}
-            name={activity.communityProposal.name}
-          />{" "}
-          failed.
-        </Typography>
-      </CardBase>
-    );
+    if (result === SubgraphVoteResult.Failed) {
+      return (
+        <CardBase time={activity.timestamp}>
+          <Typography variant="body1">
+            Proposal{" "}
+            <ProposalName
+              id={proposalId}
+              name={activity.communityProposal.name}
+            />{" "}
+            failed.
+          </Typography>
+        </CardBase>
+      );
+    }
   }
 
   if (activity.type === ActivityNotificationType.PROPOSAL_EXECUTED) {

@@ -2,23 +2,16 @@ import React, { CSSProperties, useMemo, useRef } from "react";
 import { Column, Row, styled } from "@ecoinc/ecomponents";
 import Image from "next/image";
 import EcoLogoImg from "../../../public/images/eco-gov-logo.svg";
-import DotsBg from "../../../public/images/dots.svg";
 import { useScrollExceeds } from "../../hooks/useScrollExceeds";
 import { HeaderItem } from "./HeaderItem";
 import { WalletItem } from "./WalletItem";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { css } from "@emotion/react";
-
-const linearGradient = (color: string) => `linear-gradient(${color}, ${color})`;
+import HeaderBackground from "./HeaderBackground";
 
 const PageContainer = styled.div<{ height: number }>(({ theme, height }) => ({
   backgroundRepeat: "no-repeat",
-  backgroundImage: [
-    `url(${DotsBg.src})`,
-    linearGradient(theme.palette.primary.main),
-    linearGradient(theme.palette.background.paper),
-  ].join(", "),
   backgroundSize: [`auto ${height}px`, `100% ${height}px`, "auto"].join(", "),
   backgroundPosition: "top center",
   minHeight: "100vh",
@@ -26,10 +19,6 @@ const PageContainer = styled.div<{ height: number }>(({ theme, height }) => ({
 
 const TopContent = styled.div(({ theme }) => ({
   backgroundRepeat: "no-repeat",
-  backgroundImage: [
-    `url(${DotsBg.src})`,
-    linearGradient(theme.palette.primary.main),
-  ].join(", "),
   backgroundSize: [`auto 100%`, `100% 100%`].join(", "),
   backgroundPosition: "top center",
 }));
@@ -189,16 +178,18 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
   if (content) {
     return (
       <React.Fragment>
-        <TopContent
-          ref={topRef}
-          css={styles.pageStyle}
-          style={{ minHeight: styles.height }}
-        >
-          {header}
-          {overlayHeader}
-          {content}
-        </TopContent>
-        <BottomContent css={styles.bodyStyle}>{children}</BottomContent>
+        <HeaderBackground styles={styles}>
+          <TopContent
+            ref={topRef}
+            css={styles.pageStyle}
+            style={{ minHeight: styles.height }}
+          >
+            {header}
+            {overlayHeader}
+            {content}
+          </TopContent>
+          <BottomContent css={styles.bodyStyle}>{children}</BottomContent>
+        </HeaderBackground>
       </React.Fragment>
     );
   }

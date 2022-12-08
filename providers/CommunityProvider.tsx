@@ -26,6 +26,7 @@ import { adjustVotingPower } from "../utilities/adjustVotingPower";
 import { convertDate } from "../utilities/convertDate";
 import { PastProposalsQuery } from "../queries/PAST_PROPOSALS_QUERY";
 import { ProposalQueryResult } from "../queries/PROPOSAL_QUERY";
+import { formatLockup } from "../utilities";
 
 const defaultValue: CommunityInterface = {
   generation: null,
@@ -40,7 +41,11 @@ const defaultValue: CommunityInterface = {
   majorityReachedAt: null,
   nextGenerationStartsAt: new Date(Number.MAX_SAFE_INTEGER),
 
-  currentGeneration: { blockNumber: 0, number: 0 },
+  currentGeneration: {
+    blockNumber: 0,
+    number: 0,
+    createdAt: new Date(Number.MAX_SAFE_INTEGER),
+  },
   stage: { name: null, endsAt: null },
 };
 
@@ -191,6 +196,7 @@ class Community {
       currentGeneration: {
         blockNumber: parseInt(this.generation.blockNumber),
         number: parseInt(this.generation.number),
+        createdAt: Community.formatDate(this.generation.createdAt),
       },
     };
   }
@@ -249,9 +255,14 @@ function getCommunityData(
   if (!data) return defaultValue;
 
   const generation = data.generations[0];
+  const pastGeneration = data.pastGeneration[0];
 
   return {
     generation,
+    lockup: formatLockup(
+      parseInt(pastGeneration?.number),
+      pastGeneration?.lockup
+    ),
     proposals: getProposals(generation),
     ...Community.getData(generation),
   };

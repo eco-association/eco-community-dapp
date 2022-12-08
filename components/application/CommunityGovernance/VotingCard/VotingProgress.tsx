@@ -48,10 +48,7 @@ export const VotingProgress: React.FC<VotingProgressProps> = ({
         color={["success", "primary"]}
         label={[
           <Typography key={1} variant="body1">
-            {numberFormatter(yesVotes)} votes For{" "}
-            <Typography variant="body1" color="secondary">
-              (of {numberFormatter(majority)} needed to pass)
-            </Typography>
+            {numberFormatter(yesVotes)} votes For
           </Typography>,
           <Typography key={2} variant="body1">
             {numberFormatter(noVotes)} votes Against

@@ -1,15 +1,19 @@
 import { BigNumber } from "ethers";
-import { Address, FundsLockupDeposit } from ".";
 
-type FundsLockup = {
-  address: Address;
-  depositWindowDuration: number;
-  depositWindowEndsAt: Date;
+export interface FundsLockup {
+  address: string;
   duration: number; // in days
   generation: number;
   interest: number; // 0 - 100 percent
-  totalLocked: BigNumber;
-  deposits: FundsLockupDeposit[];
-};
+  depositWindowDuration: number;
+  depositWindowEndsAt: Date;
+  endsAt: Date;
+}
 
-export type { FundsLockup };
+export interface FundsLockupWithDeposit extends FundsLockup {
+  id: string;
+  delegate: string;
+  amount: BigNumber;
+  reward: BigNumber;
+  withdrawnAt: Date | null;
+}

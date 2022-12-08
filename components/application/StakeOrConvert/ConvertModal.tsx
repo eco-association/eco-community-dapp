@@ -9,10 +9,9 @@ import {
   Typography,
 } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
-import { BigNumber, BigNumberish, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useMemo, useState } from "react";
 import { tokensToNumber } from "../../../utilities";
-import { useGasFee } from "../../hooks/useGasFee";
 import { Zero } from "@ethersproject/constants";
 import { GasFee } from "../commons/GasFee";
 
@@ -78,12 +77,12 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
             irreversable, and you cannot convert ECO back into ECOx
           </Typography>
         </Column>
-        <Container>
+        <Container gap="md">
           <Typography variant="h5">
             {formatNumber(tokensToNumber(ecoXBalance), false)} ECOx available to
             convert
           </Typography>
-          <Typography variant="body1" css={{ marginTop: 18, marginBottom: 8 }}>
+          <Typography variant="body1">
             How much would you like to convert?
           </Typography>
           <Input
@@ -127,7 +126,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
           </Note>
           <Button
             color="success"
-            style={{ width: 107, marginTop: 16, marginBottom: 8 }}
+            style={{ width: 107 }}
             onClick={convertEcoX}
             disabled={!toConvert}
           >

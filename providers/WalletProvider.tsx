@@ -125,12 +125,18 @@ export enum WalletActionType {
   Unstake,
   LockupDeposit,
   LockupWithdrawal,
+  Convert,
 }
 
 type WalletAction =
   | {
       type: WalletActionType.Stake | WalletActionType.Unstake;
       amount: BigNumber;
+    }
+  | {
+      type: WalletActionType.Convert;
+      ecoXAmount: BigNumber;
+      ecoAmount: BigNumber;
     }
   | {
       type: WalletActionType.SetState;
@@ -170,6 +176,12 @@ const delegateReducer: React.Reducer<WalletInterface, WalletAction> = (
           action.type === WalletActionType.Stake
             ? state.ecoXBalance.sub(action.amount)
             : state.ecoXBalance.add(action.amount),
+      };
+    case WalletActionType.Convert:
+      return {
+        ...state,
+        ecoXBalance: state.ecoXBalance.sub(action.ecoXAmount),
+        ecoBalance: state.ecoBalance.add(action.ecoAmount),
       };
     case WalletActionType.LockupDeposit:
       let lockups;

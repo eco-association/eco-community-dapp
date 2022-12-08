@@ -5,6 +5,8 @@ import { tokensToNumber, txError } from "../../utilities";
 import { useECOx } from "./contract/useECOx";
 import { ToastOptions } from "react-toastify/dist/types";
 import { formatNumber } from "@ecoinc/ecomponents";
+import { useWallet } from "../../providers";
+import { WalletActionType } from "../../providers/WalletProvider";
 
 const successfulToastStyle: ToastOptions = {
   position: "top-center",
@@ -21,7 +23,7 @@ const successfulToastStyle: ToastOptions = {
 
 const useConvertECOX = () => {
   const ecoX = useECOx();
-
+  const wallet = useWallet();
   const [loading, setLoading] = useState(false);
 
   const getValueOfEcoX = async (amount: BigNumber) => {
@@ -32,8 +34,14 @@ const useConvertECOX = () => {
   const convertEcoX = async (amount: BigNumber, onComplete: () => void) => {
     setLoading(true);
     try {
+      const value = await ecoX.ecoValueOf(amount);
       const tx = await ecoX.exchange(amount);
-      await tx.wait(2);
+      await tx.wait();
+      wallet.dispatch({
+        type: WalletActionType.Convert,
+        ecoXAmount: amount,
+        ecoAmount: value,
+      });
 
       onComplete();
       nativeToast(

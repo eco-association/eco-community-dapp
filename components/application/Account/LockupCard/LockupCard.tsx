@@ -39,16 +39,28 @@ export const LockupCard = () => {
               LOCKUP
             </Typography>
             <Row gap="md" items="center">
-              <Image
-                alt="eco token"
-                src={EcoLogoBlack}
-                layout="fixed"
-                width={18}
-                height={18}
-              />
-              <Typography variant="h2" style={{ lineHeight: 1 }}>
-                {formatNumber(tokensToNumber(amountLocked))}
-              </Typography>
+              {tokensToNumber(amountLocked) === 0 ? (
+                <Typography
+                  variant="body1"
+                  color="secondary"
+                  style={{ lineHeight: 1 }}
+                >
+                  You have no available lockups.
+                </Typography>
+              ) : (
+                <>
+                  <Image
+                    alt="eco token"
+                    src={EcoLogoBlack}
+                    layout="fixed"
+                    width={18}
+                    height={18}
+                  />
+                  <Typography variant="h2" style={{ lineHeight: 1 }}>
+                    {formatNumber(tokensToNumber(amountLocked))}
+                  </Typography>
+                </>
+              )}
             </Row>
           </Column>
           {lockup ? <LockupDepositAlert lockup={lockup} /> : null}

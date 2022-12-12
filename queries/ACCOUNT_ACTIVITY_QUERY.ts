@@ -31,17 +31,34 @@ export type AccountActivity = {
     withdrawnAt: string;
   };
 };
-
 export interface AccountActivityQuery {
-  id: string;
-  activities: AccountActivity[];
+  account: {
+    id: string;
+    activities: {
+      type: AccountActivityType;
+      timestamp: string;
+      communityProposal: {
+        id: string;
+        name: string;
+        generationNumber: string;
+      };
+      randomInflation: {
+        id: string;
+      };
+      lockupDeposit: {
+        id: string;
+        amount: string;
+        withdrawnAt: string;
+      };
+    };
+  };
 }
 
 export type AccountActivityQueryResults = {
-  activityRecords: AccountActivity;
+  activityRecords: AccountActivityQuery;
 };
 
-export const AccountActivityQuery = gql`
+export const ACCOUNT_ACTIVITY_QUERY = gql`
   query AccountActivityQuery($address: String!) {
     account(id: $address) {
       id

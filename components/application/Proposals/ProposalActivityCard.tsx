@@ -17,7 +17,6 @@ import {
   useCommunity,
 } from "../../../providers/CommunityProvider";
 import { SubgraphVoteResult } from "../../../queries/CURRENT_GENERATION";
-import { convertDate } from "../../../utilities/convertDate";
 import Skeleton from "react-loading-skeleton";
 
 interface ActivityIconProps
@@ -152,7 +151,7 @@ const VoteItem: React.FC<{
   if (!voting || !proposal.policyVote) return null;
 
   const { majorityReachedAt, voteEnds } = proposal.policyVote;
-  const endedAtDate = convertDate(majorityReachedAt || voteEnds);
+  const endedAtDate = majorityReachedAt || voteEnds;
   const votingEnded = Date.now() > endedAtDate.getTime();
 
   return (
@@ -207,7 +206,7 @@ const VoteResultItem: React.FC<{
   const title = passed ? "Vote passed" : "Vote failed";
   const endedAtDate = majorityReachedAt || voteEnds;
 
-  const votingEnded = Date.now() > convertDate(endedAtDate).getTime();
+  const votingEnded = Date.now() > endedAtDate.getTime();
   if (!votingEnded) return null;
 
   const description = activity

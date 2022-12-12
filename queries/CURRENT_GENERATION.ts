@@ -7,6 +7,10 @@ import {
   LockupFragment,
   LockupFragmentResult,
 } from "./fragments/LockupFragment";
+import {
+  PolicyVotesFragment,
+  PolicyVotesFragmentResult,
+} from "./fragments/PolicyVotesFragment";
 
 export type SubgraphPolicyProposal = {
   id: string;
@@ -25,17 +29,11 @@ export type SubgraphProposal = CommunityProposalFragmentResult & {
   support: { createdAt: string }[];
 };
 
-export type SubgraphPolicyVote = {
-  id: string;
-  totalVotingPower: string;
-  majorityReachedAt: string;
-  ENACTION_DELAY: string;
-  voteEnds: string;
+export type SubgraphPolicyVote = PolicyVotesFragmentResult & {
   blockNumber: string;
+  ENACTION_DELAY: string;
+  totalVotingPower: string;
   proposal: SubgraphProposal;
-  yesVoteAmount: string;
-  totalVoteAmount: string;
-  result: SubgraphVoteResult | null;
   votes: {
     totalAmount: string;
     yesAmount: string;
@@ -84,15 +82,10 @@ export const CURRENT_GENERATION = gql`
         blockNumber
       }
       policyVote {
-        id
-        result
-        voteEnds
+        ...PolicyVotesFragment
         blockNumber
-        yesVoteAmount
-        totalVoteAmount
-        totalVotingPower
-        majorityReachedAt
         ENACTION_DELAY
+        totalVotingPower
         proposal {
           ...CommunityProposalFragment
           support(where: { supporter: $supporter }) {
@@ -125,6 +118,7 @@ export const CURRENT_GENERATION = gql`
       }
     }
   }
+  ${PolicyVotesFragment}
   ${CommunityProposalFragment}
   ${LockupFragment}
 `;

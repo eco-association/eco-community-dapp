@@ -35,7 +35,6 @@ export const VotingProgress: React.FC<VotingProgressProps> = ({
   const yesVotes = tokensToNumber(yesVotesBig);
   const noVotes = tokensToNumber(noVotesBig);
   const total = tokensToNumber(totalBig);
-  const majority = total / 2;
   const yesPercentage = yesVotes / total;
   const noPercentage = noVotes / total;
 

@@ -10,11 +10,8 @@ import {
 import { useAccount } from "wagmi";
 import { convertDate } from "../../utilities/convertDate";
 import { adjustVotingPower } from "../../utilities/adjustVotingPower";
-import {
-  getProposalResult,
-  useCommunity,
-} from "../../providers/CommunityProvider";
-import { CommunityInterface } from "../../types";
+import { getProposalResult } from "../../providers/CommunityProvider";
+import { formatPolicyVotes } from "../../queries/fragments/PolicyVotesFragment";
 
 export interface ProposalFull extends CommunityProposal {
   generation: CommunityProposal["generation"] & {
@@ -22,10 +19,7 @@ export interface ProposalFull extends CommunityProposal {
   };
 }
 
-function formatData(
-  community: CommunityInterface,
-  data?: ProposalQueryResult
-): ProposalFull {
+function formatData(data?: ProposalQueryResult): ProposalFull {
   if (!data || !data.communityProposal) return null;
 
   const { support, policyVotes, ...communityProposal } = data.communityProposal;
@@ -34,12 +28,9 @@ function formatData(
     ? convertDate(support[0].createdAt)
     : undefined;
 
-  let policyVote;
-  if (policyVotes.length) {
-    policyVote = {
-      ...policyVotes[0],
-      result: getProposalResult(community, data.communityProposal),
-    };
+  const policyVote = policyVotes[0] && formatPolicyVotes(policyVotes[0]);
+  if (policyVote) {
+    policyVote.result = getProposalResult(policyVote);
   }
 
   return {
@@ -102,7 +93,6 @@ const proposalReducer: React.Reducer<ProposalFull, ProposalAction> = (
 
 export const useProposal = (id: string) => {
   const account = useAccount();
-  const community = useCommunity();
   const [state, dispatch] = useReducer(proposalReducer, null);
 
   const { data, startPolling, stopPolling, ...opts } = useQuery<
@@ -119,10 +109,10 @@ export const useProposal = (id: string) => {
     if (data && data.communityProposal) {
       dispatch({
         type: ProposalReducerActionType.SetState,
-        state: formatData(community, data),
+        state: formatData(data),
       });
     }
-  }, [community, data]);
+  }, [data]);
 
   useEffect(() => {
     startPolling(5_000);
@@ -132,6 +122,6 @@ export const useProposal = (id: string) => {
   return {
     ...opts,
     dispatch,
-    proposal: state || formatData(community, data),
+    proposal: state || formatData(data),
   };
 };

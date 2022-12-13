@@ -7,7 +7,8 @@ import { css } from "@emotion/react";
 import { useActivities } from "../../../hooks/useActivities";
 
 const setMaxHeight = css({
-  height: "max-content",
+  height: 264,
+  overflow: "hidden",
 });
 
 const Sticky = styled.div`

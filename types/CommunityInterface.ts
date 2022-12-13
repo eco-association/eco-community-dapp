@@ -1,20 +1,23 @@
-import { FundsLockup, GenerationStage, ProposalType, Stage } from "./";
+import { FundsLockup, ProposalType, Stage } from "./";
 import { BigNumber } from "ethers";
-import { Generation } from "../queries/CURRENT_GENERATION";
+import { Generation, SubgraphVoteResult } from "../queries/CURRENT_GENERATION";
 import { Vote } from "../providers/CommunityProvider";
 import { RandomInflation } from "./RandomInflation";
 
-export interface PolicyVote {
+export interface BasicPolicyVote {
+  policyId?: string;
+  voteEnds?: Date;
+  result?: SubgraphVoteResult;
   yesStake: BigNumber;
   requiredStake: BigNumber;
-  totalVotingPower: BigNumber;
-  enactionDelay?: number;
-  policyId?: string;
-  selectedProposal?: ProposalType;
   majorityReachedAt?: Date;
-  voteEnds?: Date;
+}
+
+export interface PolicyVote extends BasicPolicyVote {
+  enactionDelay?: number;
+  selectedProposal?: ProposalType;
+  totalVotingPower: BigNumber;
   voted?: Vote;
-  result?: GenerationStage;
 }
 
 interface CommunityInterface extends PolicyVote {

@@ -11,18 +11,11 @@ const HeaderBackground = ({ styles, children }) => {
     await loadFull(engine);
   }, []);
 
-  const particlesLoaded = useCallback(
-    async (container: Container | undefined) => {
-      await console.log(container);
-    },
-    []
-  );
   return (
     <div>
       <Particles
         id="tsparticles"
         init={particlesInit}
-        loaded={particlesLoaded}
         css={{
           height: 400,
           position: "absolute",
@@ -36,7 +29,7 @@ const HeaderBackground = ({ styles, children }) => {
           },
           particles: {
             number: {
-              value: 110,
+              value: 90,
               density: {
                 enable: true,
                 value_area: 800,
@@ -73,21 +66,22 @@ const HeaderBackground = ({ styles, children }) => {
             },
             move: {
               enable: true,
-              speed: 0,
-              direction: "none",
-              random: true,
+              speed: 0.045,
+              direction: "top",
+              random: false,
               straight: true,
               out_mode: "out",
               bounce: false,
               attract: {
                 enable: false,
-                rotateX: 600,
-                rotateY: 600,
+                rotateX: 10,
+                rotateY: 10,
               },
             },
           },
           interactivity: {
             detect_on: "window",
+            speed: 2,
             events: {
               onhover: {
                 enable: true,
@@ -96,6 +90,7 @@ const HeaderBackground = ({ styles, children }) => {
               resize: true,
             },
           },
+          fpsLimit: 5,
           retina_detect: true,
           background: {
             color: "#112733",

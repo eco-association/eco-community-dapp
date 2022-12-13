@@ -50,7 +50,7 @@ export interface AccountActivityQuery {
         amount: string;
         withdrawnAt: string;
       };
-    };
+    }[];
   };
 }
 

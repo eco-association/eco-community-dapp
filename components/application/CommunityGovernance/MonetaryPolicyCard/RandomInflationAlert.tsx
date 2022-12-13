@@ -49,7 +49,7 @@ export const RandomInflationAlert = () => {
         </Typography>
       }
     >
-      <Typography variant="body1" color="secondary">
+      <Typography variant="body2" color="secondary">
         Random Inflation is active, ECO supply will increase by{" "}
         <Typography inline variant="body2" color="black" css={fontWeight}>
           {percent}%.

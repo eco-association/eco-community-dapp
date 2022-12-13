@@ -4,7 +4,11 @@ import {
   CommunityProposalFragmentResult,
 } from "./fragments/CommunityProposalFragment";
 import { BigNumber } from "ethers";
-import { SubgraphVoteResult } from "./CURRENT_GENERATION";
+import {
+  PolicyVotesFragment,
+  PolicyVotesFragmentResult,
+} from "./fragments/PolicyVotesFragment";
+import { BasicPolicyVote } from "../types/CommunityInterface";
 
 export enum ActivityType {
   ProposalSubmitted = "ProposalSubmitted",
@@ -42,12 +46,7 @@ export interface CommunityProposal {
     };
   };
   activities: Activity[];
-  policyVote?: {
-    id: string;
-    result: SubgraphVoteResult;
-    voteEnds: string;
-    majorityReachedAt: string;
-  };
+  policyVote?: BasicPolicyVote;
 }
 
 export type ProposalQueryResult = {
@@ -60,12 +59,7 @@ export type ProposalQueryResult = {
         proposalEnds: string;
       };
     };
-    policyVotes: {
-      id: string;
-      result: SubgraphVoteResult;
-      voteEnds: string;
-      majorityReachedAt: string;
-    }[];
+    policyVotes: PolicyVotesFragmentResult[];
     activities: {
       type: ActivityType;
       timestamp: string;
@@ -92,10 +86,7 @@ export const PROPOSAL_QUERY = gql`
         }
       }
       policyVotes {
-        id
-        result
-        voteEnds
-        majorityReachedAt
+        ...PolicyVotesFragment
       }
       activities(orderBy: timestamp, orderDirection: desc) {
         type
@@ -106,5 +97,6 @@ export const PROPOSAL_QUERY = gql`
       }
     }
   }
+  ${PolicyVotesFragment}
   ${CommunityProposalFragment}
 `;

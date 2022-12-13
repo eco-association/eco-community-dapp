@@ -2,6 +2,7 @@ import { FundsLockup, ProposalType, Stage } from "./";
 import { BigNumber } from "ethers";
 import { Generation, SubgraphVoteResult } from "../queries/CURRENT_GENERATION";
 import { Vote } from "../providers/CommunityProvider";
+import { RandomInflation } from "./RandomInflation";
 
 export interface BasicPolicyVote {
   policyId?: string;
@@ -25,6 +26,7 @@ interface CommunityInterface extends PolicyVote {
   stage: Stage;
   nextGenerationStartsAt: Date | null;
   lockup?: FundsLockup;
+  randomInflation?: RandomInflation;
   currentGeneration: {
     number: number;
     blockNumber: number;

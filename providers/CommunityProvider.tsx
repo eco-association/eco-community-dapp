@@ -26,6 +26,7 @@ import { adjustVotingPower } from "../utilities/adjustVotingPower";
 import { convertDate } from "../utilities/convertDate";
 import { formatLockup } from "../utilities";
 import { formatPolicyVotes } from "../queries/fragments/PolicyVotesFragment";
+import { formatRandomInflation } from "../utilities/randomInflationTools";
 
 const defaultValue: CommunityInterface = {
   generation: null,
@@ -251,11 +252,14 @@ function getCommunityData(
 
   return {
     generation,
+    proposals: getProposals(generation),
     lockup: formatLockup(
       parseInt(pastGeneration?.number),
       pastGeneration?.lockup
     ),
-    proposals: getProposals(generation),
+    randomInflation:
+      pastGeneration?.randomInflation &&
+      formatRandomInflation(pastGeneration.randomInflation),
     ...Community.getData(generation),
   };
 }

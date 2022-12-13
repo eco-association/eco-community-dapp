@@ -11,6 +11,10 @@ import {
   PolicyVotesFragment,
   PolicyVotesFragmentResult,
 } from "./fragments/PolicyVotesFragment";
+import {
+  RandomInflationFragment,
+  RandomInflationFragmentResult,
+} from "./fragments/RandomInflationFragment";
 
 export type SubgraphPolicyProposal = {
   id: string;
@@ -56,6 +60,7 @@ export type PastGeneration = {
   id: string;
   number: string;
   lockup?: LockupFragmentResult;
+  randomInflation?: RandomInflationFragmentResult;
 };
 
 export type CurrentGenerationQueryResult = {
@@ -116,9 +121,13 @@ export const CURRENT_GENERATION = gql`
       lockup {
         ...LockupFragment
       }
+      randomInflation {
+        ...RandomInflationFragment
+      }
     }
   }
   ${PolicyVotesFragment}
-  ${CommunityProposalFragment}
   ${LockupFragment}
+  ${RandomInflationFragment}
+  ${CommunityProposalFragment}
 `;

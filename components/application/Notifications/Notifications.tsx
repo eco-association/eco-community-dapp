@@ -1,14 +1,16 @@
 import React from "react";
-import { LinearInflationNotification } from "./LinearInflationNotification";
-import { RefundNotification } from "./RefundNotification";
 import { CookiesProvider } from "react-cookie";
+
+import { RefundNotification } from "./RefundNotification";
+import { LinearInflationNotification } from "./LinearInflationNotification";
+import { RandomInflationNotification } from "./RandomInflation/RandomInflationNotification";
+
 export const Notifications = () => {
   return (
-    <React.Fragment>
-      <CookiesProvider>
-        <RefundNotification />
-        <LinearInflationNotification />
-      </CookiesProvider>
-    </React.Fragment>
+    <CookiesProvider>
+      <RefundNotification />
+      <LinearInflationNotification />
+      <RandomInflationNotification />
+    </CookiesProvider>
   );
 };

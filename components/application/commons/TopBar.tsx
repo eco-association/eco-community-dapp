@@ -1,5 +1,5 @@
 import React from "react";
-import { Color, Grid, styled } from "@ecoinc/ecomponents";
+import { Color, Grid, Row, styled, Typography } from "@ecoinc/ecomponents";
 import { XIcon } from "./XIcon";
 
 interface TopBarProps
@@ -9,19 +9,18 @@ interface TopBarProps
   onRequestClose?(event: React.MouseEvent | React.KeyboardEvent): void;
 }
 
-const Content = styled(Grid)<TopBarProps & { clickable?: boolean }>(
-  ({ theme, color, clickable, onRequestClose }) => ({
-    ...theme.typography.body3,
-    fontSize: 12,
-    width: "100%",
-    padding: "12px 8px",
-    background: theme.palette[color].main,
-    ...(clickable ? { cursor: "pointer" } : {}),
-    ...(onRequestClose ? { gridTemplateColumns: "1fr 24px", gap: "8px" } : {}),
-  })
-);
+const Bar = styled(Grid)<TopBarProps>(({ theme, color, onRequestClose }) => ({
+  width: "100%",
+  background: theme.palette[color].main,
+  ...(onRequestClose ? { gridTemplateColumns: "1fr auto", gap: "8px" } : {}),
+}));
 
-const Icon = styled.div({ cursor: "pointer" });
+const Content = styled(Row)<TopBarProps>(({ onClick }) => ({
+  padding: "12px 8px",
+  ...(onClick ? { cursor: "pointer" } : {}),
+}));
+
+const Icon = styled.div({ cursor: "pointer", paddingRight: 8 });
 
 export const TopBar: React.FC<React.PropsWithChildren<TopBarProps>> = ({
   children,
@@ -30,21 +29,17 @@ export const TopBar: React.FC<React.PropsWithChildren<TopBarProps>> = ({
   ...props
 }) => {
   return (
-    <Content
-      color={color}
-      clickable={!!onClick}
-      alignItems="center"
-      justifyContent="center"
-      {...props}
-    >
-      <div onClick={onClick} style={{ justifySelf: "center" }}>
-        {children}
-      </div>
+    <Bar color={color} alignItems="center" {...props}>
+      <Content justify="center" onClick={onClick}>
+        <Typography variant="body2" style={{ fontSize: 12 }}>
+          {children}
+        </Typography>
+      </Content>
       {props.onRequestClose && (
         <Icon onClick={props.onRequestClose}>
           <XIcon />
         </Icon>
       )}
-    </Content>
+    </Bar>
   );
 };

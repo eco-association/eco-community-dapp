@@ -27,6 +27,7 @@ import { convertDate } from "../utilities/convertDate";
 import { PastProposalsQuery } from "../queries/PAST_PROPOSALS_QUERY";
 import { ProposalQueryResult } from "../queries/PROPOSAL_QUERY";
 import { formatLockup } from "../utilities";
+import { formatRandomInflation } from "../utilities/randomInflationTools";
 
 const defaultValue: CommunityInterface = {
   generation: null,
@@ -259,11 +260,14 @@ function getCommunityData(
 
   return {
     generation,
+    proposals: getProposals(generation),
     lockup: formatLockup(
       parseInt(pastGeneration?.number),
       pastGeneration?.lockup
     ),
-    proposals: getProposals(generation),
+    randomInflation:
+      pastGeneration?.randomInflation &&
+      formatRandomInflation(pastGeneration.randomInflation),
     ...Community.getData(generation),
   };
 }

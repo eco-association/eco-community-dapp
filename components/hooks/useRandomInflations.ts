@@ -158,8 +158,11 @@ export const useRandomInflations = () => {
     Record<string, RandomInflationRecipient[]>
   >({});
 
-  const { data: randomInflationQuery } =
-    useQuery<RandomInflationQueryResult>(RANDOM_INFLATION);
+  const {
+    data: randomInflationQuery,
+    called,
+    loading,
+  } = useQuery<RandomInflationQueryResult>(RANDOM_INFLATION);
 
   useEffect(() => {
     dispatch({
@@ -184,7 +187,7 @@ export const useRandomInflations = () => {
 
   const items = useMemo(
     () =>
-      randomInflations.map((ri) => {
+      randomInflations.map((ri): RandomInflationWithClaims => {
         const claimIds = ri.claims.map((claim) =>
           getClaimId(claim.claimedFor, claim.sequenceNumber)
         );
@@ -197,5 +200,5 @@ export const useRandomInflations = () => {
     [randomInflations, recipients]
   );
 
-  return { items, dispatch };
+  return { items, dispatch, called, loading };
 };

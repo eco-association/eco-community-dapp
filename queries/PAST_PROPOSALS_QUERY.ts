@@ -86,7 +86,7 @@ export const PAST_PROPOSALS_QUERY = gql`
           id
         }
       }
-      activities {
+      activities(where: { type: "ProposalSubmitted" }) {
         timestamp
         type
       }

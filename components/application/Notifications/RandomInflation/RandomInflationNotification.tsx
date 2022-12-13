@@ -6,7 +6,7 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import {
   RandomInflationActionType,
@@ -14,35 +14,70 @@ import {
 } from "../../../hooks/useRandomInflations";
 import { tokensToNumber } from "../../../../utilities";
 import { Zero } from "@ethersproject/constants";
-import { RIClaimRow } from "./RIClaimRow";
-import moment from "moment";
 import { RandomInflationRecipient } from "../../../../types";
+import { RandomInflationClaimRows } from "./RandomInflationClaimRows";
+import { RIClaimBox } from "./RIClaimBox";
 
-const Content = styled(Column)({ padding: "0 16px" });
+const Content = styled(Column)({ padding: "0 24px" });
 
-function formatDate(date: Date): string {
-  return moment(date).format("MM.DD.YY");
+function getReceiptID(receipt: RandomInflationRecipient): string {
+  return `${receipt.randomInflation.address}-${receipt.index}`;
 }
 
 export const RandomInflationNotification = () => {
   const account = useAccount();
-  const { items: randomInflations, dispatch } = useRandomInflations();
+  const address = account.address?.toLowerCase();
+
+  const {
+    items: randomInflations,
+    dispatch,
+    called,
+    loading: loadingRIs,
+  } = useRandomInflations();
 
   const [open, setOpen] = useState(false);
+  const [availableClaims, setAvailableClaims] = useState<string[]>([]);
+  const [randomInflationIDs, setRandomInflationIds] = useState<string[]>([]);
 
-  const address = account.address?.toLowerCase();
+  useEffect(() => {
+    if (called && !loadingRIs) {
+      const ids = randomInflations
+        .filter((ri) =>
+          ri.recipients.some(
+            ({ recipient, claimed, claimableAt }) =>
+              !claimed &&
+              recipient === address &&
+              Date.now() > claimableAt.getTime()
+          )
+        )
+        .map((ri) => ri.address);
+      setRandomInflationIds(ids);
+    }
+  }, [address, called, loadingRIs, randomInflations]);
+
   const claimRIs = randomInflations.filter((ri) =>
-    ri.recipients.some(
-      ({ recipient, claimed, claimableAt }) =>
-        !claimed && recipient === address && Date.now() > claimableAt.getTime()
-    )
+    randomInflationIDs.includes(ri.address)
   );
 
-  if (!claimRIs.length) return null;
+  useEffect(() => {
+    if (!availableClaims.length) {
+      const recipientIDs = claimRIs
+        .flatMap((ri) => ri.recipients)
+        .filter((r) => !r.claimed && r.recipient === address)
+        .map(getReceiptID);
+      setAvailableClaims(recipientIDs);
+    }
+  }, [address, availableClaims.length, claimRIs]);
+
+  const pendingClaims = claimRIs
+    .flatMap((ri) => ri.recipients)
+    .filter((r) => !r.claimed && r.recipient === address);
+
+  if (!pendingClaims.length) return null;
 
   const recipients = claimRIs
     .flatMap((ri) => ri.recipients)
-    .filter((recipient) => recipient.recipient === address);
+    .filter((r) => availableClaims.includes(getReceiptID(r)));
 
   const amount = recipients
     .filter((recipient) => !recipient.claimed)
@@ -56,46 +91,6 @@ export const RandomInflationNotification = () => {
       randomInflationId: recipient.randomInflation.address,
     });
   };
-
-  let rows;
-  if (claimRIs.length === 1) {
-    rows = recipients.map((recipient) => (
-      <RIClaimRow
-        key={recipient.sequenceNumber}
-        recipient={recipient}
-        onClaimed={() => onClaimed(recipient)}
-      />
-    ));
-  } else {
-    rows = claimRIs.flatMap((ri) => {
-      const end = new Date(
-        ri.claimPeriodStarts.getTime() + ri.claimPeriodDuration
-      );
-      const riRecipients = recipients.filter(
-        (r) => r.randomInflation.address === ri.address
-      );
-      return (
-        <Column gap="md">
-          <Typography
-            variant="h6"
-            color="secondary"
-            style={{ paddingLeft: 16 }}
-          >
-            PERIOD {formatDate(ri.claimPeriodStarts)} - {formatDate(end)}
-          </Typography>
-          <Column gap="lg">
-            {riRecipients.map((recipient) => (
-              <RIClaimRow
-                key={`${ri.address}-${recipient.sequenceNumber}`}
-                recipient={recipient}
-                onClaimed={() => onClaimed(recipient)}
-              />
-            ))}
-          </Column>
-        </Column>
-      );
-    });
-  }
 
   return (
     <React.Fragment>
@@ -118,7 +113,15 @@ export const RandomInflationNotification = () => {
                 : "."}
             </Typography>
           </Content>
-          <Column gap="lg">{rows}</Column>
+          {recipients.length === 1 ? (
+            <RIClaimBox recipient={recipients[0]} onClaimed={onClaimed} />
+          ) : (
+            <RandomInflationClaimRows
+              claims={recipients}
+              onClaimed={onClaimed}
+              randomInflations={claimRIs}
+            />
+          )}
         </Column>
       </Dialog>
     </React.Fragment>

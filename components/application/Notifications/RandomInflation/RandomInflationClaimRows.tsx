@@ -60,5 +60,9 @@ export const RandomInflationClaimRows: React.FC<
     });
   }
 
-  return <Column gap="lg">{rows}</Column>;
+  return (
+    <Column gap="lg" style={{ maxHeight: 400, overflowY: "auto" }}>
+      {rows}
+    </Column>
+  );
 };

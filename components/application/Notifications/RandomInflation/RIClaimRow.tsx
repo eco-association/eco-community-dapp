@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@ecoinc/ecomponents";
 import LoaderAnimation from "../../Loader";
+import { toast as nativeToast, ToastOptions } from "react-toastify";
 
 export interface RIClaimRowProps {
   recipient: RandomInflationRecipient;
@@ -23,6 +24,19 @@ const Box = styled(Row)(({ theme }) => ({
   padding: "16px 24px",
   backgroundColor: theme.palette.disabled.bg,
 }));
+
+const toastOpts: ToastOptions = {
+  position: "top-center",
+  autoClose: 3000,
+  hideProgressBar: true,
+  theme: "colored",
+  style: {
+    backgroundColor: "#F7FEFC",
+    border: "solid 1px #5AE4BF",
+    color: "#22313A",
+    top: "115px",
+  },
+};
 
 export const RIClaimRow: React.FC<RIClaimRowProps> = ({
   recipient,
@@ -45,6 +59,7 @@ export const RIClaimRow: React.FC<RIClaimRowProps> = ({
         recipient.index
       );
       await claimTx.wait();
+      nativeToast(`Successfully claimed random inflation`, toastOpts);
       onClaimed(recipient);
     } catch (err) {
       txError("Failed claiming random inflation", err);
@@ -57,7 +72,7 @@ export const RIClaimRow: React.FC<RIClaimRowProps> = ({
       <Column>
         <Row gap="sm">
           <Typography variant="h5">
-            <b>Claim #{recipient.sequenceNumber}</b>
+            <b>Claim #{recipient.sequenceNumber + 1}</b>
           </Typography>
           {recipient.claimed ? (
             <Typography variant="h5" color="secondary">

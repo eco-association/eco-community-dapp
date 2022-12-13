@@ -7,6 +7,7 @@ import LoaderAnimation from "../../Loader";
 import { GasFee } from "../../commons/GasFee";
 import { useAccount } from "wagmi";
 import TextLoader from "../../commons/TextLoader";
+import { toast as nativeToast, ToastOptions } from "react-toastify";
 
 export interface RIClaimBoxProps {
   recipient: RandomInflationRecipient;
@@ -14,10 +15,23 @@ export interface RIClaimBoxProps {
   onClaimed(recipient: RandomInflationRecipient): void;
 }
 
-const Box = styled(Row)(({ theme }) => ({
+const Box = styled(Column)(({ theme }) => ({
   padding: "16px 24px",
   backgroundColor: theme.palette.disabled.bg,
 }));
+
+const toastOpts: ToastOptions = {
+  position: "top-center",
+  autoClose: 3000,
+  hideProgressBar: true,
+  theme: "colored",
+  style: {
+    backgroundColor: "#F7FEFC",
+    border: "solid 1px #5AE4BF",
+    color: "#22313A",
+    top: "115px",
+  },
+};
 
 export const RIClaimBox: React.FC<RIClaimBoxProps> = ({
   recipient,
@@ -41,6 +55,7 @@ export const RIClaimBox: React.FC<RIClaimBoxProps> = ({
         recipient.index
       );
       await claimTx.wait();
+      nativeToast(`Successfully claimed random inflation`, toastOpts);
       onClaimed(recipient);
     } catch (err) {
       txError("Failed claiming random inflation", err);
@@ -63,7 +78,7 @@ export const RIClaimBox: React.FC<RIClaimBoxProps> = ({
           </Button>
           {loading && <TextLoader />}
         </Row>
-        <GasFee gasLimit={205_000} />
+        <GasFee gasLimit={211_000} />
       </Column>
     </Box>
   );

@@ -21,7 +21,18 @@ import { RIClaimBox } from "./RIClaimBox";
 const Content = styled(Column)({ padding: "0 24px" });
 
 function getReceiptID(receipt: RandomInflationRecipient): string {
-  return `${receipt.randomInflation.address}-${receipt.index}`;
+  return `${receipt.randomInflation.address}-${receipt.sequenceNumber}`;
+}
+
+function isClaimable(
+  recipient: RandomInflationRecipient,
+  address: string
+): boolean {
+  return (
+    !recipient.claimed &&
+    recipient.recipient === address &&
+    Date.now() > recipient.claimableAt.getTime()
+  );
 }
 
 export const RandomInflationNotification = () => {
@@ -42,14 +53,7 @@ export const RandomInflationNotification = () => {
   useEffect(() => {
     if (called && !loadingRIs) {
       const ids = randomInflations
-        .filter((ri) =>
-          ri.recipients.some(
-            ({ recipient, claimed, claimableAt }) =>
-              !claimed &&
-              recipient === address &&
-              Date.now() > claimableAt.getTime()
-          )
-        )
+        .filter((ri) => ri.recipients.some((r) => isClaimable(r, address)))
         .map((ri) => ri.address);
       setRandomInflationIds(ids);
     }
@@ -63,7 +67,7 @@ export const RandomInflationNotification = () => {
     if (!availableClaims.length) {
       const recipientIDs = claimRIs
         .flatMap((ri) => ri.recipients)
-        .filter((r) => !r.claimed && r.recipient === address)
+        .filter((r) => isClaimable(r, address))
         .map(getReceiptID);
       setAvailableClaims(recipientIDs);
     }
@@ -71,7 +75,7 @@ export const RandomInflationNotification = () => {
 
   const pendingClaims = claimRIs
     .flatMap((ri) => ri.recipients)
-    .filter((r) => !r.claimed && r.recipient === address);
+    .filter((r) => isClaimable(r, address));
 
   if (!pendingClaims.length) return null;
 

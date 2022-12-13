@@ -79,6 +79,7 @@ async function getRecipients(
   client: ApolloClient<object>,
   randomInflation: RandomInflationWithClaims
 ): Promise<RandomInflationRecipient[]> {
+  if (!randomInflation.seedReveal) return [];
   try {
     const queryResult = await client.query<
       EcoSnapshotQueryResult,

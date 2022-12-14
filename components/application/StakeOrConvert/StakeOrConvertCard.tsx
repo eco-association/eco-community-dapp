@@ -14,6 +14,7 @@ import StakingModal from "../Account/StakingModal";
 import ConvertModal from "./ConvertModal";
 import { ethers } from "ethers";
 import useConvertECOX from "../../hooks/useConvertECOX";
+import { useSigner } from "wagmi";
 
 const TopRow = styled(Row)({
   borderBottom: `1px solid #DCE9F0`,
@@ -22,15 +23,20 @@ const TopRow = styled(Row)({
 });
 
 const StakeOrConvertCard = () => {
-  const [ratio, setRatio] = useState<string>();
+  const { data: signerData } = useSigner();
+  const [ratio, setRatio] = useState<string>("Calculating...");
   const [convertOpen, setConvertOpen] = useState<boolean>(false);
   const [stakeOpen, setStakeOpen] = useState<boolean>(false);
   const { getValueOfEcoX } = useConvertECOX();
   const wallet = useWallet();
   useMemo(async () => {
-    const value = await getValueOfEcoX(ethers.utils.parseUnits("1"));
-    setRatio(`${value}:1`);
-  }, [wallet]);
+    if (signerData) {
+      const value = await getValueOfEcoX(ethers.utils.parseUnits("1"));
+      setRatio(value ? `${value}:1` : "Calculating...");
+    } else {
+      setRatio("Calculating...");
+    }
+  }, [wallet, signerData]);
 
   return (
     <Card>

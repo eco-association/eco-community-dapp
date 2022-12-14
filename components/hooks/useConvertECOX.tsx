@@ -27,8 +27,12 @@ const useConvertECOX = () => {
   const [loading, setLoading] = useState(false);
 
   const getValueOfEcoX = async (amount: BigNumber) => {
-    const y = await ecoX.ecoValueOf(amount);
-    return formatNumber(tokensToNumber(y));
+    try {
+      const y = await ecoX.ecoValueOf(amount);
+      return formatNumber(tokensToNumber(y));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const convertEcoX = async (amount: BigNumber, onComplete: () => void) => {

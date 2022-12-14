@@ -142,7 +142,7 @@ const PastProposalsCard: React.FC<PastProposalsCardProps> = ({ proposal }) => {
               newLines.length > 3
                 ? newLines.splice(0, 3).join("\n")
                 : proposal.description,
-              500
+              340
             )}
           </Typography>
         </Column>

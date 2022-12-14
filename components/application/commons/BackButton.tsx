@@ -8,11 +8,12 @@ const arrow = css({ transform: "rotate(180deg)", scale: 0.6 });
 
 export const BackButton: React.FC = () => {
   const router = useRouter();
+
   return (
     <Row
       items="center"
       gap="md"
-      onClick={router.back}
+      onClick={() => router.replace("/proposals", undefined, { shallow: true })}
       style={{ cursor: "pointer" }}
     >
       <Arrow color="success" css={arrow} />

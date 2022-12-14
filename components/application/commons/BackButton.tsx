@@ -12,7 +12,7 @@ export const BackButton: React.FC = () => {
     <Row
       items="center"
       gap="md"
-      onClick={router.back}
+      onClick={router.replace("https://governance.eco.org/proposals")}
       style={{ cursor: "pointer" }}
     >
       <Arrow color="success" css={arrow} />

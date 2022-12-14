@@ -86,7 +86,7 @@ const Proposal: React.FC = () => {
   useEffect(() => {
     if (!loading && !proposal) {
       // Redirect to home if proposal does not exist
-      router.replace("/");
+      router.replace("https://governance.eco.org/proposals");
     }
   }, [loading, proposal, router]);
 

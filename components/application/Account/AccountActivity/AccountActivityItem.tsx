@@ -19,6 +19,12 @@ interface CardBaseProps {
   time: Date;
 }
 
+interface ProposalActivityProps {
+  action: string;
+  proposalName: string;
+  bridge?: string;
+}
+
 const CardBase: React.FC<React.PropsWithChildren<CardBaseProps>> = ({
   time,
   children,
@@ -32,6 +38,19 @@ const CardBase: React.FC<React.PropsWithChildren<CardBaseProps>> = ({
     </Column>
   );
 };
+
+const ProposalActivity: React.FC<ProposalActivityProps> = ({
+  action,
+  proposalName,
+  bridge,
+}) => {
+  return (
+    <Typography variant="body1">
+      You <b>{action}</b> {bridge} proposal: <i>{proposalName}</i>
+    </Typography>
+  );
+};
+
 const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
   activity,
 }) => {
@@ -51,22 +70,61 @@ const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
     return <CardBase time={activity.timestamp}>Lockup Deposit</CardBase>;
   }
   if (activity.type === AccountActivityType.PROPOSAL_VOTED_AGAINST) {
-    return <CardBase time={activity.timestamp}>Voted Against</CardBase>;
+    return (
+      <CardBase time={activity.timestamp}>
+        <ProposalActivity
+          action="voted against"
+          proposalName={activity.communityProposal.name}
+        />
+      </CardBase>
+    );
   }
   if (activity.type === AccountActivityType.PROPOSAL_VOTED_FOR) {
-    return <CardBase time={activity.timestamp}>voted for</CardBase>;
+    return (
+      <CardBase time={activity.timestamp}>
+        <ProposalActivity
+          action="voted"
+          bridge="for"
+          proposalName={activity.communityProposal.name}
+        />
+      </CardBase>
+    );
   }
   if (activity.type === AccountActivityType.PROPOSAL_UNSUPPORTED) {
-    return <CardBase time={activity.timestamp}>proposal unsupported</CardBase>;
+    return (
+      <CardBase time={activity.timestamp}>
+        <ProposalActivity
+          action="revoked support"
+          bridge="for"
+          proposalName={activity.communityProposal.name}
+        />
+      </CardBase>
+    );
   }
   if (activity.type === AccountActivityType.PROPOSAL_SUPPORTED) {
-    return <CardBase time={activity.timestamp}>Proposal supported</CardBase>;
+    return (
+      <CardBase time={activity.timestamp}>
+        <ProposalActivity
+          action="gave support"
+          bridge="to"
+          proposalName={activity.communityProposal.name}
+        />
+      </CardBase>
+    );
   }
   if (activity.type === AccountActivityType.PROPOSAL_REFUNDED) {
     return <CardBase time={activity.timestamp}>proposal refunded</CardBase>;
   }
   if (activity.type === AccountActivityType.PROPOSAL_SUBMITTED) {
-    return <CardBase time={activity.timestamp}>proposal submitted</CardBase>;
+    return (
+      <CardBase time={activity.timestamp}>
+        <ProposalActivity
+          action="deployed"
+          bridge="a"
+          proposalName={activity.communityProposal.name}
+        />
+      </CardBase>
+    );
   }
 };
 

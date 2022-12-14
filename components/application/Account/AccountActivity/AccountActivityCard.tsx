@@ -26,16 +26,48 @@ const AccountActivityCard = () => {
         },
         {
           type: AccountActivityType.PROPOSAL_SUPPORTED,
-          timeStamp: new Date(),
+          timestamp: new Date(),
           communityProposal: {
             id: 1,
             name: "Test One",
             generationNumber: 333,
           },
         },
+        {
+          type: AccountActivityType.PROPOSAL_VOTED_AGAINST,
+          timestamp: new Date(),
+          communityProposal: {
+            id: 2,
+            name: "Test Two",
+            generationNumber: 334,
+          },
+        },
+        {
+          type: AccountActivityType.PROPOSAL_REFUNDED,
+          timestamp: new Date(),
+          communityProposal: {
+            id: 3,
+            name: "Refunded proposal",
+            generationNumber: 332,
+          },
+        },
+        {
+          type: AccountActivityType.PROPOSAL_UNSUPPORTED,
+          timestamp: new Date(),
+          communityProposal: {
+            id: 4,
+            name: "Did not support",
+            generationNumber: 3345,
+          },
+        },
+        {
+          type: AccountActivityType.LOCKUP_DEPOSIT,
+          timestamp: new Date(),
+          lockupDeposit: {
+            amount: 55,
+          },
+        },
       ],
-      randomInflation: [],
-      lockupDeposit: [],
     },
   };
 

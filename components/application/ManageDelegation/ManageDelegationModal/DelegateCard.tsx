@@ -2,6 +2,7 @@ import {
   Button,
   Column,
   FormTextField,
+  Input,
   Typography,
   useTheme,
 } from "@ecoinc/ecomponents";
@@ -12,7 +13,6 @@ import { toast as nativeToast, ToastOptions } from "react-toastify";
 import { displayAddress, txError } from "../../../../utilities";
 import { useECO } from "../../../hooks/contract/useECO";
 import { useECOxStaking } from "../../../hooks/contract/useECOxStaking";
-import { useGasFee } from "../../../hooks/useGasFee";
 import LoaderAnimation from "../../Loader";
 import { Option } from "./ManageDelegationModal";
 import { ethers } from "ethers";
@@ -21,6 +21,7 @@ import {
   DelegateActionType,
   useDelegationState,
 } from "./provider/ManageDelegationProvider";
+import { GasFee } from "../../commons/GasFee";
 
 interface DelegateCardProps {
   lockup?: string;
@@ -60,7 +61,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
   const { dispatch } = useDelegationState();
 
   const theme = useTheme();
-  const gasFee = useGasFee(500_000);
 
   const [loading, setLoading] = useState(false);
 
@@ -78,6 +78,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
   });
 
   const submitHandler = async (data: FormValues) => {
+    console.log(data);
     const address = data.ethAddress.toLowerCase().trim();
     const contract = option === Option.SEcoXMyWallet ? ecoX : eco;
 
@@ -114,12 +115,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
 
   return (
     <div>
-      <Typography variant="body1">Delegate votes </Typography>{" "}
-      <Link href="#">
-        <Typography link variant="body1" color="secondary">
-          Browse Available
-        </Typography>
-      </Link>
       <form onSubmit={handleSubmit(submitHandler)}>
         <Column gap="lg">
           <FormTextField
@@ -136,21 +131,17 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
               type="submit"
               color="success"
               variant="fill"
-              disabled={
-                !isValid ||
-                ethAddress === invalidAddress ||
-                ethAddress === account.address.toLowerCase() ||
-                ethAddress === delegate?.toLowerCase()
-              }
+              // disabled={
+
+              //   !isValid ||
+              //   ethAddress === invalidAddress ||
+              //   ethAddress === account.address.toLowerCase() ||
+              //   ethAddress === delegate?.toLowerCase()
+              // }
             >
               {loading ? <LoaderAnimation /> : "Delegate"}
             </Button>
-            <Typography variant="body3">
-              Estimated Gas:{" "}
-              <Typography variant="body3" color="secondary">
-                {gasFee} ETH
-              </Typography>
-            </Typography>
+            <GasFee gasLimit={500_000} />
           </Column>
         </Column>
       </form>

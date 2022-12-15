@@ -26,6 +26,7 @@ import {
 import chevronDown from "../../../../public/images/chevron-down.svg";
 import chevronUp from "../../../../public/images/chevron-up.svg";
 import AdvancedDelegation from "./AdvancedDelegation";
+import Link from "next/link";
 
 export enum Option {
   None,
@@ -52,63 +53,81 @@ interface DropdownBoxProps {
 }
 
 const DropdownBoxStyle = styled(Column)<Pick<DropdownBoxProps, "red">>(
-  ({ theme, red }) => ({
-    backgroundColor: red ? "#FDF4F4" : theme.palette.background.paper,
+  ({ theme }) => ({
+    backgroundColor: theme.palette.background.paper,
     padding: "12px 16px",
     borderRadius: "4px",
   })
 );
 
-const DropdownBox: React.FC<React.PropsWithChildren<DropdownBoxProps>> = ({
-  open,
-  red,
-  title,
-  amount,
-  delegate,
-  onToggle,
-  children,
-}) => {
+const DelegateInputArea: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
-    <DropdownBoxStyle red={red} gap="lg">
+    <DropdownBoxStyle gap="lg">
       <Grid columns="1fr 16px" gap="8px" style={{ alignItems: "center" }}>
         <Row items="center" gap="sm" style={{ flexWrap: "wrap" }}>
-          <Typography
-            variant="h5"
-            color={red ? "error" : "primary"}
-            style={{ lineHeight: 1 }}
-          >
-            {formatNumber(tokensToNumber(amount), false)}
-          </Typography>
-          <Typography
-            variant="h5"
-            color={red ? "error" : "active"}
-            style={{ lineHeight: 1 }}
-          >
-            &#x2022; {title}
-          </Typography>
-          {delegate ? (
-            <Typography
-              variant="h5"
-              color={red ? "error" : "secondary"}
-              style={{ lineHeight: 1 }}
-            >
-              &#x2022; delegated to {displayAddress(delegate)}
+          <Typography variant="body1" color="primary" style={{ lineHeight: 1 }}>
+            Delegate your voting power to someone?{" "}
+            <Typography inline color="secondary">
+              (optional)
             </Typography>
-          ) : null}
+          </Typography>
         </Row>
-        {children && (
-          <Image
-            alt=""
-            onClick={onToggle}
-            css={{ cursor: "pointer" }}
-            src={open ? chevronUp : chevronDown}
-          />
-        )}
       </Grid>
-      {open && children}
+      {children}
     </DropdownBoxStyle>
   );
 };
+
+// const DropdownBox: React.FC<React.PropsWithChildren<DropdownBoxProps>> = ({
+//   open,
+//   red,
+//   title,
+//   amount,
+//   delegate,
+//   onToggle,
+//   children,
+// }) => {
+//   return (
+//     <DropdownBoxStyle red={red} gap="lg">
+//       <Grid columns="1fr 16px" gap="8px" style={{ alignItems: "center" }}>
+//         <Row items="center" gap="sm" style={{ flexWrap: "wrap" }}>
+//           <Typography
+//             variant="h5"
+//             color={red ? "error" : "primary"}
+//             style={{ lineHeight: 1 }}
+//           >
+//             {formatNumber(tokensToNumber(amount), false)}
+//           </Typography>
+//           <Typography
+//             variant="h5"
+//             color={red ? "error" : "active"}
+//             style={{ lineHeight: 1 }}
+//           >
+//             &#x2022; {title}
+//           </Typography>
+//           {delegate ? (
+//             <Typography
+//               variant="h5"
+//               color={red ? "error" : "secondary"}
+//               style={{ lineHeight: 1 }}
+//             >
+//               &#x2022; delegated to {displayAddress(delegate)}
+//             </Typography>
+//           ) : null}
+//         </Row>
+//         {children && (
+//           <Image
+//             alt=""
+//             onClick={onToggle}
+//             css={{ cursor: "pointer" }}
+//             src={open ? chevronUp : chevronDown}
+//           />
+//         )}
+//       </Grid>
+//       {open && children}
+//     </DropdownBoxStyle>
+//   );
+// };
 
 const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   open,
@@ -147,96 +166,34 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
     >
       <Column gap="xl">
         <Column gap="xl" style={{ padding: "0 16px" }}>
-          <Column gap="lg" style={{ padding: "0 16px" }}>
-            <Typography variant="h2">Manage Delegation</Typography>
-            <Typography variant="body1">
-              You have {formatNumber(tokensToNumber(votingPower), false)} Total
-              Voting Power,{" "}
-              <span style={{ fontWeight: "700" }}>
-                {formatNumber(tokensToNumber(currentGenVotingPower), false)} is
-                active this generation.
-              </span>
+          <Column gap="lg">
+            <Typography variant="h2">Manage Voting Delegation</Typography>
+            <Typography variant="body1" color="primary">
+              All changes take effect at the start of the next generation.
+            </Typography>
+            <Typography variant="body1" color="secondary">
+              Or you can choose to become a delegate and receive voting power
+              from others. (Note that you cannot choose to both delegate your
+              voting power, and be a delegate yourself) Want to receive others
+              votes and{" "}
+              <Link href="">
+                <Typography
+                  inline
+                  variant="h5"
+                  color="secondary"
+                  css={{ textDecoration: "underline", cursor: "pointer" }}
+                >
+                  become a delegate?
+                </Typography>
+              </Link>
             </Typography>
           </Column>
-          <DropdownBox
-            title="ECO from your wallet"
-            amount={ecoBalance}
-            delegate={state.eco.delegate}
-            red={state.eco.validate === DelegateValidation.Confirm}
-            open={
-              option === Option.EcoMyWallet &&
-              state.eco.validate !== DelegateValidation.Confirm
-            }
-            onToggle={() =>
-              handleDropdownClick(
-                option === Option.EcoMyWallet ? Option.None : Option.EcoMyWallet
-              )
-            }
-          >
-            {!state.eco.enabled && !loading && (
-              <DelegateCard
-                delegate={state.eco.delegate}
-                option={Option.EcoMyWallet}
-              />
-            )}
-          </DropdownBox>
-          <DropdownBox
-            title="sECOx from your wallet"
-            amount={sEcoXBalance.mul(10)}
-            delegate={state.secox.delegate}
-            red={state.secox.validate === DelegateValidation.Confirm}
-            open={
-              option === Option.SEcoXMyWallet &&
-              state.secox.validate !== DelegateValidation.Confirm
-            }
-            onToggle={() =>
-              handleDropdownClick(
-                option === Option.SEcoXMyWallet
-                  ? Option.None
-                  : Option.SEcoXMyWallet
-              )
-            }
-          >
-            {!state.secox.enabled && !loading && (
-              <DelegateCard
-                delegate={state.secox.delegate}
-                option={Option.SEcoXMyWallet}
-              />
-            )}
-          </DropdownBox>
-          {sources.fundsLockedUp.map((lockup) => (
-            <DropdownBox
-              key={lockup.id}
-              title={`ECO from Lockup ending ${moment(lockup.endsAt).format(
-                "L"
-              )}`}
-              open={option === Option.Lockup && selectedLockup === lockup.id}
-              amount={lockup.amount}
-              delegate={lockup.delegate}
-              onToggle={() => {
-                setSelectedLockup(lockup.id);
-                handleDropdownClick(
-                  option === Option.Lockup ? Option.None : Option.Lockup
-                );
-              }}
-            >
-              {!state.eco.enabled && !loading && (
-                <DelegateCard
-                  lockup={lockup.id}
-                  delegate={lockup.delegate}
-                  option={Option.Lockup}
-                />
-              )}
-            </DropdownBox>
-          ))}
-
-          <hr />
-
-          {!advanced && state.eco.enabled === state.secox.enabled ? (
-            <EnableDelegationBox onOpen={() => setAdvanced(true)} />
-          ) : (
-            <AdvancedDelegation onClose={() => setAdvanced(false)} />
-          )}
+          <DelegateInputArea>
+            <DelegateCard
+              delegate={state.eco.delegate}
+              option={Option.EcoMyWallet}
+            />
+          </DelegateInputArea>
         </Column>
       </Column>
     </Dialog>

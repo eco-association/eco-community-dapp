@@ -39,7 +39,7 @@ export const LockupCard = () => {
               LOCKUP
             </Typography>
             <Row gap="md" items="center">
-              {tokensToNumber(amountLocked) === 0 ? (
+              {!lockups.length ? (
                 <Typography
                   variant="body1"
                   color="secondary"

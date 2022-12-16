@@ -131,15 +131,15 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
               type="submit"
               color="success"
               variant="fill"
-              // disabled={
-
-              //   !isValid ||
-              //   ethAddress === invalidAddress ||
-              //   ethAddress === account.address.toLowerCase() ||
-              //   ethAddress === delegate?.toLowerCase()
-              // }
+              disabled={
+                !isValid ||
+                !ethAddress ||
+                ethAddress === invalidAddress ||
+                ethAddress === account.address.toLowerCase() ||
+                ethAddress === delegate?.toLowerCase()
+              }
             >
-              {loading ? <LoaderAnimation /> : "Delegate"}
+              {loading ? <LoaderAnimation /> : "Confirm"}
             </Button>
             <GasFee gasLimit={500_000} />
           </Column>

@@ -1,14 +1,5 @@
-import {
-  Button,
-  Column,
-  FormTextField,
-  Input,
-  Typography,
-  useTheme,
-} from "@ecoinc/ecomponents";
-import Link from "next/link";
+import { Button, Column, FormTextField, useTheme } from "@ecoinc/ecomponents";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast as nativeToast, ToastOptions } from "react-toastify";
 import { displayAddress, txError } from "../../../../utilities";
 import { useECO } from "../../../hooks/contract/useECO";
@@ -22,6 +13,7 @@ import {
   useDelegationState,
 } from "./provider/ManageDelegationProvider";
 import { GasFee } from "../../commons/GasFee";
+import { useForm } from "react-hook-form";
 
 interface DelegateCardProps {
   lockup?: string;
@@ -78,7 +70,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
   });
 
   const submitHandler = async (data: FormValues) => {
-    console.log(data);
     const address = data.ethAddress.toLowerCase().trim();
     const contract = option === Option.SEcoXMyWallet ? ecoX : eco;
 
@@ -133,7 +124,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
               variant="fill"
               disabled={
                 !isValid ||
-                !ethAddress ||
                 ethAddress === invalidAddress ||
                 ethAddress === account.address.toLowerCase() ||
                 ethAddress === delegate?.toLowerCase()

@@ -13,7 +13,6 @@ import {
 } from "../../../../hooks/useVotingPowerSources";
 import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
-import EcoAbi from "../../../../../assets/abi/ECO.json";
 import {
   ECO__factory,
   ECOxStaking__factory,
@@ -34,7 +33,7 @@ export interface TokenDelegation {
 
 export type DelegableToken = "eco" | "secox";
 
-type ManageDelegationState = Record<DelegableToken, TokenDelegation>;
+export type ManageDelegationState = Record<DelegableToken, TokenDelegation>;
 
 const defaultValue: ManageDelegationState = {
   eco: {
@@ -191,7 +190,6 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   const sources = useVotingPowerSources();
 
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
-  console.log(sources);
   const eco = useECO({ useProvider: true });
   const secox = useECOxStaking({ useProvider: true });
 

@@ -20,6 +20,7 @@ import { useVotingPower } from "../../hooks/useVotingPower";
 import { ManageDelegationProvider } from "./ManageDelegationModal/provider/ManageDelegationProvider";
 import { useAccount } from "wagmi";
 import Tooltip from "rc-tooltip";
+import { useVotingPowerSources } from "../../hooks/useVotingPowerSources";
 
 const chevron = css({ cursor: "pointer" });
 
@@ -29,17 +30,28 @@ const customRow = css({
   justifyContent: "space-between",
 });
 
+const Sources = () => {
+  return (
+    <Row gap="xl" style={{ justifyContent: "space-between" }}>
+      <Typography variant="body1">2,500,000 ECO</Typography>
+      <Typography variant="body1" color="secondary">
+        From your wallet 911
+      </Typography>
+    </Row>
+  );
+};
+
 const ManageDelegationCard = () => {
+  const votingSources = useVotingPowerSources();
   const community = useCommunity();
   const account = useAccount();
   const { votingPower } = useVotingPower();
   const { votingPower: currentGenVotingPower } = useVotingPower(
     community.currentGeneration.blockNumber
   );
-
+  console.log(votingSources);
   const [extendedDisplay, setExtendedDisplay] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-
   return (
     <Card>
       <ManageDelegationProvider>
@@ -52,52 +64,27 @@ const ManageDelegationCard = () => {
         />
       </ManageDelegationProvider>
       <Column gap="xl">
-        <Column gap="lg">
-          <Row items="start" justify="space-between">
-            <Column gap="md">
-              <Typography variant="subtitle1" color="secondary">
-                YOUR VOTING POWER NEXT GENERATION
-              </Typography>
-              <Typography variant="h2" style={{ lineHeight: 1 }}>
-                {formatNumber(tokensToNumber(votingPower), false)}
-              </Typography>
-            </Column>
-
-            <Tooltip
-              placement="left"
-              trigger="hover"
-              overlayStyle={{
-                padding: "3px 6px",
-                width: "220px",
-              }}
-              overlay={
-                <Typography variant="subtitle1" color="white">
-                  This number includes delegation and staking changes you make
-                  now and becomes active next generation. Your current active
-                  voting power is fixed.
-                </Typography>
-              }
-            >
-              <Image src={informationI} alt="" />
-            </Tooltip>
-          </Row>
-          {extendedDisplay && <hr />}
-        </Column>
-        {extendedDisplay ? <VotingSources /> : null}
-        <Row items="center" css={customRow}>
+        <Typography variant="h4">
+          {formatNumber(tokensToNumber(votingPower))} Voting power
+        </Typography>
+        <hr />
+        <Typography variant="body2" color="secondary">
+          SOURCES OF VOTING POWER
+        </Typography>
+        <Sources />
+        <Row gap="md">
+          <Typography variant="body2" color="secondary" css={{ width: "60%" }}>
+            manage delegating your votes to others, or become a delegate
+            yourself.
+          </Typography>
           <Button
             variant="outline"
             color="secondary"
             onClick={() => setModalOpen(true)}
+            style={{ width: 169, height: 38, padding: 0 }}
           >
             Manage Delegation
           </Button>
-          <Image
-            css={chevron}
-            onClick={() => setExtendedDisplay(!extendedDisplay)}
-            src={!extendedDisplay ? chevronDown : chevronUp}
-            alt=""
-          />
         </Row>
       </Column>
     </Card>

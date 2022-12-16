@@ -12,6 +12,7 @@ import { useManageDelegation } from "./hooks/useManageDelegation";
 import { GasFee } from "../../commons/GasFee";
 import LoaderAnimation from "../../Loader";
 import ChevronLeft from "../../../../public/images/chevron-left.svg";
+import Link from "next/link";
 
 interface EnableDelegationBoxProps {
   back(): void;
@@ -40,13 +41,17 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({ back }) => {
   // const alreadyDelegating = true;
 
   return (
-    <Column gap="md">
-      <Row>
+    <Column gap="xl">
+      <Row gap="lg" css={{ width: "80%" }}>
         <Image
+          layout="intrinsic"
+          height={15}
           src={ChevronLeft}
           alt=""
           onClick={back}
-          css={{ cursor: "pointer" }}
+          style={{
+            cursor: "pointer",
+          }}
         />
         <Typography variant="h2">
           Are you sure you want to become a delegate?
@@ -59,14 +64,23 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({ back }) => {
         holders. Remember, you cannot both be a delegate and also delegate
         voting power to others.
       </Typography>
-      <Column gap="md" style={{ backgroundColor: "#f6f9fb", padding: 24 }}>
+      <Column gap="lg" style={{ backgroundColor: "#f6f9fb", padding: 24 }}>
         <Typography variant="body2" color="secondary">
           THINGS TO CONSIDER
         </Typography>
         <ul style={{ listStyleType: "disc", marginLeft: 24 }}>
-          <li>
+          <li style={{ marginBottom: 12 }}>
             <Typography variant="body1">
-              Making a post to the Community in the Forum (optional)
+              Making a post to the Community in the{" "}
+              <Link href="https://forums.eco.org/">
+                <Typography
+                  color="active"
+                  style={{ textDecoration: "underline", cursor: "pointer" }}
+                >
+                  Forum
+                </Typography>
+              </Link>{" "}
+              <Typography color="secondary">(optional)</Typography>
             </Typography>
           </li>
           <li>
@@ -86,7 +100,9 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({ back }) => {
           </Note>
         )}
         <Row gap="lg">
-          <Button disabled>Go back</Button>
+          <Button color="disabled" onClick={back}>
+            Go back
+          </Button>
           <Button color="success" onClick={() => manageBothTokens(true, false)}>
             {loading ? (
               <LoaderAnimation />

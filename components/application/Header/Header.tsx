@@ -1,7 +1,7 @@
 import React, { CSSProperties, useMemo, useRef } from "react";
 import { Column, Row, styled } from "@ecoinc/ecomponents";
 import Image from "next/image";
-import EcoLogoImg from "../../../public/images/eco-gov-logo.svg";
+import EcoLogoImg from "../../../public/images/eco-logo/eco-gov-logo.svg";
 import { useScrollExceeds } from "../../hooks/useScrollExceeds";
 import { HeaderItem } from "./HeaderItem";
 import { WalletItem } from "./WalletItem";

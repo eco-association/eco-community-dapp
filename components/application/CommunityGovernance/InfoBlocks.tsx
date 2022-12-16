@@ -1,8 +1,8 @@
 import { Block } from "./Block";
 import { Row, TokenAmount } from "@ecoinc/ecomponents";
 import Image from "next/image";
-import EcoLogoWhiteOutline from "../../../public/images/eco-logo/eco-logo-white-outline.svg";
-import EcoXLogo from "../../../public/images/ecox-logo.svg";
+import EcoLogo from "../../../public/images/eco-logo/eco-currency-brandmark.svg";
+import EcoXLogo from "../../../public/images/ecox-logo/ecox-currency-brandmark.svg";
 import React from "react";
 import { css } from "@emotion/react";
 import { useWallet } from "../../../providers";
@@ -20,7 +20,7 @@ export const InfoBlocks = () => {
           <Row gap="sm" items="center">
             <Image
               alt="Eco Logo"
-              src={EcoLogoWhiteOutline}
+              src={EcoLogo}
               layout="fixed"
               width={18}
               height={18}

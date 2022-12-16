@@ -83,7 +83,7 @@ class SubmitProposal {
     return {
       reference: "proposal",
       contractAddress,
-      abi: Proposal__factory.abi,
+      abi: [...Proposal__factory.abi],
       calls: [
         { reference: "name", methodName: "name", methodParameters: [] },
         { reference: "url", methodName: "url", methodParameters: [] },

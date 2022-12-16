@@ -1,14 +1,14 @@
 import { Column, Grid, Typography } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import AccountInfoBar from "../components/application/Account/AccountInfoBar";
-import StakingCard from "../components/application/Account/StakingCard";
 import { Header } from "../components/application/Header/Header";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useWallet } from "../providers";
 import ManageDelegationCard from "../components/application/ManageDelegation/ManageDelegationCard";
 import { LockupCard } from "../components/application/Account/LockupCard/LockupCard";
 import AccountActivityCard from "../components/application/Account/AccountActivity/AccountActivityCard";
+import StakeOrConvertCard from "../components/application/StakeOrConvert/StakeOrConvertCard";
 
 const headerStyle = { scrollHeader: { padding: "8px 64px 0 64px" } };
 
@@ -48,8 +48,7 @@ const Account = () => {
         }}
       >
         <Column gap="xl">
-          {/* <StakingCard balances={wallet} /> This is now in the home page as part of the convert card */}
-          <ManageDelegationCard />
+          <StakeOrConvertCard />
           <LockupCard />
         </Column>
         <AccountActivityCard />

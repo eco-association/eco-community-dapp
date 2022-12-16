@@ -7,13 +7,13 @@ import {
   Typography,
 } from "@ecoinc/ecomponents";
 import styled from "@emotion/styled";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useWallet } from "../../../providers";
 import { tokensToNumber } from "../../../utilities";
 import StakingModal from "../Account/StakingModal";
 import ConvertModal from "./ConvertModal";
-import { ethers } from "ethers";
 import useConvertECOX from "../../hooks/useConvertECOX";
+import { WeiPerEther, Zero } from "@ethersproject/constants";
 
 const TopRow = styled(Row)({
   borderBottom: `1px solid #DCE9F0`,
@@ -22,21 +22,27 @@ const TopRow = styled(Row)({
 });
 
 const StakeOrConvertCard = () => {
-  const [ratio, setRatio] = useState<string>();
-  const [convertOpen, setConvertOpen] = useState<boolean>(false);
-  const [stakeOpen, setStakeOpen] = useState<boolean>(false);
-  const { getValueOfEcoX } = useConvertECOX();
   const wallet = useWallet();
-  useMemo(async () => {
-    const value = await getValueOfEcoX(ethers.utils.parseUnits("1"));
-    setRatio(`${value}:1`);
-  }, [wallet]);
+
+  const [ratio, setRatio] = useState(Zero);
+  const [stakeOpen, setStakeOpen] = useState(false);
+  const [convertOpen, setConvertOpen] = useState(false);
+
+  const { getValueOfEcoX } = useConvertECOX();
+
+  useEffect(() => {
+    getValueOfEcoX(WeiPerEther).then(setRatio);
+  }, [getValueOfEcoX]);
+
+  const _ratio = ratio.isZero()
+    ? "Calculating..."
+    : `${formatNumber(tokensToNumber(ratio))}:1`;
 
   return (
     <Card>
       <ConvertModal
         ecoXBalance={wallet.ecoXBalance}
-        exchangeRate={ratio}
+        exchangeRate={_ratio}
         open={convertOpen}
         setOpen={setConvertOpen}
       />
@@ -54,7 +60,7 @@ const StakeOrConvertCard = () => {
           <Typography variant="subtitle1" color="secondary">
             ECO-ECOX RATE
           </Typography>
-          <Typography variant="h2">{ratio}</Typography>
+          <Typography variant="h2">{_ratio}</Typography>
         </Column>
       </TopRow>
       <Typography variant="body2" color="secondary">

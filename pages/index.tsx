@@ -47,10 +47,7 @@ const Home: React.FC = () => {
           }}
         >
           <MonetaryPolicyCard />
-          <Column gap="xl">
-            <ActivityCard />
-            <StakeOrConvertCard />
-          </Column>
+          <ActivityCard />
         </Grid>
       </Column>
     </Header>

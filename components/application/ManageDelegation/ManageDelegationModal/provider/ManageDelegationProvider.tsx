@@ -13,6 +13,7 @@ import {
 } from "../../../../hooks/useVotingPowerSources";
 import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
+import EcoAbi from "../../../../../assets/abi/ECO.json";
 import {
   ECO__factory,
   ECOxStaking__factory,
@@ -206,7 +207,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
       {
         reference: "eco",
         contractAddress: eco.address,
-        abi: ECO__factory.abi,
+        abi: [...ECO__factory.abi],
         calls: [
           {
             reference: "ecoEnabled",
@@ -223,7 +224,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
       {
         reference: "secox",
         contractAddress: secox.address,
-        abi: ECOxStaking__factory.abi,
+        abi: [...ECOxStaking__factory.abi],
         calls: [
           {
             reference: "sEcoXEnabled",

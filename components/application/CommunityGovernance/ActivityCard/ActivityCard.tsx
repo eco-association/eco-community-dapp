@@ -7,7 +7,7 @@ import { css } from "@emotion/react";
 import { useActivities } from "../../../hooks/useActivities";
 
 const setMaxHeight = css({
-  height: 264,
+  maxHeight: 600,
   overflow: "hidden",
 });
 

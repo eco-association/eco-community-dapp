@@ -14,7 +14,7 @@ import Image from "next/image";
 import { css } from "@emotion/react";
 
 import DelegateCard from "./DelegateCard";
-import EnableDelegationBox from "./EnableDelegationBox";
+import EnableDelegationBox from "./EnableDelegationScreen";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
 import { useWallet } from "../../../../providers";
 import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
@@ -27,6 +27,8 @@ import chevronDown from "../../../../public/images/chevron-down.svg";
 import chevronUp from "../../../../public/images/chevron-up.svg";
 import AdvancedDelegation from "./AdvancedDelegation";
 import Link from "next/link";
+import EnableDelegationScreen from "./EnableDelegationScreen";
+import DisableDelegationCard from "./DisableDelegationCard";
 
 export enum Option {
   None,
@@ -138,16 +140,18 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   const sources = useVotingPowerSources();
   const { state } = useDelegationState();
   const { ecoBalance, sEcoXBalance } = useWallet();
-
   const [option, setOption] = useState(Option.None);
   const [advanced, setAdvanced] = useState(
     state.eco.enabled !== state.secox.enabled
   );
+  console.log(state);
   const [selectedLockup, setSelectedLockup] = useState<string>(null);
+  const [openDelegation, setOpenDelegation] = useState(false);
 
   const handleDropdownClick = (option: Option) => setOption(option);
 
   const loading = state.eco.loading || state.secox.loading;
+  const delegationEnabled = state.eco.enabled || state.secox.enabled;
 
   useEffect(() => {
     if (state.eco.enabled !== state.secox.enabled) {
@@ -162,40 +166,49 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}
-      style={{ card: { maxWidth: 540, padding: "40px 24px" } }}
+      style={{ card: { width: 540, padding: "40px 24px" } }}
     >
-      <Column gap="xl">
-        <Column gap="xl" style={{ padding: "0 16px" }}>
-          <Column gap="lg">
-            <Typography variant="h2">Manage Voting Delegation</Typography>
-            <Typography variant="body1" color="primary">
-              All changes take effect at the start of the next generation.
-            </Typography>
-            <Typography variant="body1" color="secondary">
-              Or you can choose to become a delegate and receive voting power
-              from others. (Note that you cannot choose to both delegate your
-              voting power, and be a delegate yourself) Want to receive others
-              votes and{" "}
-              <Link href="">
-                <Typography
-                  inline
-                  variant="h5"
-                  color="secondary"
-                  css={{ textDecoration: "underline", cursor: "pointer" }}
-                >
-                  become a delegate?
+      {openDelegation ? (
+        <EnableDelegationScreen back={() => setOpenDelegation(false)} />
+      ) : (
+        <Column gap="xl">
+          <Column gap="xl" style={{ padding: "0 16px" }}>
+            <Column gap="lg">
+              <Typography variant="h2">Manage Voting Delegation</Typography>
+
+              <Typography variant="body1" color="primary">
+                All changes take effect at the start of the next generation.
+              </Typography>
+              {delegationEnabled && <DisableDelegationCard state={state} />}
+              {!delegationEnabled && (
+                <Typography variant="body1" color="secondary">
+                  Or you can choose to become a delegate and receive voting
+                  power from others. (Note that you cannot choose to both
+                  delegate your voting power, and be a delegate yourself) Want
+                  to receive others votes and{" "}
+                  <Typography
+                    onClick={() => setOpenDelegation(!openDelegation)}
+                    inline
+                    variant="h5"
+                    color="secondary"
+                    css={{ textDecoration: "underline", cursor: "pointer" }}
+                  >
+                    become a delegate?
+                  </Typography>
                 </Typography>
-              </Link>
-            </Typography>
+              )}
+            </Column>
+            {!delegationEnabled && (
+              <DelegateInputArea>
+                <DelegateCard
+                  delegate={state.eco.delegate}
+                  option={Option.EcoMyWallet}
+                />
+              </DelegateInputArea>
+            )}
           </Column>
-          <DelegateInputArea>
-            <DelegateCard
-              delegate={state.eco.delegate}
-              option={Option.EcoMyWallet}
-            />
-          </DelegateInputArea>
         </Column>
-      </Column>
+      )}
     </Dialog>
   );
 };

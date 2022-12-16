@@ -1,4 +1,10 @@
-import { Button, Column, FormTextField, useTheme } from "@ecoinc/ecomponents";
+import {
+  Button,
+  Column,
+  FormTextField,
+  Row,
+  useTheme,
+} from "@ecoinc/ecomponents";
 import React, { useState } from "react";
 import { toast as nativeToast, ToastOptions } from "react-toastify";
 import { displayAddress, txError } from "../../../../utilities";
@@ -14,6 +20,9 @@ import {
 } from "./provider/ManageDelegationProvider";
 import { GasFee } from "../../commons/GasFee";
 import { useForm } from "react-hook-form";
+import EnableDelegationBox from "./EnableDelegationScreen";
+import EnableDelegationScreen from "./EnableDelegationScreen";
+import TextLoader from "../../commons/TextLoader";
 
 interface DelegateCardProps {
   lockup?: string;
@@ -118,19 +127,22 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
             rules={{ required: false, validate: ethers.utils.isAddress }}
           />
           <Column gap="md" items="start">
-            <Button
-              type="submit"
-              color="success"
-              variant="fill"
-              disabled={
-                !isValid ||
-                ethAddress === invalidAddress ||
-                ethAddress === account.address.toLowerCase() ||
-                ethAddress === delegate?.toLowerCase()
-              }
-            >
-              {loading ? <LoaderAnimation /> : "Confirm"}
-            </Button>
+            <Row gap="lg">
+              <Button
+                type="submit"
+                color="success"
+                variant="fill"
+                disabled={
+                  !isValid ||
+                  ethAddress === invalidAddress ||
+                  ethAddress === account.address.toLowerCase() ||
+                  ethAddress === delegate?.toLowerCase()
+                }
+              >
+                {loading ? <LoaderAnimation /> : "Confirm"}
+              </Button>
+              {loading && <TextLoader />}
+            </Row>
             <GasFee gasLimit={500_000} />
           </Column>
         </Column>

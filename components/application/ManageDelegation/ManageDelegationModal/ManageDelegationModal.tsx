@@ -10,11 +10,8 @@ import {
 } from "@ecoinc/ecomponents";
 
 import DelegateCard from "./DelegateCard";
-import { useWallet } from "../../../../providers";
-import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
 import { useDelegationState } from "./provider/ManageDelegationProvider";
 
-import AdvancedDelegation from "./AdvancedDelegation";
 import EnableDelegationScreen from "./EnableDelegationScreen";
 import DisableDelegationCard from "./DisableDelegationCard";
 

@@ -1,9 +1,9 @@
-import { useCallback } from "react";
-import type { Container, Engine } from "tsparticles-engine";
+import React, { useCallback } from "react";
+import type { Engine } from "tsparticles-engine";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 
-const HeaderBackground = ({ styles, children }) => {
+const HeaderBackground: React.FC<React.PropsWithChildren> = ({ children }) => {
   const particlesInit = useCallback(async (engine: Engine) => {
     // you can initialize the tsParticles instance (engine) here, adding custom shapes or presets
     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready

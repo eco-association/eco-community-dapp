@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast as nativeToast } from "react-toastify";
 import { tokensToNumber, txError } from "../../utilities";
 import { useECOx } from "./contract/useECOx";
@@ -7,6 +7,7 @@ import { ToastOptions } from "react-toastify/dist/types";
 import { formatNumber } from "@ecoinc/ecomponents";
 import { useWallet } from "../../providers";
 import { WalletActionType } from "../../providers/WalletProvider";
+import { Zero } from "@ethersproject/constants";
 
 const successfulToastStyle: ToastOptions = {
   position: "top-center",
@@ -26,14 +27,17 @@ const useConvertECOX = () => {
   const wallet = useWallet();
   const [loading, setLoading] = useState(false);
 
-  const getValueOfEcoX = async (amount: BigNumber) => {
-    try {
-      const y = await ecoX.ecoValueOf(amount);
-      return formatNumber(tokensToNumber(y));
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const getValueOfEcoX = useCallback(
+    async (amount: BigNumber): Promise<BigNumber> => {
+      try {
+        if (ecoX.provider) return ecoX.ecoValueOf(amount);
+      } catch (err) {
+        console.error(err);
+      }
+      return Zero;
+    },
+    [ecoX]
+  );
 
   const convertEcoX = async (amount: BigNumber, onComplete: () => void) => {
     setLoading(true);

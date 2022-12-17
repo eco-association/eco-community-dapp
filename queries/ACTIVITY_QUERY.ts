@@ -64,7 +64,7 @@ export type ActivityQueryResults = {
 };
 
 export const ACTIVITY_QUERY = gql`
-  query {
+  query ACTIVITY_QUERY {
     activityRecords(
       first: 30
       where: { type_not_in: [ProposalSupported, ProposalUnsupported] }

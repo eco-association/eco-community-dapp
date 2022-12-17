@@ -243,7 +243,6 @@ export function getRandomInflationRecipients(
 export function formatRandomInflation(
   randomInflation: RandomInflationFragmentResult
 ): RandomInflation {
-  const { seedCommit } = randomInflation;
   return {
     address: randomInflation.address,
     reward: BigNumber.from(randomInflation.reward),
@@ -252,6 +251,5 @@ export function formatRandomInflation(
     claimPeriodStarts: convertDate(randomInflation.claimPeriodStarts),
     claimPeriodDuration: parseInt(randomInflation.CLAIM_PERIOD) * 1000,
     seedReveal: randomInflation.seedReveal,
-    seedCommit: seedCommit && BigNumber.from(seedCommit),
   };
 }

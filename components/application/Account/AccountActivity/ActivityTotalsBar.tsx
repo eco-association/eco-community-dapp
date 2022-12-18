@@ -14,24 +14,35 @@ const ActivityTotalsBar: React.FC<ActivityTotalsBarProps> = ({
   return (
     <Row
       gap="xl"
-      style={{ borderBottom: "1px solid #c7d9ea", paddingBottom: 12 }}
+      style={{
+        padding: "12px",
+        background: "#F6F9FB",
+        borderRadius: "5px",
+        justifyContent: "space-between",
+      }}
     >
       <Column>
-        <Typography variant="h5">{proposalsSupported}</Typography>
+        <Typography variant="h5">
+          {proposalsSupported ? proposalsSupported : 0}
+        </Typography>
         <Typography variant="subtitle1" color="secondary">
-          proposals supported
+          PROPOSED
         </Typography>
       </Column>
       <Column>
-        <Typography variant="h5">{votesSubmitted}</Typography>
+        <Typography variant="h5">
+          {votesSubmitted ? votesSubmitted : 0}
+        </Typography>
         <Typography variant="subtitle1" color="secondary">
-          votes submitted
+          VOTED
         </Typography>
       </Column>
       <Column>
-        <Typography variant="h5">{proposalsSubmitted}</Typography>
+        <Typography variant="h5">
+          {proposalsSubmitted ? proposalsSubmitted : 0}
+        </Typography>
         <Typography variant="subtitle1" color="secondary">
-          proposals submitted
+          SUBMITTED
         </Typography>
       </Column>
     </Row>

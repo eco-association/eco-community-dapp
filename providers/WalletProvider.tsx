@@ -52,7 +52,23 @@ export const WalletContext = createContext<WalletContextState>({
 });
 
 function getLockups(data?: WalletQueryResult): FundsLockupWithDeposit[] {
-  if (!data?.account?.fundsLockupDeposits.length) return [];
+  if (!data?.account?.fundsLockupDeposits.length)
+    return [
+      {
+        id: "0x000asd",
+        duration: 1000 * 24 * 3600 * 14,
+        generation: 1010,
+        address: "0x000asd",
+        interest: 0.08,
+        depositWindowEndsAt: new Date(Date.now() - 1000 * 24 * 3600 * 2),
+        depositWindowDuration: 1000 * 24 * 3600 * 2,
+        endsAt: new Date(Date.now() - 1000 * 24 * 3600 * 1),
+        delegate: "0x000asd",
+        amount: BigNumber.from(WeiPerEther.mul(10)),
+        reward: BigNumber.from(WeiPerEther),
+        withdrawnAt: null,
+      },
+    ];
 
   return data.account.fundsLockupDeposits.map(
     (lockupDeposit): FundsLockupWithDeposit => {

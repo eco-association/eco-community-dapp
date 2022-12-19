@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Alert, Button, formatNumber, Typography } from "@ecoinc/ecomponents";
+import {
+  Alert,
+  Button,
+  formatNumber,
+  Row,
+  styled,
+  Typography,
+} from "@ecoinc/ecomponents";
 import { FundsLockupWithDeposit } from "../../../../types/FundsLockup";
 import { useWallet } from "../../../../providers";
 import { getLockupClaimAmount, tokensToNumber } from "../../../../utilities";
@@ -8,6 +15,12 @@ import { LockupClaimModal } from "./LockupClaimModal";
 interface LockupClaimAlertProps {
   lockup: FundsLockupWithDeposit;
 }
+
+const StyledAlert = styled(Alert)({
+  "& span": {
+    lineHeight: 1,
+  },
+});
 
 export const LockupClaimAlert: React.FC<LockupClaimAlertProps> = ({
   lockup,
@@ -23,21 +36,28 @@ export const LockupClaimAlert: React.FC<LockupClaimAlertProps> = ({
         lockup={lockup}
         onRequestClose={() => setOpen(false)}
       />
-      <Alert
-        color="success"
-        title="Lockup claimable"
+      <StyledAlert
+        color="active"
+        title="Lockup Claim Complete"
         button={
-          <Button color="success" onClick={() => setOpen(true)}>
-            Claim
-          </Button>
+          <Row justify="end">
+            <Button
+              color="active"
+              variant="outline"
+              onClick={() => setOpen(true)}
+              style={{ padding: "10px 16px", minWidth: "initial" }}
+            >
+              Claim
+            </Button>
+          </Row>
         }
       >
         You have{" "}
         <Typography color="primary" variant="body2">
           <b>{formatNumber(tokensToNumber(amount))} ECO</b>
         </Typography>{" "}
-        ready to claim!
-      </Alert>
+        to claim
+      </StyledAlert>
     </React.Fragment>
   );
 };

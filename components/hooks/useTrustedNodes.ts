@@ -8,7 +8,7 @@ import { Address } from "../../types";
 import { BigNumber } from "ethers";
 
 export interface TrustedNodesData {
-  hoard: Address;
+  hoard: string;
   yearEnd: BigNumber;
   voteReward: BigNumber;
   yearStartGen: BigNumber;
@@ -29,7 +29,7 @@ export const useTrustedNodes = () => {
   );
   const data: TrustedNodesData = original
     ? {
-        hoard: new Address(original.trustedNodes.hoard),
+        hoard: original.trustedNodes.hoard,
         yearEnd: BigNumber.from(original.trustedNodes.yearEnd),
         voteReward: BigNumber.from(original.trustedNodes.voteReward),
         yearStartGen: BigNumber.from(original.trustedNodes.yearStartGen),

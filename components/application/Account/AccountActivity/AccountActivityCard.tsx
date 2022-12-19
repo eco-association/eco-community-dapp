@@ -100,6 +100,11 @@ const AccountActivityCard = () => {
           votesSubmitted={votesSubmitted}
           proposalsSupported={proposalsSupported}
         />
+        {activities.length === 0 && (
+          <Typography variant="body1" color="secondary">
+            You do not have any activities yet!
+          </Typography>
+        )}
         {activities?.map((activity) => (
           <AccountActivityItem key={activity.type} activity={activity} />
         ))}

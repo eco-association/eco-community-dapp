@@ -11,7 +11,6 @@ import EcoXLogo from "../../../../public/images/ecox-logo/ecox-currency-brandmar
 import { css } from "@emotion/react";
 import { AccountCard } from "../AccountCard";
 
-const textRight = css({ textAlign: "right", lineHeight: 1 });
 const button = css({ padding: "10px 16px", minWidth: "initial" });
 
 const EcoXCard = () => {
@@ -25,7 +24,9 @@ const EcoXCard = () => {
   const [convertOpen, setConvertOpen] = useState(false);
 
   useEffect(() => {
-    getValueOfEcoX(WeiPerEther).then(setRatio);
+    getValueOfEcoX(WeiPerEther).then((ratio) => {
+      if (!ratio.isZero()) setRatio(ratio);
+    });
   }, [getValueOfEcoX]);
 
   const openStaking = () => {

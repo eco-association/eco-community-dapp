@@ -11,7 +11,10 @@ import { displayAddress, tokensToNumber } from "../../../utilities";
 import { useCommunity } from "../../../providers";
 import ManageDelegationModal from "./ManageDelegationModal/ManageDelegationModal";
 import { useVotingPower } from "../../hooks/useVotingPower";
-import { ManageDelegationProvider } from "./ManageDelegationModal/provider/ManageDelegationProvider";
+import {
+  ManageDelegationProvider,
+  useDelegationState,
+} from "./ManageDelegationModal/provider/ManageDelegationProvider";
 import { useAccount } from "wagmi";
 import { useVotingPowerSources } from "../../hooks/useVotingPowerSources";
 import { BigNumber } from "ethers";
@@ -26,6 +29,13 @@ enum VotingSourceType {
   SECOX = "sECOx",
   LOCKUPS = "From Lockups",
   OTHERS = "Delegated from others",
+}
+
+enum StatusType {
+  DELEGATE = "Delegate",
+  ADVANCED = "Advanced",
+  DELEGATING = "Delegating",
+  DEFAULT = "default",
 }
 
 const Sources: React.FC<SourcesProps> = ({ amount, sourceType }) => {
@@ -49,6 +59,7 @@ const Sources: React.FC<SourcesProps> = ({ amount, sourceType }) => {
 };
 
 const ManageDelegationCard = () => {
+  const { state } = useDelegationState();
   const votingSources = useVotingPowerSources();
   const community = useCommunity();
   const account = useAccount();
@@ -59,6 +70,7 @@ const ManageDelegationCard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [totalDelegatedToMe, setTotalDelegatedToMe] = useState<BigNumber>();
   const [totalLockedUp, setTotalLockedUp] = useState<BigNumber>();
+  const [status, setStatus] = useState<StatusType>();
 
   useMemo(() => {
     const totalDelegated = BigNumber.from("0");
@@ -76,6 +88,23 @@ const ManageDelegationCard = () => {
     setTotalLockedUp(totalLockups);
   }, [votingSources]);
 
+  const getStatus = () => {
+    if (state.eco.enabled || state.secox.enabled) {
+      return setStatus(StatusType.DELEGATE);
+    }
+    if (state.eco.delegate || state.secox.delegate) {
+      console.log("HSouldnt trigger");
+      return setStatus(StatusType.DELEGATING);
+    }
+    setStatus(StatusType.DEFAULT);
+  };
+
+  useMemo(() => {
+    console.log(state);
+    getStatus();
+  }, [state]);
+  console.log(state);
+
   return (
     <Card>
       <ManageDelegationProvider>
@@ -88,9 +117,29 @@ const ManageDelegationCard = () => {
         />
       </ManageDelegationProvider>
       <Column gap="lg">
-        <Typography variant="h4">
-          {formatNumber(tokensToNumber(votingPower))} Voting power
-        </Typography>
+        <Row style={{ justifyContent: "space-between" }}>
+          <Typography variant="h4">
+            {formatNumber(tokensToNumber(votingPower))} Voting power
+          </Typography>
+          {status !== StatusType.DEFAULT && (
+            <Column>
+              <Typography
+                variant="subtitle1"
+                color="secondary"
+                style={{ marginBottom: -5 }}
+              >
+                {status === StatusType.DELEGATING
+                  ? "DELEGATED TO"
+                  : "YOUR STATUS"}
+              </Typography>
+              <Typography variant="h5">
+                {status === StatusType.DELEGATING
+                  ? `${displayAddress(state.eco.delegate)}`
+                  : status}
+              </Typography>
+            </Column>
+          )}
+        </Row>
         <hr />
         <Typography variant="subtitle1" color="secondary">
           SOURCES OF VOTING POWER

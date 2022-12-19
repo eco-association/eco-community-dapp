@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useDebugValue, useMemo, useState } from "react";
 import { ManageDelegationState } from "./provider/ManageDelegationProvider";
 import { Zero } from "@ethersproject/constants";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@ecoinc/ecomponents";
 import { tokensToNumber } from "../../../../utilities";
 import { useManageDelegation } from "./hooks/useManageDelegation";
+import LoaderAnimation from "../../Loader";
 
 interface DisableDelegationCardProps {
   state: ManageDelegationState;
@@ -44,7 +45,7 @@ const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
 }) => {
   const { manageBothTokens } = useManageDelegation();
   const [totalDelegatedToMe, setTotalDelegatedToMe] = useState<string>();
-
+  const loading = state.eco.loading || state.secox.loading;
   useMemo(() => {
     const totalBN = Zero;
     state.eco.delegatesToMe?.map((e) => {
@@ -88,7 +89,7 @@ const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
             css={{ height: 31, padding: 0 }}
             onClick={() => manageBothTokens(false, false)}
           >
-            Disable
+            {loading ? <LoaderAnimation /> : "Disable"}
           </Button>
         </Row>
         {hasDelegatedToMe && (

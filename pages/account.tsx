@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useWallet } from "../providers";
 import ManageDelegationCard from "../components/application/ManageDelegation/ManageDelegationCard";
 import { LockupCard } from "../components/application/Account/LockupCard/LockupCard";
-import StakeOrConvertCard from "../components/application/StakeOrConvert/StakeOrConvertCard";
+import EcoXCard from "../components/application/Account/EcoXCard/EcoXCard";
 
 const headerStyle = { scrollHeader: { padding: "8px 64px 0 64px" } };
 
@@ -37,20 +37,20 @@ const Account = () => {
       }
     >
       <Grid
-        columns="calc(50% - 12px) calc(50% - 12px)"
+        columns="1fr 450px"
         gap="24px"
         style={{
-          maxWidth: 980,
+          width: 980,
           margin: "-48px auto 0 auto",
           alignItems: "flex-start",
           justifyContent: "space-between",
         }}
       >
-        <ManageDelegationCard />
         <Column gap="xl">
-          <StakeOrConvertCard />
+          <EcoXCard />
           <LockupCard />
         </Column>
+        <ManageDelegationCard />
       </Grid>
     </Header>
   );

@@ -10,17 +10,17 @@ import {
   Typography,
 } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
-import { displayAddress, tokensToNumber } from "../../../utilities";
-import { useGasFee } from "../../hooks/useGasFee";
+import { displayAddress, tokensToNumber } from "../../../../utilities";
+import { useGasFee } from "../../../hooks/useGasFee";
 import useStaking, {
   formatStakeAmount,
   formatStakedAmount,
-} from "../../hooks/useStaking";
-import LoaderAnimation from "../Loader";
-import { useBlockExit } from "../../hooks/useBlockExit";
-import { WalletInterface } from "../../../types";
+} from "../../../hooks/useStaking";
+import LoaderAnimation from "../../Loader";
+import { useBlockExit } from "../../../hooks/useBlockExit";
+import { WalletInterface } from "../../../../types";
 import { css } from "@emotion/react";
-import TextLoader from "../commons/TextLoader";
+import TextLoader from "../../commons/TextLoader";
 import { Zero } from "@ethersproject/constants";
 import { ethers } from "ethers";
 

@@ -7,7 +7,7 @@ import { ActivityCard } from "../components/application/CommunityGovernance/Acti
 import { VotingCard } from "../components/application/CommunityGovernance/VotingCard/VotingCard";
 import { HeaderInfo } from "../components/application/Header/HeaderInfo";
 import { useCommunity } from "../providers";
-import StakeOrConvertCard from "../components/application/StakeOrConvert/StakeOrConvertCard";
+import EcoXCard from "../components/application/Account/EcoXCard/EcoXCard";
 
 const Home: React.FC = () => {
   const { stage, nextGenerationStartsAt } = useCommunity();

@@ -16,6 +16,8 @@ export enum ActivityType {
   ProposalUnsupported = "ProposalUnsupported",
   ProposalQuorum = "ProposalQuorum",
   ProposalVoting = "ProposalVoting",
+  ProposalVoteFor = "ProposalVoteFor",
+  ProposalVoteAgainst = "ProposalVoteAgainst",
   ProposalResult = "ProposalResult",
   ProposalExecuted = "ProposalExecuted",
   RandomInflation = "RandomInflation",
@@ -88,7 +90,18 @@ export const PROPOSAL_QUERY = gql`
       policyVotes {
         ...PolicyVotesFragment
       }
-      activities(orderBy: timestamp, orderDirection: desc) {
+      activities(
+        orderBy: timestamp
+        orderDirection: desc
+        where: {
+          type_not_in: [
+            ProposalSupported
+            ProposalUnsupported
+            ProposalVoteFor
+            ProposalVoteAgainst
+          ]
+        }
+      ) {
         type
         timestamp
       }

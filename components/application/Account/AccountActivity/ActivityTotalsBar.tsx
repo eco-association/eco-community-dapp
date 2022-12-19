@@ -1,5 +1,11 @@
-import { Column, Row, Typography } from "@ecoinc/ecomponents";
+import { Column, Row, styled, Typography } from "@ecoinc/ecomponents";
 
+const ActivityTotals = styled(Row)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  padding: 16,
+  borderRadius: 12,
+  justifyContent: "space-between",
+}));
 interface ActivityTotalsBarProps {
   proposalsSubmitted: number;
   votesSubmitted: number;
@@ -12,7 +18,7 @@ const ActivityTotalsBar: React.FC<ActivityTotalsBarProps> = ({
   proposalsSupported,
 }) => {
   return (
-    <Row
+    <ActivityTotals
       gap="xl"
       style={{
         padding: "12px",
@@ -45,7 +51,7 @@ const ActivityTotalsBar: React.FC<ActivityTotalsBarProps> = ({
           SUBMITTED
         </Typography>
       </Column>
-    </Row>
+    </ActivityTotals>
   );
 };
 

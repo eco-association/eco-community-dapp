@@ -103,7 +103,6 @@ const ManageDelegationCard = () => {
     console.log(state);
     getStatus();
   }, [state]);
-  console.log(state);
 
   return (
     <Card>

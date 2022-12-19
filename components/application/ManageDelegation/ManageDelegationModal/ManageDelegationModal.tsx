@@ -14,6 +14,7 @@ import { useDelegationState } from "./provider/ManageDelegationProvider";
 
 import EnableDelegationScreen from "./EnableDelegationScreen";
 import DisableDelegationCard from "./DisableDelegationCard";
+import AdvancedDelegation from "./AdvancedDelegation";
 
 export enum Option {
   None,
@@ -70,7 +71,6 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   onRequestClose,
 }) => {
   const { state } = useDelegationState();
-  const [option, setOption] = useState(Option.None);
   const [advanced, setAdvanced] = useState(
     state.eco.enabled !== state.secox.enabled
   );
@@ -85,55 +85,64 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
     }
   }, [advanced, state.eco.enabled, state.secox.enabled]);
 
+  const handleClose = () => {
+    onRequestClose();
+    setAdvanced(false);
+  };
+
   return (
     <Dialog
       isOpen={open}
-      onRequestClose={onRequestClose}
+      onRequestClose={handleClose}
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}
       style={{ card: { width: 540, padding: "40px 24px" } }}
     >
-      {openDelegation ? (
+      {advanced && <AdvancedDelegation />}
+      {openDelegation && !advanced ? (
         <EnableDelegationScreen back={() => setOpenDelegation(false)} />
       ) : (
-        <Column gap="xl">
-          <Column gap="xl" style={{ padding: "0 16px" }}>
-            <Column gap="lg">
-              <Typography variant="h2">Manage Voting Delegation</Typography>
+        !advanced && (
+          <Column gap="xl">
+            <Column gap="xl" style={{ padding: "0 16px" }}>
+              <Column gap="lg">
+                <Typography variant="h2">Manage Voting Delegation</Typography>
 
-              <Typography variant="body1" color="primary">
-                All changes take effect at the start of the next generation.
-              </Typography>
-              {delegationEnabled && <DisableDelegationCard state={state} />}
-              {!delegationEnabled && (
-                <Typography variant="body1" color="secondary">
-                  Or you can choose to become a delegate and receive voting
-                  power from others. (Note that you cannot choose to both
-                  delegate your voting power, and be a delegate yourself) Want
-                  to receive others votes and{" "}
-                  <Typography
-                    onClick={() => setOpenDelegation(!openDelegation)}
-                    inline
-                    variant="h5"
-                    color="secondary"
-                    css={{ textDecoration: "underline", cursor: "pointer" }}
-                  >
-                    become a delegate?
-                  </Typography>
+                <Typography variant="body1" color="primary">
+                  All changes take effect at the start of the next generation.
                 </Typography>
+                {delegationEnabled && <DisableDelegationCard state={state} />}
+                {!delegationEnabled && (
+                  <Typography variant="body1" color="secondary">
+                    Or you can choose to become a delegate and receive voting
+                    power from others. (Note that you cannot choose to both
+                    delegate your voting power, and be a delegate yourself) Want
+                    to receive others votes and{" "}
+                    <Typography
+                      onClick={() => setOpenDelegation(!openDelegation)}
+                      inline
+                      variant="h5"
+                      color="secondary"
+                      css={{ textDecoration: "underline", cursor: "pointer" }}
+                    >
+                      become a delegate?
+                    </Typography>
+                  </Typography>
+                )}
+              </Column>
+              {!delegationEnabled && (
+                <DelegateInputArea>
+                  <DelegateCard
+                    setOpenAdvanced={() => setAdvanced(true)}
+                    delegate={state.eco.delegate}
+                    option={Option.EcoMyWallet}
+                  />
+                </DelegateInputArea>
               )}
             </Column>
-            {!delegationEnabled && (
-              <DelegateInputArea>
-                <DelegateCard
-                  delegate={state.eco.delegate}
-                  option={Option.EcoMyWallet}
-                />
-              </DelegateInputArea>
-            )}
           </Column>
-        </Column>
+        )
       )}
     </Dialog>
   );

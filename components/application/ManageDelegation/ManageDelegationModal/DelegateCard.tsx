@@ -3,6 +3,8 @@ import {
   Column,
   FormTextField,
   Row,
+  styled,
+  Typography,
   useTheme,
 } from "@ecoinc/ecomponents";
 import React, { useState } from "react";
@@ -20,19 +22,32 @@ import {
 } from "./provider/ManageDelegationProvider";
 import { GasFee } from "../../commons/GasFee";
 import { useForm } from "react-hook-form";
-import EnableDelegationBox from "./EnableDelegationScreen";
-import EnableDelegationScreen from "./EnableDelegationScreen";
 import TextLoader from "../../commons/TextLoader";
+import chevronDown from "../../../../public/images/chevron-down.svg";
+import Image from "next/image";
 
 interface DelegateCardProps {
+  fromAdvanced?: boolean;
   lockup?: string;
   delegate?: string;
   option: Option;
+  setOpenAdvanced: () => void;
 }
 
 type FormValues = {
   ethAddress: string;
 };
+
+const AdvancedSelectBox = styled(Row)(() => ({
+  width: "max-content",
+  justifyContent: "flex-end",
+  backgroundColor: "#DEE6EB",
+  borderRadius: "4px 0 0 0",
+  marginRight: -16,
+  marginBottom: -12,
+  padding: "0 8px",
+  cursor: "pointer",
+}));
 
 const toastOpts: ToastOptions = {
   position: "top-center",
@@ -55,7 +70,12 @@ const getToastText = (delegate: string) => {
   }
 };
 
-const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
+const DelegateCard: React.FC<DelegateCardProps> = ({
+  fromAdvanced,
+  option,
+  delegate,
+  setOpenAdvanced,
+}) => {
   const eco = useECO();
   const ecoX = useECOxStaking();
   const account = useAccount();
@@ -64,7 +84,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
   const theme = useTheme();
 
   const [loading, setLoading] = useState(false);
-
   // An invalid address does not have delegation enabled
   const [invalidAddress, setInvalidAddress] = useState<string>();
 
@@ -147,6 +166,20 @@ const DelegateCard: React.FC<DelegateCardProps> = ({ option, delegate }) => {
           </Column>
         </Column>
       </form>
+      {!fromAdvanced && (
+        <Row style={{ width: "100%", justifyContent: "flex-end" }}>
+          <AdvancedSelectBox>
+            <Typography
+              onClick={setOpenAdvanced}
+              variant="subtitle1"
+              color="secondary"
+            >
+              EXPERT MODE{" "}
+              <Image src={chevronDown} alt="" height={10} width={5} />
+            </Typography>
+          </AdvancedSelectBox>
+        </Row>
+      )}
     </div>
   );
 };

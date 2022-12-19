@@ -64,20 +64,10 @@ export type ActivityQueryResults = {
 };
 
 export const ACTIVITY_QUERY = gql`
-  query ACTIVITY_QUERY {
+  query {
     activityRecords(
       first: 30
-      where: {
-        type_in: [
-          RandomInflation
-          ProposalSubmitted
-          ProposalQuorum
-          ProposalVoting
-          ProposalResult
-          ProposalExecuted
-          Generation
-        ]
-      }
+      where: { type_not_in: [ProposalSupported, ProposalUnsupported] }
       orderBy: timestamp
       orderDirection: desc
     ) {

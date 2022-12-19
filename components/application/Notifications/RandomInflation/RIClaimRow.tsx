@@ -1,5 +1,9 @@
-import React, { useState } from "react";
-import { tokensToNumber, txError } from "../../../../utilities";
+import React, { useEffect, useState } from "react";
+import {
+  formatCountdown,
+  tokensToNumber,
+  txError,
+} from "../../../../utilities";
 import { RandomInflationRecipient } from "../../../../types";
 import { useRandomInflation as useRandomInflationContract } from "../../../hooks/contract/useRandomInflation";
 import {
@@ -11,42 +15,36 @@ import {
   Typography,
 } from "@ecoinc/ecomponents";
 import LoaderAnimation from "../../Loader";
-import { toast as nativeToast, ToastOptions } from "react-toastify";
+import ReactCountdown from "react-countdown";
 
-export interface RIClaimRowProps {
+interface RIClaimRowProps {
   recipient: RandomInflationRecipient;
-
-  onClaimed(recipient: RandomInflationRecipient): void;
+  onClaimed(): void;
 }
 
 const Box = styled(Row)(({ theme }) => ({
+  padding: "8px 16px",
   borderRadius: 4,
-  padding: "16px 24px",
   backgroundColor: theme.palette.disabled.bg,
 }));
 
-const toastOpts: ToastOptions = {
-  position: "top-center",
-  autoClose: 3000,
-  hideProgressBar: true,
-  theme: "colored",
-  style: {
-    backgroundColor: "#F7FEFC",
-    border: "solid 1px #5AE4BF",
-    color: "#22313A",
-    top: "115px",
-  },
-};
-
-export const RIClaimRow: React.FC<RIClaimRowProps> = ({
-  recipient,
-  onClaimed,
-}) => {
-  const [loading, setLoading] = useState(false);
-
+export const RIClaimRow: React.FC<RIClaimRowProps> = ({ recipient }) => {
   const contract = useRandomInflationContract(
     recipient.randomInflation.address
   );
+
+  const [loading, setLoading] = useState(false);
+  const [claimable, setClaimable] = useState(
+    Date.now() > recipient.claimableAt.getTime()
+  );
+
+  useEffect(() => {
+    if (!claimable) {
+      const diff = recipient.claimableAt.getTime() - Date.now();
+      const timeout = setTimeout(() => setClaimable(true), diff);
+      return () => clearTimeout(timeout);
+    }
+  }, [claimable, recipient.claimableAt]);
 
   const claim = async () => {
     setLoading(true);
@@ -59,8 +57,6 @@ export const RIClaimRow: React.FC<RIClaimRowProps> = ({
         recipient.index
       );
       await claimTx.wait();
-      nativeToast(`Successfully claimed random inflation`, toastOpts);
-      onClaimed(recipient);
     } catch (err) {
       txError("Failed claiming random inflation", err);
     }
@@ -72,11 +68,15 @@ export const RIClaimRow: React.FC<RIClaimRowProps> = ({
       <Column>
         <Row gap="sm">
           <Typography variant="h5">
-            <b>Claim #{recipient.sequenceNumber + 1}</b>
+            <b>Sequence #{recipient.sequenceNumber}</b>
           </Typography>
           {recipient.claimed ? (
             <Typography variant="h5" color="secondary">
               • Claimed
+            </Typography>
+          ) : !claimable ? (
+            <Typography variant="h5" color="info">
+              • Waiting...
             </Typography>
           ) : (
             <Typography variant="h5" color="active">
@@ -84,12 +84,24 @@ export const RIClaimRow: React.FC<RIClaimRowProps> = ({
             </Typography>
           )}
         </Row>
-        <Typography variant="body2" color="secondary">
-          {recipient.claimed ? "You have claimed" : "You can claim"}{" "}
-          {formatNumber(tokensToNumber(recipient.randomInflation.reward))} ECO
-        </Typography>
+        {claimable || recipient.claimed ? (
+          <Typography variant="body2" color="secondary">
+            {recipient.claimed ? "You have claimed" : "You can claim"}{" "}
+            {formatNumber(tokensToNumber(recipient.randomInflation.reward))} ECO
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="secondary">
+            <ReactCountdown
+              date={recipient.claimableAt}
+              renderer={(countdownData) => {
+                const remaining = formatCountdown(countdownData);
+                return `${remaining.amount} ${remaining.unit} remaining to claim`;
+              }}
+            />
+          </Typography>
+        )}
       </Column>
-      {recipient.claimed ? null : (
+      {recipient.claimed || !claimable ? null : (
         <Button size="sm" color="success" onClick={claim} disabled={loading}>
           {!loading ? "Claim" : <LoaderAnimation />}
         </Button>

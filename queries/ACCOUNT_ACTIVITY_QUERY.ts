@@ -1,4 +1,6 @@
 import { gql } from "@apollo/client";
+import { timeStamp } from "console";
+import Account from "../pages/account";
 
 export enum AccountActivityType {
   PROPOSAL_REFUNDED = "ProposalRefunded",
@@ -13,6 +15,34 @@ export enum AccountActivityType {
   SECOX_DELEGATE = "sEcoXDelegate",
   SECOX_UNDELEGATE = "sEcoXUndelegate",
 }
+
+const activities = {
+  account: {
+    id: "0x0r5r",
+    activities: [
+      {
+        type: AccountActivityType.PROPOSAL_SUBMITTED,
+        timestamp: new Date(),
+        communityProposal: {
+          id: 1,
+          name: "Test One",
+          generationNumber: 333,
+        },
+      },
+      {
+        type: AccountActivityType.PROPOSAL_SUPPORTED,
+        timeStamp: new Date(),
+        communityProposal: {
+          id: 1,
+          name: "Test One",
+          generationNumber: 333,
+        },
+      },
+    ],
+    randomInflation: [],
+    lockupDeposit: [],
+  },
+};
 
 export type AccountActivity = {
   type: AccountActivityType;

@@ -7,6 +7,7 @@ export interface RandomInflation {
   numRecipients: number;
   claimPeriodStarts: Date;
   claimPeriodDuration: number;
+  seedCommit: BigNumber;
   seedReveal: string; // bytes
   blockNumber: number;
 }

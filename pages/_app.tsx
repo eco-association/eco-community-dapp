@@ -13,7 +13,13 @@ import {
   WalletProvider,
 } from "../providers";
 
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import {
+  chain,
+  configureChains,
+  createClient,
+  WagmiConfig,
+  defaultChains,
+} from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";

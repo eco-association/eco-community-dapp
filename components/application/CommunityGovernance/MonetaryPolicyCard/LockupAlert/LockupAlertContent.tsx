@@ -1,6 +1,6 @@
 import React from "react";
 import { Column, Typography } from "@ecoinc/ecomponents";
-import { LockupDepositAlert } from "../../../Account/LockupCard/LockupDepositAlert";
+import { LockupDepositAlert } from "../../../Account/EcoCard/LockupDepositAlert";
 import { FundsLockup } from "../../../../../types";
 import { LockupDescription } from "./LockupDescription";
 import { useTimeFlag } from "../../../../hooks/useTimeFlag";

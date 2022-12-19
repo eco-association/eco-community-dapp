@@ -23,7 +23,7 @@ export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
 
   return (
     <Alert
-      color="active"
+      color="info"
       title={
         <ReactCountdown
           date={endsAt}
@@ -37,8 +37,8 @@ export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
               );
             const remaining = formatCountdown(countdownData);
             return (
-              <Typography variant="h5" color="active" css={fontWeight}>
-                {remaining.amount} {remaining.unit} remain to participate
+              <Typography variant="h5" color="info" css={fontWeight}>
+                New Lockup • {remaining.amount} {remaining.unit} remain
               </Typography>
             );
           }}

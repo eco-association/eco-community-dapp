@@ -1,6 +1,6 @@
 import { Row, styled, Typography, useTheme } from "@ecoinc/ecomponents";
 import React from "react";
-import Loader from "../../Loader";
+import Loader from "../../../Loader";
 
 export enum DelegateOption {
   Receive,

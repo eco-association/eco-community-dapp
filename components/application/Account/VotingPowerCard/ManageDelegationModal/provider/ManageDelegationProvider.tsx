@@ -6,17 +6,17 @@ import React, {
   useState,
 } from "react";
 import { useAccount, useProvider } from "wagmi";
-import { useECO } from "../../../../hooks/contract/useECO";
+import { useECO } from "../../../../../hooks/contract/useECO";
 import {
   TokenDelegate,
   useVotingPowerSources,
-} from "../../../../hooks/useVotingPowerSources";
-import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
+} from "../../../../../hooks/useVotingPowerSources";
+import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import {
   ECO__factory,
   ECOxStaking__factory,
-} from "../../../../../types/contracts";
+} from "../../../../../../types/contracts";
 
 export enum DelegateValidation {
   Confirm = "Confirm",
@@ -33,7 +33,7 @@ export interface TokenDelegation {
 
 export type DelegableToken = "eco" | "secox";
 
-type ManageDelegationState = Record<DelegableToken, TokenDelegation>;
+export type ManageDelegationState = Record<DelegableToken, TokenDelegation>;
 
 const defaultValue: ManageDelegationState = {
   eco: {

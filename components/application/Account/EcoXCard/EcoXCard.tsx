@@ -7,9 +7,9 @@ import useConvertECOX from "../../../hooks/useConvertECOX";
 import { WeiPerEther, Zero } from "@ethersproject/constants";
 import { useConnectContext } from "../../../../providers/ConnectModalProvider";
 import { useAccount } from "wagmi";
-import EcoLogo from "../../../../public/images/ecox-logo/ecox-currency-brandmark.svg";
+import EcoXLogo from "../../../../public/images/ecox-logo/ecox-currency-brandmark.svg";
 import { css } from "@emotion/react";
-import { TokenCard } from "../TokenCard";
+import { AccountCard } from "../AccountCard";
 
 const textRight = css({ textAlign: "right", lineHeight: 1 });
 const button = css({ padding: "10px 16px", minWidth: "initial" });
@@ -39,9 +39,9 @@ const EcoXCard = () => {
   };
 
   return (
-    <TokenCard
+    <AccountCard
       title="ECOx"
-      logo={EcoLogo}
+      logo={EcoXLogo}
       balances={[
         {
           title: "YOUR ECOX",
@@ -82,7 +82,7 @@ const EcoXCard = () => {
           Convert
         </Button>
       </Grid>
-    </TokenCard>
+    </AccountCard>
   );
 };
 

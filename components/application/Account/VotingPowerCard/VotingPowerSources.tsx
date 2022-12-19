@@ -8,26 +8,26 @@ import {
 } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import moment from "moment";
-import { displayAddress, tokensToNumber } from "../../../utilities";
-import { useVotingPowerSources } from "../../hooks/useVotingPowerSources";
+import { displayAddress, tokensToNumber } from "../../../../utilities";
+import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
 
 const Container = styled(Column)({ width: "100%" });
 
-const VotingSources: React.FC = () => {
+const VotingPowerSources: React.FC = () => {
   const { address } = useAccount();
   const sources = useVotingPowerSources();
 
   return (
     <Container gap="lg">
       <Typography variant="body3" color="secondary">
-        SOURCES OF YOUR VOTING POWER
+        SOURCES OF VOTING POWER
       </Typography>
       <Row gap="md" justify="space-between">
-        <Typography variant="body2">
+        <Typography variant="body1">
           {formatNumber(tokensToNumber(sources.eco), false)} ECO
         </Typography>
         <Typography
-          variant="body2"
+          variant="body1"
           color="secondary"
           style={{ textAlign: "right" }}
         >
@@ -35,11 +35,11 @@ const VotingSources: React.FC = () => {
         </Typography>
       </Row>
       <Row gap="md" justify="space-between">
-        <Typography variant="body2">
-          {formatNumber(tokensToNumber(sources.sEcoX), false)} sECOx
+        <Typography variant="body1">
+          {formatNumber(tokensToNumber(sources.sEcoX), false)} staked ECOx
         </Typography>
         <Typography
-          variant="body2"
+          variant="body1"
           color="secondary"
           style={{ textAlign: "right" }}
         >
@@ -48,11 +48,11 @@ const VotingSources: React.FC = () => {
       </Row>
       {sources.fundsLockedUp.map((lockup) => (
         <Row key={lockup.id} gap="md" justify="space-between">
-          <Typography variant="body2">
+          <Typography variant="body1">
             {formatNumber(tokensToNumber(lockup.amount), false)} ECO
           </Typography>
           <Typography
-            variant="body2"
+            variant="body1"
             color="secondary"
             style={{ textAlign: "right" }}
           >
@@ -62,11 +62,11 @@ const VotingSources: React.FC = () => {
       ))}
       {sources.ecoDelegatedToMe.map((delegate) => (
         <Row key={delegate.address} gap="md" justify="space-between">
-          <Typography variant="body2">
+          <Typography variant="body1">
             {formatNumber(tokensToNumber(delegate.amount), false)} ECO
           </Typography>
           <Typography
-            variant="body2"
+            variant="body1"
             color="secondary"
             style={{ textAlign: "right" }}
           >
@@ -76,11 +76,11 @@ const VotingSources: React.FC = () => {
       ))}
       {sources.sEcoXDelegatedToMe.map((delegate) => (
         <Row key={delegate.address} gap="md" justify="space-between">
-          <Typography variant="body2">
-            {formatNumber(tokensToNumber(delegate.amount), false)} sECOx
+          <Typography variant="body1">
+            {formatNumber(tokensToNumber(delegate.amount), false)} staked ECOx
           </Typography>
           <Typography
-            variant="body2"
+            variant="body1"
             color="secondary"
             style={{ textAlign: "right" }}
           >
@@ -90,11 +90,11 @@ const VotingSources: React.FC = () => {
       ))}
       {sources.fundsLockupDelegated.map((lockup) => (
         <Row key={lockup.id} gap="md" justify="space-between">
-          <Typography variant="body2">
+          <Typography variant="body1">
             {formatNumber(tokensToNumber(lockup.amount), false)} ECO
           </Typography>
           <Typography
-            variant="body2"
+            variant="body1"
             color="secondary"
             style={{ textAlign: "right" }}
           >
@@ -106,4 +106,4 @@ const VotingSources: React.FC = () => {
   );
 };
 
-export default VotingSources;
+export default VotingPowerSources;

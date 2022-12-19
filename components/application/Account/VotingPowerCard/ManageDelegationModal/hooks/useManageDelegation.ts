@@ -6,9 +6,9 @@ import {
   TokenDelegation,
   useDelegationState,
 } from "../provider/ManageDelegationProvider";
-import { useECO } from "../../../../hooks/contract/useECO";
-import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
-import { txError } from "../../../../../utilities";
+import { useECO } from "../../../../../hooks/contract/useECO";
+import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
+import { txError } from "../../../../../../utilities";
 import { Zero } from "@ethersproject/constants";
 
 const validateToken = (

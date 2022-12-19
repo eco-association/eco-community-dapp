@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 import {
   Card,
   Column,
+  ColumnProps,
   formatNumber,
   Row,
   Typography,
@@ -13,27 +14,27 @@ import { tokensToNumber } from "../../../utilities";
 
 const textRight = css({ textAlign: "right", lineHeight: 1 });
 
-interface TokenCardProps {
-  logo: ImageProps["src"];
+interface AccountCardProps {
   title: string;
-  balances: { title: string; balance: BigNumber }[];
+  logo?: ImageProps["src"];
+  gap?: ColumnProps["gap"];
+  balances?: { title: string; balance: BigNumber }[];
+  right?: React.ReactNode;
 }
 
-export const TokenCard: React.FC<React.PropsWithChildren<TokenCardProps>> = ({
-  title,
-  logo,
-  balances,
-  children,
-}) => {
+export const AccountCard: React.FC<
+  React.PropsWithChildren<AccountCardProps>
+> = ({ title, logo, right, children, gap = "lg", balances = [] }) => {
   return (
     <Card>
       <Column gap="xl">
         <Row justify="space-between">
           <Row items="center" gap="sm">
-            <Image src={logo} alt={title} width={24} height={24} />
+            {logo ? (
+              <Image src={logo} alt={title} width={24} height={24} />
+            ) : null}
             <Typography variant="h3">{title}</Typography>
           </Row>
-
           <Row gap="xl">
             {balances.map((item) => (
               <Column key={item.title} gap="md">
@@ -50,8 +51,9 @@ export const TokenCard: React.FC<React.PropsWithChildren<TokenCardProps>> = ({
               </Column>
             ))}
           </Row>
+          {right}
         </Row>
-        <Column gap="lg">
+        <Column gap={gap}>
           <hr />
           {children}
         </Column>

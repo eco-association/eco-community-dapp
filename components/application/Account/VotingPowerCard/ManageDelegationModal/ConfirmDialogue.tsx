@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Column, Row, Typography } from "@ecoinc/ecomponents";
-import { displayAddress } from "../../../../utilities";
+import { displayAddress } from "../../../../../utilities";
 
 type ConfirmDialogueProps =
   | {

@@ -1,7 +1,7 @@
 import { Column, Row, Typography } from "@ecoinc/ecomponents";
 import React from "react";
 import Image from "next/image";
-import GearIcon from "../../../../public/images/gear-icon.svg";
+import GearIcon from "../../../../../public/images/gear-icon.svg";
 import { DelegateOption, DelegateRadioOption } from "./DelegateRadioOption";
 import ConfirmDialogue from "./ConfirmDialogue";
 import {

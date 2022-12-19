@@ -3,9 +3,9 @@ import { useAccount } from "wagmi";
 import { Header, HeaderProps } from "../components/application/Header/Header";
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import ManageDelegationCard from "../components/application/ManageDelegation/ManageDelegationCard";
-import { LockupCard } from "../components/application/Account/LockupCard/LockupCard";
+import VotingPowerCard from "../components/application/Account/VotingPowerCard/VotingPowerCard";
 import EcoXCard from "../components/application/Account/EcoXCard/EcoXCard";
+import { EcoCard } from "../components/application/Account/EcoCard/EcoCard";
 
 const headerStyle: HeaderProps["styles"] = {
   scrollHeader: { padding: "8px 64px 0 64px" },
@@ -49,9 +49,9 @@ const Account = () => {
       >
         <Column gap="xl">
           <EcoXCard />
-          <LockupCard />
+          <EcoCard />
+          <VotingPowerCard />
         </Column>
-        <ManageDelegationCard />
       </Grid>
     </Header>
   );

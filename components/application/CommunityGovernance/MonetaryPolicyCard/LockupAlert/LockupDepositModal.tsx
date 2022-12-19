@@ -32,8 +32,8 @@ import Image from "next/image";
 import { useLockup } from "../../../../hooks/contract/useLockup";
 import { useAccount } from "wagmi";
 import { useECO } from "../../../../hooks/contract/useECO";
-import { ModalTextItem } from "../../../Account/LockupCard/ModalTextItem";
 import { WalletActionType } from "../../../../../providers/WalletProvider";
+import { ModalTextItem } from "../../../Account/EcoCard/ModalTextItem";
 
 interface LockupModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockup;

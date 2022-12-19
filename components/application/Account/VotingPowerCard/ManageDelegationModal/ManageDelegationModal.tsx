@@ -14,17 +14,18 @@ import Image from "next/image";
 
 import DelegateCard from "./DelegateCard";
 import EnableDelegationBox from "./EnableDelegationBox";
-import { displayAddress, tokensToNumber } from "../../../../utilities";
-import { useWallet } from "../../../../providers";
-import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
+import { displayAddress, tokensToNumber } from "../../../../../utilities";
+import { useWallet } from "../../../../../providers";
+import { useVotingPowerSources } from "../../../../hooks/useVotingPowerSources";
 import {
   DelegateValidation,
   useDelegationState,
 } from "./provider/ManageDelegationProvider";
 
-import chevronDown from "../../../../public/images/chevron-down.svg";
-import chevronUp from "../../../../public/images/chevron-up.svg";
+import chevronDown from "../../../../../public/images/chevron-down.svg";
+import chevronUp from "../../../../../public/images/chevron-up.svg";
 import AdvancedDelegation from "./AdvancedDelegation";
+import { isAdvancedDelegation } from "../../../../../utilities/votingPower";
 
 export enum Option {
   None,
@@ -120,9 +121,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   const { ecoBalance, sEcoXBalance } = useWallet();
 
   const [option, setOption] = useState(Option.None);
-  const [advanced, setAdvanced] = useState(
-    state.eco.enabled !== state.secox.enabled
-  );
+  const [advanced, setAdvanced] = useState(isAdvancedDelegation(state));
   const [selectedLockup, setSelectedLockup] = useState<string>(null);
 
   const handleDropdownClick = (option: Option) => setOption(option);
@@ -130,10 +129,8 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   const loading = state.eco.loading || state.secox.loading;
 
   useEffect(() => {
-    if (state.eco.enabled !== state.secox.enabled) {
-      setAdvanced(true);
-    }
-  }, [advanced, state.eco.enabled, state.secox.enabled]);
+    setAdvanced(advanced || isAdvancedDelegation(state));
+  }, [advanced, state]);
 
   return (
     <Dialog

@@ -1,55 +1,38 @@
-import { Column, Row, Typography } from "@ecoinc/ecomponents";
+import { Column, formatNumber, Row, Typography } from "@ecoinc/ecomponents";
 import React from "react";
 import { useDelegationState } from "./provider/ManageDelegationProvider";
 import { ManageToken } from "./ManageToken";
+import AdvancedOptionsVotingSources from "./AdvancedOptionsVotingSources";
+import { useVotingPower } from "../../../hooks/useVotingPower";
+import { useCommunity } from "../../../../providers";
+import { tokensToNumber } from "../../../../utilities";
 
-interface AdvancedDelegationProps {
-  onClose(): void;
-}
-
-const AdvancedDelegation: React.FC<AdvancedDelegationProps> = ({ onClose }) => {
+const AdvancedDelegation: React.FC = ({}) => {
   const { state } = useDelegationState();
-  const loading = state.eco.loading || state.secox.loading;
+  const community = useCommunity();
 
+  const { votingPower } = useVotingPower();
+  const { votingPower: currentGenVotingPower } = useVotingPower(
+    community.currentGeneration.blockNumber
+  );
   return (
-    <Column gap="xl">
+    <Column gap="md">
       <Row justify="space-between" gap="md">
         <Column gap="sm">
-          <Typography variant="h5">Advanced Delegation Settings</Typography>
-          <Typography variant="body2" color="secondary">
-            Independently control your delegation settings by currency type.
+          <Typography variant="h2">Advanced Delegation Settings</Typography>
+          <Typography variant="body1">
+            You have {formatNumber(tokensToNumber(votingPower))} Total Voting
+            Power,{" "}
+            <b>
+              {formatNumber(tokensToNumber(currentGenVotingPower))} is active
+              this generation
+            </b>
           </Typography>
+          <AdvancedOptionsVotingSources />
         </Column>
-
-        {state.eco.enabled === state.secox.enabled && !loading ? (
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            onClick={onClose}
-            style={{ cursor: "pointer" }}
-          >
-            <path
-              d="M13 1L7 7L13 13"
-              stroke="black"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M1 1L7 7L1 13"
-              stroke="black"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        ) : null}
       </Row>
-      <ManageToken token="eco" />
-      <ManageToken token="secox" />
+      <ManageToken token="eco" loading={state.eco.loading} />
+      <ManageToken token="secox" loading={state.secox.loading} />
     </Column>
   );
 };

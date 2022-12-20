@@ -14,6 +14,7 @@ import StakingModal from "../Account/StakingModal";
 import ConvertModal from "./ConvertModal";
 import useConvertECOX from "../../hooks/useConvertECOX";
 import { WeiPerEther, Zero } from "@ethersproject/constants";
+import { BigNumber } from "ethers";
 
 const TopRow = styled(Row)({
   borderBottom: `1px solid #DCE9F0`,
@@ -31,12 +32,12 @@ const StakeOrConvertCard = () => {
   const { getValueOfEcoX } = useConvertECOX();
 
   useEffect(() => {
-    getValueOfEcoX(WeiPerEther).then(setRatio);
+    //getValueOfEcoX(WeiPerEther).then(setRatio);
   }, [getValueOfEcoX]);
 
   const _ratio = ratio.isZero()
     ? "Calculating..."
-    : `${formatNumber(tokensToNumber(ratio))}:1`;
+    : `${formatNumber(tokensToNumber(BigNumber.from("1")))}:1`;
 
   return (
     <Card>

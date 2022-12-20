@@ -1,26 +1,21 @@
 import React, { useState } from "react";
-import { tokensToNumber, txError } from "../../../../utilities";
+import { displayAddress, txError } from "../../../../utilities";
 import { RandomInflationRecipient } from "../../../../types";
 import { useRandomInflation as useRandomInflationContract } from "../../../hooks/contract/useRandomInflation";
-import {
-  Button,
-  Column,
-  formatNumber,
-  Row,
-  styled,
-  Typography,
-} from "@ecoinc/ecomponents";
+import { Button, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
 import LoaderAnimation from "../../Loader";
+import { GasFee } from "../../commons/GasFee";
+import { useAccount } from "wagmi";
+import TextLoader from "../../commons/TextLoader";
 import { toast as nativeToast, ToastOptions } from "react-toastify";
 
-export interface RIClaimRowProps {
+export interface RIClaimBoxProps {
   recipient: RandomInflationRecipient;
 
   onClaimed(recipient: RandomInflationRecipient): void;
 }
 
-const Box = styled(Row)(({ theme }) => ({
-  borderRadius: 4,
+const Box = styled(Column)(({ theme }) => ({
   padding: "16px 24px",
   backgroundColor: theme.palette.disabled.bg,
 }));
@@ -38,10 +33,11 @@ const toastOpts: ToastOptions = {
   },
 };
 
-export const RIClaimRow: React.FC<RIClaimRowProps> = ({
+export const RIClaimBox: React.FC<RIClaimBoxProps> = ({
   recipient,
   onClaimed,
 }) => {
+  const account = useAccount();
   const [loading, setLoading] = useState(false);
 
   const contract = useRandomInflationContract(
@@ -68,32 +64,22 @@ export const RIClaimRow: React.FC<RIClaimRowProps> = ({
   };
 
   return (
-    <Box items="center" justify="space-between">
-      <Column>
-        <Row gap="sm">
-          <Typography variant="h5">
-            <b>Claim #{recipient.sequenceNumber + 1}</b>
-          </Typography>
-          {recipient.claimed ? (
-            <Typography variant="h5" color="secondary">
-              • Claimed
-            </Typography>
-          ) : (
-            <Typography variant="h5" color="active">
-              • Claim
-            </Typography>
-          )}
-        </Row>
-        <Typography variant="body2" color="secondary">
-          {recipient.claimed ? "You have claimed" : "You can claim"}{" "}
-          {formatNumber(tokensToNumber(recipient.randomInflation.reward))} ECO
+    <Box gap="lg">
+      <Row gap="sm">
+        <Typography variant="body1">Move to your wallet </Typography>
+        <Typography variant="body1" color="secondary">
+          Eth Address {displayAddress(account.address)}
         </Typography>
+      </Row>
+      <Column gap="md" items="start">
+        <Row gap="md" items="center">
+          <Button color="success" onClick={claim} disabled={loading}>
+            {!loading ? "Claim" : <LoaderAnimation />}
+          </Button>
+          {loading && <TextLoader />}
+        </Row>
+        <GasFee gasLimit={211_000} />
       </Column>
-      {recipient.claimed ? null : (
-        <Button size="sm" color="success" onClick={claim} disabled={loading}>
-          {!loading ? "Claim" : <LoaderAnimation />}
-        </Button>
-      )}
     </Box>
   );
 };

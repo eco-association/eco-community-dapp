@@ -7,7 +7,6 @@ export type RandomInflationFragmentResult = {
   CLAIM_PERIOD: string;
   numRecipients: string;
   claimPeriodStarts: string;
-  seedCommit: string | null;
   seedReveal: string | null;
   generation: { number: string };
 };
@@ -20,7 +19,6 @@ export const RandomInflationFragment = gql`
     numRecipients
     CLAIM_PERIOD
     claimPeriodStarts
-    seedCommit
     seedReveal
     generation {
       number

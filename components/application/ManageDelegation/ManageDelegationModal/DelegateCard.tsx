@@ -131,7 +131,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
 
   const ethAddress = getValues().ethAddress.toLowerCase().trim();
   const secondaryColor = theme.palette.secondary.main;
-
+  console.log(ethAddress);
   return (
     <div>
       <form onSubmit={handleSubmit(submitHandler)}>
@@ -153,6 +153,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
                 variant="fill"
                 disabled={
                   !isValid ||
+                  !ethAddress ||
                   ethAddress === invalidAddress ||
                   ethAddress === account.address.toLowerCase() ||
                   ethAddress === delegate?.toLowerCase()

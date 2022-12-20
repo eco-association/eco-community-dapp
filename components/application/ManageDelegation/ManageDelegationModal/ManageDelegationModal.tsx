@@ -106,7 +106,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
         !advanced && (
           <Column gap="xl">
             <Column gap="xl" style={{ padding: "0 16px" }}>
-              <Column gap="lg">
+              <Column gap="lg" style={{ padding: 14 }}>
                 <Typography variant="h2">Manage Voting Delegation</Typography>
 
                 <Typography variant="body1" color="primary">

@@ -16,7 +16,7 @@ const AdvancedDelegation: React.FC = ({}) => {
     community.currentGeneration.blockNumber
   );
   return (
-    <Column gap="xl">
+    <Column gap="md">
       <Row justify="space-between" gap="md">
         <Column gap="sm">
           <Typography variant="h2">Advanced Delegation Settings</Typography>

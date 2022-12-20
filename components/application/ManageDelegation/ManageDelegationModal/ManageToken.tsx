@@ -34,10 +34,10 @@ export const ManageToken: React.FC<ManageTokenProps> = ({
     : DelegateOption.Delegate;
 
   return (
-    <Column gap="lg">
-      <Column gap="md">
+    <Column gap="xs">
+      <Column gap="xs">
         <Typography variant="h5">{name}</Typography>
-        <Row gap="lg">
+        <Row gap="md">
           <Typography variant="h5">
             Receive delegation:{" "}
             <Typography inline color="secondary">

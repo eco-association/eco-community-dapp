@@ -8,10 +8,6 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import moment from "moment";
-import Image from "next/image";
-import { css } from "@emotion/react";
-
 
 import DelegateCard from "./DelegateCard";
 import { useDelegationState } from "./provider/ManageDelegationProvider";

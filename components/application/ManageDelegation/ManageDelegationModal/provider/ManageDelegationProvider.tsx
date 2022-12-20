@@ -13,7 +13,6 @@ import {
 } from "../../../../hooks/useVotingPowerSources";
 import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
-import EcoAbi from "../../../../../assets/abi/ECO.json";
 import {
   ECO__factory,
   ECOxStaking__factory,

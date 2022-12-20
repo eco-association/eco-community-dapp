@@ -86,7 +86,18 @@ export const PAST_PROPOSALS_QUERY = gql`
           id
         }
       }
-      activities {
+      activities(
+        orderBy: timestamp
+        orderDirection: desc
+        where: {
+          type_not_in: [
+            ProposalSupported
+            ProposalUnsupported
+            ProposalVoteFor
+            ProposalVoteAgainst
+          ]
+        }
+      ) {
         timestamp
         type
       }

@@ -3,8 +3,8 @@ import { Row, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import { Block } from "../CommunityGovernance/Block";
 import Image from "next/image";
-import EcoLogo from "../../../public/images/eco-logo/eco-logo-white.svg";
-import EcoXLogo from "../../../public/images/ecox-logo.svg";
+import EcoLogoWhiteOutline from "../../../public/images/eco-logo/eco-logo-white-outline.svg";
+import EcoXLogo from "../../../public/images/ecox-logo/ecox-logo.svg";
 import { useCommunity } from "../../../providers";
 import { useVotingPower } from "../../hooks/useVotingPower";
 import { tokensToNumber } from "../../../utilities";
@@ -37,7 +37,7 @@ const AccountInfoBar: React.FC<AccountInfoBarProps> = ({ balances }) => {
           <Row gap="sm" items="center">
             <Image
               alt="Eco Logo"
-              src={EcoLogo}
+              src={EcoLogoWhiteOutline}
               layout="fixed"
               width={18}
               height={18}

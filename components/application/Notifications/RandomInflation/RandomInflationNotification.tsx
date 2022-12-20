@@ -6,7 +6,7 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import {
   RandomInflationActionType,
@@ -59,8 +59,10 @@ export const RandomInflationNotification = () => {
     }
   }, [address, called, loadingRIs, randomInflations]);
 
-  const claimRIs = randomInflations.filter((ri) =>
-    randomInflationIDs.includes(ri.address)
+  const claimRIs = useMemo(
+    () =>
+      randomInflations.filter((ri) => randomInflationIDs.includes(ri.address)),
+    [randomInflationIDs, randomInflations]
   );
 
   useEffect(() => {

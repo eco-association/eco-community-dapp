@@ -7,7 +7,7 @@ import { LockupDescription } from "../../CommunityGovernance/MonetaryPolicyCard/
 import LockupDepositModal from "../../CommunityGovernance/MonetaryPolicyCard/LockupAlert/LockupDepositModal";
 import { formatCountdown } from "../../../../utilities";
 
-const fontWeight = css({ fontSize: 13, fontWeight: "bold", lineHeight: 1 });
+const lineHeight = css({ lineHeight: 1 });
 
 interface StakeVaultAlertProps {
   lockup: FundsLockup;
@@ -31,14 +31,16 @@ export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
           renderer={(countdownData) => {
             if (countdownData.completed)
               return (
-                <Typography variant="h5" color="active" css={fontWeight}>
-                  You can&apos;t participate now
+                <Typography variant="h5" color="active" css={lineHeight}>
+                  <b>You can&apos;t participate now</b>
                 </Typography>
               );
             const remaining = formatCountdown(countdownData);
             return (
-              <Typography variant="h5" color="info" css={fontWeight}>
-                New Lockup • {remaining.amount} {remaining.unit} remain
+              <Typography variant="body2" color="info" css={lineHeight}>
+                <b>
+                  New Lockup • {remaining.amount} {remaining.unit} remain
+                </b>
               </Typography>
             );
           }}
@@ -47,7 +49,7 @@ export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
       button={
         <Button
           size="sm"
-          color="active"
+          color="info"
           variant="outline"
           onClick={() => setOpen(true)}
         >

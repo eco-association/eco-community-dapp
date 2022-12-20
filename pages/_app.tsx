@@ -4,7 +4,7 @@ import "@ecoinc/ecomponents-old/lib/styles.css";
 import "rc-tooltip/assets/bootstrap.css";
 import "react-loading-skeleton/dist/skeleton.css";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import {
   CommunityProvider,
@@ -27,6 +27,7 @@ import { GoogleAnalytics } from "nextjs-google-analytics";
 import { ThemeProvider } from "../components/contexts/ThemeProvider";
 import { ConnectModalProvider } from "../providers/ConnectModalProvider";
 import { ProposalTabProvider } from "../providers/ProposalTabProvider";
+import { RandomInflationProvider } from "../providers/RandomInflationProvider";
 import { Notifications } from "../components/application/Notifications/Notifications";
 
 import Favicon from "../public/favicon.png";
@@ -96,8 +97,10 @@ const App = ({ Component, pageProps }) => {
                     <ThemeProvider>
                       <ConnectModalProvider>
                         <ProposalTabProvider>
-                          <Notifications />
-                          <Component {...pageProps} />
+                          <RandomInflationProvider>
+                            <Notifications />
+                            <Component {...pageProps} />
+                          </RandomInflationProvider>
                         </ProposalTabProvider>
                       </ConnectModalProvider>
                     </ThemeProvider>

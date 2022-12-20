@@ -11,6 +11,7 @@ import { AccountCard } from "../AccountCard";
 import EcoLogo from "../../../../public/images/eco-logo/eco-currency-brandmark.svg";
 import { LockupClaimAlert } from "./LockupClaimAlert";
 import { isLockupClaimable } from "../../../../utilities";
+import { RandomInflationAlert } from "./RandomInflationAlert";
 
 const LockupTable = styled.table({
   "& tr:first-child td": {
@@ -106,6 +107,7 @@ export const EcoCard = () => {
       </Column>
       {claimableLockup ? <LockupClaimAlert lockup={claimableLockup} /> : null}
       {lockup ? <LockupDepositAlert lockup={lockup} /> : null}
+      <RandomInflationAlert />
     </AccountCard>
   );
 };

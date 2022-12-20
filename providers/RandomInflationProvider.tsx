@@ -1,22 +1,28 @@
-import React, { useEffect, useMemo, useReducer, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { ApolloClient, useApolloClient, useQuery } from "@apollo/client";
-import { RANDOM_INFLATION, RandomInflationQueryResult } from "../../queries";
-import {
-  RandomInflationRecipient,
-  RandomInflationWithClaims,
-} from "../../types";
+import { RANDOM_INFLATION, RandomInflationQueryResult } from "../queries";
+import { RandomInflationRecipient, RandomInflationWithClaims } from "../types";
 import { BigNumber } from "ethers";
-import { SubgraphRandomInflation } from "../../queries/RANDOM_INFLATION";
-import { RandomInflationClaim } from "../../types/RandomInflation";
+import { SubgraphRandomInflation } from "../queries/RANDOM_INFLATION";
+import { RandomInflationClaim } from "../types/RandomInflation";
 import {
   ECO_SNAPSHOT,
   EcoSnapshotQueryResult,
   EcoSnapshotQueryVariables,
-} from "../../queries/ECO_SNAPSHOT";
+} from "../queries/ECO_SNAPSHOT";
 import {
   formatRandomInflation,
   getRandomInflationRecipients,
-} from "../../utilities/randomInflationTools";
+} from "../utilities/randomInflationTools";
+import { useAccount } from "wagmi";
+import { Zero } from "@ethersproject/constants";
+import { RandomInflationModal } from "../components/application/Account/EcoCard/RandomInflationModal";
 
 export enum RandomInflationActionType {
   SetState,
@@ -148,13 +154,56 @@ function parseRandomInflationQuery(
   return queryResult.randomInflations.map(formatRandomInflationWithClaims);
 }
 
+function getReceiptID(receipt: RandomInflationRecipient): string {
+  return `${receipt.randomInflation.address}-${receipt.sequenceNumber}`;
+}
+
+function isClaimable(
+  recipient: RandomInflationRecipient,
+  address: string
+): boolean {
+  return (
+    !recipient.claimed &&
+    recipient.recipient === address &&
+    Date.now() > recipient.claimableAt.getTime()
+  );
+}
+
 const getClaimId = (recipient: string, sequence: number) =>
   `${recipient}-${sequence}`;
 
-export const useRandomInflations = () => {
+interface RandomInflationState {
+  isModalOpen: boolean;
+  setModalOpen(open: boolean): void;
+  claimableAmount: BigNumber;
+  actives: RandomInflationRecipient[];
+  pendingClaims: RandomInflationRecipient[];
+  randomInflations: RandomInflationWithClaims[];
+  claimableRandomInflations: RandomInflationWithClaims[];
+  dispatch: React.Dispatch<RandomInflationAction>;
+}
+
+const RandomInflationContext = React.createContext<RandomInflationState>({
+  isModalOpen: false,
+  actives: [],
+  pendingClaims: [],
+  randomInflations: [],
+  claimableRandomInflations: [],
+  claimableAmount: Zero,
+  dispatch: () => ({}),
+  setModalOpen: () => ({}),
+});
+
+export const RandomInflationProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const account = useAccount();
   const apolloClient = useApolloClient();
   const [randomInflations, dispatch] = useReducer(randomInflationReducer, []);
 
+  const address = account.address?.toLowerCase();
+
+  const [isModalOpen, setModalOpen] = useState(false);
   const [recipients, setRecipients] = useState<
     Record<string, RandomInflationRecipient[]>
   >({});
@@ -201,5 +250,63 @@ export const useRandomInflations = () => {
     [randomInflations, recipients]
   );
 
-  return { items, dispatch, called, loading };
+  const [availableClaims, setAvailableClaims] = useState<string[]>([]);
+  const [randomInflationIDs, setRandomInflationIds] = useState<string[]>([]);
+
+  const claimableRandomInflations = useMemo(
+    () => items.filter((ri) => randomInflationIDs.includes(ri.address)),
+    [randomInflationIDs, items]
+  );
+
+  const pendingClaims = claimableRandomInflations
+    .flatMap((ri) => ri.recipients)
+    .filter((r) => isClaimable(r, address));
+
+  const activeRecipients = claimableRandomInflations
+    .flatMap((ri) => ri.recipients)
+    .filter((r) => availableClaims.includes(getReceiptID(r)));
+
+  const claimableAmount = pendingClaims.reduce(
+    (acc, reward) => acc.add(reward.randomInflation.reward),
+    Zero
+  );
+
+  useEffect(() => {
+    if (called && !loading) {
+      const ids = items
+        .filter((ri) => ri.recipients.some((r) => isClaimable(r, address)))
+        .map((ri) => ri.address);
+      setRandomInflationIds(ids);
+    }
+  }, [address, called, loading, items]);
+
+  useEffect(() => {
+    if (!availableClaims.length) {
+      const recipientIDs = claimableRandomInflations
+        .flatMap((ri) => ri.recipients)
+        .filter((r) => isClaimable(r, address))
+        .map(getReceiptID);
+      setAvailableClaims(recipientIDs);
+    }
+  }, [address, availableClaims.length, claimableRandomInflations]);
+
+  return (
+    <RandomInflationContext.Provider
+      value={{
+        dispatch,
+        isModalOpen,
+        setModalOpen,
+        pendingClaims,
+        claimableAmount,
+        claimableRandomInflations,
+        actives: activeRecipients,
+        randomInflations: items,
+      }}
+    >
+      <RandomInflationModal />
+      {children}
+    </RandomInflationContext.Provider>
+  );
 };
+
+export const useRandomInflation = () => useContext(RandomInflationContext);

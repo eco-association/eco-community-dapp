@@ -38,25 +38,32 @@ export const LockupClaimAlert: React.FC<LockupClaimAlertProps> = ({
       />
       <StyledAlert
         color="active"
-        title="Lockup Claim Complete"
+        title={
+          <Typography variant="body2" color="active">
+            <b>Lockup Claim Complete</b>
+          </Typography>
+        }
         button={
           <Row justify="end">
             <Button
+              size="sm"
               color="active"
               variant="outline"
               onClick={() => setOpen(true)}
-              style={{ padding: "10px 16px", minWidth: "initial" }}
+              style={{ padding: "8px 16px", minWidth: "initial" }}
             >
               Claim
             </Button>
           </Row>
         }
       >
-        You have{" "}
-        <Typography color="primary" variant="body2">
-          <b>{formatNumber(tokensToNumber(amount))} ECO</b>
-        </Typography>{" "}
-        to claim
+        <Typography color="secondary" variant="body2">
+          You have{" "}
+          <Typography color="primary" variant="body2">
+            <b>{formatNumber(tokensToNumber(amount))} ECO</b>
+          </Typography>{" "}
+          to claim
+        </Typography>
       </StyledAlert>
     </React.Fragment>
   );

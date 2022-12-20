@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import VotingPowerCard from "../components/application/Account/VotingPowerCard/VotingPowerCard";
 import EcoXCard from "../components/application/Account/EcoXCard/EcoXCard";
 import { EcoCard } from "../components/application/Account/EcoCard/EcoCard";
+import AccountActivityCard from "../components/application/Account/AccountActivity/AccountActivityCard";
 
 const headerStyle: HeaderProps["styles"] = {
   scrollHeader: { padding: "8px 64px 0 64px" },
@@ -52,6 +53,7 @@ const Account = () => {
           <EcoCard />
           <VotingPowerCard />
         </Column>
+        <AccountActivityCard />
       </Grid>
     </Header>
   );

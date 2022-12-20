@@ -63,14 +63,18 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({ back }) => {
           <li style={{ marginBottom: 12 }}>
             <Typography variant="body1">
               Making a post to the Community in the{" "}
-              <Link href="https://forums.eco.org/">
-                <Typography
-                  color="active"
-                  style={{ textDecoration: "underline", cursor: "pointer" }}
-                >
-                  Forum
-                </Typography>
-              </Link>{" "}
+              <a
+                href="https://forums.eco.org/"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  color: "#47b699",
+                }}
+              >
+                Forum
+              </a>{" "}
               <Typography color="secondary">(optional)</Typography>
             </Typography>
           </li>

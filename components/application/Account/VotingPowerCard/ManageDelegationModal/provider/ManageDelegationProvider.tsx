@@ -190,7 +190,6 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   const sources = useVotingPowerSources();
 
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
-
   const eco = useECO({ useProvider: true });
   const secox = useECOxStaking({ useProvider: true });
 

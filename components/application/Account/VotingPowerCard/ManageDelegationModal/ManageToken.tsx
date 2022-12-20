@@ -6,14 +6,24 @@ import {
   useDelegationState,
 } from "./provider/ManageDelegationProvider";
 import { useManageDelegation } from "./hooks/useManageDelegation";
-import { DelegateOption, DelegateRadioOption } from "./DelegateRadioOption";
 import ConfirmDialogue from "./ConfirmDialogue";
+import { ToggleSlider } from "react-toggle-slider";
+import LoaderAnimation from "../../../Loader";
+
+export enum DelegateOption {
+  Receive,
+  Delegate,
+}
 
 interface ManageTokenProps {
   token: DelegableToken;
+  loading: boolean;
 }
 
-export const ManageToken: React.FC<ManageTokenProps> = ({ token: tokenId }) => {
+export const ManageToken: React.FC<ManageTokenProps> = ({
+  token: tokenId,
+  loading,
+}) => {
   const { state } = useDelegationState();
   const { manageOneToken } = useManageDelegation();
   const name = tokenId === "eco" ? "ECO" : "ECOx";
@@ -24,22 +34,31 @@ export const ManageToken: React.FC<ManageTokenProps> = ({ token: tokenId }) => {
     : DelegateOption.Delegate;
 
   return (
-    <Column gap="lg">
-      <Column gap="md">
-        <Row gap="xl">
-          <Typography variant="h5">{name} Voting Power</Typography>
-          <DelegateRadioOption
-            value={value}
-            loading={token.loading}
-            disable={state.eco.loading || state.secox.loading}
-            onChange={(value) =>
-              manageOneToken(tokenId, value === DelegateOption.Receive)
-            }
-          />
+    <Column gap="xs">
+      <Column gap="xs">
+        <Typography variant="h5">{name}</Typography>
+        <Row gap="md">
+          <Typography variant="h5">
+            Receive delegation:{" "}
+            <Typography inline color="secondary">
+              {value === DelegateOption.Receive ? "enabled" : "disabled"}
+            </Typography>
+          </Typography>
+          {loading ? (
+            <LoaderAnimation />
+          ) : (
+            <ToggleSlider
+              barStylesActive={{ backgroundColor: "#47b699" }}
+              active={value === DelegateOption.Receive}
+              onToggle={() => {
+                manageOneToken(tokenId, value === DelegateOption.Delegate);
+              }}
+            />
+          )}
         </Row>
         <Typography variant="body2" color="secondary">
-          Choose whether you want to be able to delegate the voting power from
-          your {name}, or if you’d like to receive delegated votes.
+          Enable so others can delegate voting power to you. Note: if enabled,
+          you won&apos;t be able to delegate your voting power to others.
         </Typography>
       </Column>
       {token.validate === DelegateValidation.Blocked ? (

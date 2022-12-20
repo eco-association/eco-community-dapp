@@ -1,12 +1,6 @@
 import React from "react";
 import moment from "moment";
-import {
-  Color,
-  Column,
-  formatNumber,
-  Row,
-  Typography,
-} from "@ecoinc/ecomponents";
+import { Color, formatNumber, Row, Typography } from "@ecoinc/ecomponents";
 import {
   getLockupAPY,
   getLockupDates,
@@ -15,7 +9,6 @@ import {
   tokensToNumber,
 } from "../../../../utilities";
 import { LockupTableRow } from "./LockupTableRow";
-import { LockupClaimAlert } from "./LockupClaimAlert";
 import { FundsLockupWithDeposit } from "../../../../types/FundsLockup";
 import { Arrow } from "../../commons/Arrow";
 import { EcoIcon } from "../../commons/icon/EcoIcon";

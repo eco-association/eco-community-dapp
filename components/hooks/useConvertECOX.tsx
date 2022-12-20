@@ -30,9 +30,9 @@ const useConvertECOX = () => {
   const getValueOfEcoX = useCallback(
     async (amount: BigNumber): Promise<BigNumber> => {
       try {
-        if (ecoX.provider) return ecoX.ecoValueOf(amount);
+        if (ecoX.provider) return await ecoX.ecoValueOf(amount);
       } catch (err) {
-        console.error(err);
+        console.warn("[getValueOfEcoX error]", err);
       }
       return Zero;
     },

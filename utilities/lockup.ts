@@ -65,5 +65,9 @@ export function getLockupClaimAmount(
   return !early ? amount.add(lockup.reward) : amount.sub(lockup.reward);
 }
 
+export function isLockupClaimable(lockup: FundsLockupWithDeposit) {
+  return Date.now() > lockup.endsAt.getTime() && !lockup.withdrawnAt;
+}
+
 export const lockupFormatDate = (date: Date) =>
   moment(date).format("MMM DD, YYYY");

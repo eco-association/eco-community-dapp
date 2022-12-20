@@ -1,20 +1,20 @@
 import { Column, Grid, Typography } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
-import AccountInfoBar from "../components/application/Account/AccountInfoBar";
-import { Header } from "../components/application/Header/Header";
+import { Header, HeaderProps } from "../components/application/Header/Header";
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useWallet } from "../providers";
-import ManageDelegationCard from "../components/application/ManageDelegation/ManageDelegationCard";
-import { LockupCard } from "../components/application/Account/LockupCard/LockupCard";
-import StakeOrConvertCard from "../components/application/StakeOrConvert/StakeOrConvertCard";
+import VotingPowerCard from "../components/application/Account/VotingPowerCard/VotingPowerCard";
+import EcoXCard from "../components/application/Account/EcoXCard/EcoXCard";
+import { EcoCard } from "../components/application/Account/EcoCard/EcoCard";
+import AccountActivityCard from "../components/application/Account/AccountActivity/AccountActivityCard";
 
-const headerStyle = { scrollHeader: { padding: "8px 64px 0 64px" } };
+const headerStyle: HeaderProps["styles"] = {
+  scrollHeader: { padding: "8px 64px 0 64px" },
+};
 
 const Account = () => {
   const router = useRouter();
   const account = useAccount();
-  const wallet = useWallet();
 
   useEffect(() => {
     if (!account.isConnected) {
@@ -28,29 +28,32 @@ const Account = () => {
       breakpoint={16}
       styles={headerStyle}
       content={
-        <Column gap="lg" items="center" css={{ marginTop: 16 }}>
-          <Typography variant="h1" color="white">
+        <Column gap="md" items="center" style={{ marginTop: 88 }}>
+          <Typography variant="h1" color="white" style={{ lineHeight: 1 }}>
             My Account
           </Typography>
-          <AccountInfoBar balances={wallet} />
+          <Typography variant="body2" color="success">
+            Manage your balances, your voting power, and see your activity.
+          </Typography>
         </Column>
       }
     >
       <Grid
-        columns="calc(50% - 12px) calc(50% - 12px)"
+        columns="1fr 450px"
         gap="24px"
         style={{
-          maxWidth: 980,
+          width: 980,
           margin: "-48px auto 0 auto",
           alignItems: "flex-start",
           justifyContent: "space-between",
         }}
       >
-        <ManageDelegationCard />
         <Column gap="xl">
-          <StakeOrConvertCard />
-          <LockupCard />
+          <EcoXCard />
+          <EcoCard />
+          <VotingPowerCard />
         </Column>
+        <AccountActivityCard />
       </Grid>
     </Header>
   );

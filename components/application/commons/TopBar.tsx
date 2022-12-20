@@ -1,6 +1,6 @@
 import React from "react";
 import { Color, Grid, Row, styled, Typography } from "@ecoinc/ecomponents";
-import { XIcon } from "./XIcon";
+import { XIcon } from "./icon/XIcon";
 
 interface TopBarProps
   extends Omit<React.HTMLProps<HTMLDivElement>, "as" | "rows"> {

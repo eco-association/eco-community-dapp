@@ -37,11 +37,6 @@ export const RandomInflationNotification = () => {
       ({ recipient, claimed, claimableAt }) =>
         !claimed && recipient === address && Date.now() > claimableAt.getTime()
     )
-  const claimRIs = useMemo(
-    () =>
-      randomInflations.filter((ri) => randomInflationIDs.includes(ri.address)),
-    [randomInflationIDs, randomInflations]
-
   );
 
   if (!claimRIs.length) return null;

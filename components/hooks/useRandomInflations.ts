@@ -79,7 +79,6 @@ async function getRecipients(
   client: ApolloClient<object>,
   randomInflation: RandomInflationWithClaims
 ): Promise<RandomInflationRecipient[]> {
-  if (!randomInflation.seedReveal) return [];
   try {
     const queryResult = await client.query<
       EcoSnapshotQueryResult,
@@ -159,11 +158,8 @@ export const useRandomInflations = () => {
     Record<string, RandomInflationRecipient[]>
   >({});
 
-  const {
-    data: randomInflationQuery,
-    called,
-    loading,
-  } = useQuery<RandomInflationQueryResult>(RANDOM_INFLATION);
+  const { data: randomInflationQuery } =
+    useQuery<RandomInflationQueryResult>(RANDOM_INFLATION);
 
   useEffect(() => {
     dispatch({
@@ -188,7 +184,7 @@ export const useRandomInflations = () => {
 
   const items = useMemo(
     () =>
-      randomInflations.map((ri): RandomInflationWithClaims => {
+      randomInflations.map((ri) => {
         const claimIds = ri.claims.map((claim) =>
           getClaimId(claim.claimedFor, claim.sequenceNumber)
         );
@@ -201,5 +197,5 @@ export const useRandomInflations = () => {
     [randomInflations, recipients]
   );
 
-  return { items, dispatch, called, loading };
+  return { items, dispatch };
 };

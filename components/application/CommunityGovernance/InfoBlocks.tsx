@@ -2,7 +2,7 @@ import { Block } from "./Block";
 import { Row, TokenAmount } from "@ecoinc/ecomponents";
 import Image from "next/image";
 import EcoLogoWhiteOutline from "../../../public/images/eco-logo/eco-logo-white-outline.svg";
-import EcoXLogo from "../../../public/images/ecox-logo/ecox-logo.svg";
+import EcoXLogo from "../../../public/images/ecox-logo.svg";
 import React from "react";
 import { css } from "@emotion/react";
 import { useWallet } from "../../../providers";

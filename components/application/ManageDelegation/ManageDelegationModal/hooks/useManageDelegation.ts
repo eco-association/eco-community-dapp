@@ -39,7 +39,6 @@ export const useManageDelegation = () => {
   const manageDelegation = async (token: DelegableToken, enabled: boolean) => {
     const tokenState = state[token];
     const contract = token === "eco" ? eco : sEcoX;
-
     if (tokenState.enabled === enabled) return;
 
     if (enabled) {

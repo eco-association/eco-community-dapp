@@ -131,7 +131,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
 
   const ethAddress = getValues().ethAddress.toLowerCase().trim();
   const secondaryColor = theme.palette.secondary.main;
-  console.log(ethAddress);
   return (
     <div>
       <form onSubmit={handleSubmit(submitHandler)}>

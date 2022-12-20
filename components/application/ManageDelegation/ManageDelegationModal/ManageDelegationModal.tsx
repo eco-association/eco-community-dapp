@@ -97,7 +97,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}
-      style={{ card: { width: 540, padding: "40px 24px" } }}
+      style={{ card: { width: 545, padding: "40px 24px" } }}
     >
       {advanced && <AdvancedDelegation />}
       {openDelegation && !advanced ? (

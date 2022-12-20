@@ -31,6 +31,8 @@ const ActionBox = styled(Column)(() => ({
   borderRadius: 6,
   border: "1px solid #DCE9F0",
   padding: 12,
+  width: "110%",
+  marginLeft: "-20px",
 }));
 
 const InfoBox = styled(Column)(({ theme }) => ({
@@ -86,7 +88,7 @@ const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
             disabled={hasDelegatedToMe}
             variant="outline"
             color="active"
-            css={{ height: 31, padding: 0 }}
+            css={{ height: 31, padding: 0, marginLeft: 12 }}
             onClick={() => manageBothTokens(false, false)}
           >
             {loading ? <LoaderAnimation /> : "Disable"}

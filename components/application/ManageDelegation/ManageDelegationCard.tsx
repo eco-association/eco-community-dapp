@@ -93,14 +93,12 @@ const ManageDelegationCard = () => {
       return setStatus(StatusType.DELEGATE);
     }
     if (state.eco.delegate || state.secox.delegate) {
-      console.log("HSouldnt trigger");
       return setStatus(StatusType.DELEGATING);
     }
     setStatus(StatusType.DEFAULT);
   };
 
   useMemo(() => {
-    console.log(state);
     getStatus();
   }, [state]);
 

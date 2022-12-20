@@ -137,6 +137,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
                     setOpenAdvanced={() => setAdvanced(true)}
                     delegate={state.eco.delegate}
                     option={Option.EcoMyWallet}
+                    onRequestClose={onRequestClose}
                   />
                 </DelegateInputArea>
               )}

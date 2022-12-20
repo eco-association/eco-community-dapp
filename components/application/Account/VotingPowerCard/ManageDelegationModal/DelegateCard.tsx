@@ -25,8 +25,10 @@ import { useForm } from "react-hook-form";
 import TextLoader from "../../../commons/TextLoader";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
 import Image from "next/image";
+import { useManageDelegation } from "./hooks/useManageDelegation";
 
 interface DelegateCardProps {
+  onRequestClose?: () => void;
   fromAdvanced?: boolean;
   lockup?: string;
   delegate?: string;
@@ -75,15 +77,18 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   option,
   delegate,
   setOpenAdvanced,
+  onRequestClose,
 }) => {
   const eco = useECO();
   const ecoX = useECOxStaking();
   const account = useAccount();
   const { dispatch } = useDelegationState();
+  const { simpleDelegation } = useManageDelegation();
 
   const theme = useTheme();
 
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(0);
   // An invalid address does not have delegation enabled
   const [invalidAddress, setInvalidAddress] = useState<string>();
 
@@ -102,29 +107,33 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
     const contract = option === Option.SEcoXMyWallet ? ecoX : eco;
 
     setLoading(true);
-    try {
-      const enabled = await contract.delegationToAddressEnabled(address);
-      if (enabled) {
-        const tx = await contract.delegate(address);
-        await tx.wait();
+    if (fromAdvanced) {
+      try {
+        const enabled = await contract.delegationToAddressEnabled(address);
+        if (enabled) {
+          const tx = await contract.delegate(address);
+          await tx.wait();
 
-        dispatch({
-          type: DelegateActionType.SetDelegate,
-          token: option === Option.SEcoXMyWallet ? "secox" : "eco",
-          delegate: address,
-        });
-        nativeToast(getToastText(address), toastOpts);
-      } else {
-        setInvalidAddress(address);
-        txError(
-          "Failed to delegate",
-          new Error(
-            `${displayAddress(address)} doesn't have enabled delegation`
-          )
-        );
+          dispatch({
+            type: DelegateActionType.SetDelegate,
+            token: option === Option.SEcoXMyWallet ? "secox" : "eco",
+            delegate: address,
+          });
+          nativeToast(getToastText(address), toastOpts);
+        } else {
+          setInvalidAddress(address);
+          txError(
+            "Failed to delegate",
+            new Error(
+              `${displayAddress(address)} doesn't have enabled delegation`
+            )
+          );
+        }
+      } catch (err) {
+        txError("Failed to delegate", err);
       }
-    } catch (err) {
-      txError("Failed to delegate", err);
+    } else {
+      simpleDelegation(address, setInvalidAddress, setStep, onRequestClose);
     }
     setLoading(false);
   };
@@ -151,7 +160,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
                 color="success"
                 variant="fill"
                 disabled={
-                  !isValid ||
                   !ethAddress ||
                   ethAddress === invalidAddress ||
                   ethAddress === account.address.toLowerCase() ||

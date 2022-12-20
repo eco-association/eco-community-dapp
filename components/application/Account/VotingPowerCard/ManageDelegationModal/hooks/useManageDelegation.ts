@@ -6,10 +6,32 @@ import {
   TokenDelegation,
   useDelegationState,
 } from "../provider/ManageDelegationProvider";
+import { toast as nativeToast, ToastOptions } from "react-toastify";
 import { useECO } from "../../../../../hooks/contract/useECO";
 import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
-import { txError } from "../../../../../../utilities";
+import { displayAddress, txError } from "../../../../../../utilities";
 import { Zero } from "@ethersproject/constants";
+
+const toastOpts: ToastOptions = {
+  position: "top-center",
+  autoClose: 5000,
+  hideProgressBar: true,
+  theme: "colored",
+  style: {
+    backgroundColor: "#F7FEFC",
+    border: "solid 1px #5AE4BF",
+    color: "#22313A",
+    top: "115px",
+  },
+};
+
+const getToastText = (delegate: string) => {
+  if (!delegate) {
+    return `🚀 Successfully un-delegated`;
+  } else {
+    return `🚀 Successfully delegated to ${displayAddress(delegate)}`;
+  }
+};
 
 const validateToken = (
   state: TokenDelegation,
@@ -35,6 +57,48 @@ export const useManageDelegation = () => {
   const eco = useECO();
   const sEcoX = useECOxStaking();
   const { dispatch, state } = useDelegationState();
+
+  const simpleDelegation = async (
+    address: string,
+    setInvalidAddress: (string) => void,
+    setStep: (number) => void,
+    onRequestClose: () => void
+  ) => {
+    try {
+      const ecoEnabled = await eco.delegationToAddressEnabled(address);
+      const ecoXEnabled = await sEcoX.delegationToAddressEnabled(address);
+      if (ecoEnabled && ecoXEnabled) {
+        setStep(1);
+        const tx1 = await eco.delegate(address);
+        await tx1.wait();
+        setStep(2);
+        const tx2 = await sEcoX.delegate(address);
+        await tx2.wait();
+        dispatch({
+          type: DelegateActionType.SetDelegate,
+          token: "eco",
+          delegate: address,
+        });
+        dispatch({
+          type: DelegateActionType.SetDelegate,
+          token: "secox",
+          delegate: address,
+        });
+        onRequestClose();
+        nativeToast(getToastText(address), toastOpts);
+      } else {
+        setInvalidAddress(address);
+        txError(
+          "Failed to delegate",
+          new Error(
+            `${displayAddress(address)} doesn't have enabled delegation`
+          )
+        );
+      }
+    } catch (err) {
+      txError("Failed to delegate", err);
+    }
+  };
 
   const manageDelegation = async (token: DelegableToken, enabled: boolean) => {
     const tokenState = state[token];
@@ -185,5 +249,6 @@ export const useManageDelegation = () => {
   return {
     manageBothTokens,
     manageOneToken,
+    simpleDelegation,
   };
 };

@@ -1,7 +1,7 @@
 import { Column, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import {
-  AccountActivity,
+  Activity,
   AccountActivityType,
 } from "../../../../queries/ACCOUNT_ACTIVITY_QUERY";
 import { formatTime } from "../../../../utilities";
@@ -12,7 +12,7 @@ const dateTime = css({
 });
 
 interface AccountActivityItemProps {
-  activity: AccountActivity;
+  activity: Activity;
 }
 
 interface CardBaseProps {
@@ -23,6 +23,11 @@ interface ProposalActivityProps {
   action: string;
   proposalName: string;
   bridge?: string;
+}
+
+interface DelegateActivityProps {
+  action: string;
+  token: string;
 }
 
 const CardBase: React.FC<React.PropsWithChildren<CardBaseProps>> = ({
@@ -54,26 +59,53 @@ const ProposalActivity: React.FC<ProposalActivityProps> = ({
   );
 };
 
+const DelegateActivity: React.FC<DelegateActivityProps> = ({
+  action,
+  token,
+}) => {
+  return (
+    <Typography variant="body1">
+      You {action} {token}
+    </Typography>
+  );
+};
+
 const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
   activity,
 }) => {
-  // if (activity.type === AccountActivityType.SECOX_UNDELEGATE) {
-  //   return <CardBase time={activity.timestamp}>sECOx undelegated</CardBase>;
-  // }
-  // if (activity.type === AccountActivityType.SECOX_DELEGATE) {
-  //   return <CardBase time={activity.timestamp}>sEcox delegated</CardBase>;
-  // }
-  // if (activity.type === AccountActivityType.ECO_UNDELEGATE) {
-  //   return <CardBase time={activity.timestamp}>Eco Undelegated</CardBase>;
-  // }
-  // if (activity.type === AccountActivityType.ECO_DELEGATE) {
-  //   return <CardBase time={activity.timestamp}>Eco Delegated</CardBase>;
-  // }
+  if (activity.type === AccountActivityType.SECOX_UNDELEGATE) {
+    return (
+      <CardBase time={activity.timestamp}>
+        <DelegateActivity action="undelegated" token="sECOx" />
+      </CardBase>
+    );
+  }
+  if (activity.type === AccountActivityType.SECOX_DELEGATE) {
+    return (
+      <CardBase time={activity.timestamp}>
+        <DelegateActivity action="delegated" token="sECOx" />
+      </CardBase>
+    );
+  }
+  if (activity.type === AccountActivityType.ECO_UNDELEGATE) {
+    return (
+      <CardBase time={activity.timestamp}>
+        <DelegateActivity action="undelegated" token="ECO" />
+      </CardBase>
+    );
+  }
+  if (activity.type === AccountActivityType.ECO_DELEGATE) {
+    return (
+      <CardBase time={activity.timestamp}>
+        <DelegateActivity action="delegated" token="ECO" />
+      </CardBase>
+    );
+  }
   if (activity.type === AccountActivityType.LOCKUP_DEPOSIT) {
     return (
       <CardBase time={activity.timestamp}>
         <Typography variant="body1">
-          You deposited <b>{activity.lockupDeposit.amount}</b> ECO into a lockup
+          You deposited into ECO lockup <b>{activity.lockupDeposit.id}</b>
         </Typography>
       </CardBase>
     );
@@ -136,7 +168,7 @@ const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
       <CardBase time={activity.timestamp}>
         <ProposalActivity
           action="deployed"
-          bridge="a"
+          bridge="a proposal"
           proposalName={activity.communityProposal.name}
         />
       </CardBase>

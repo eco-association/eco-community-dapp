@@ -1,6 +1,4 @@
 import { gql } from "@apollo/client";
-import { timeStamp } from "console";
-import Account from "../pages/account";
 
 export enum AccountActivityType {
   PROPOSAL_REFUNDED = "ProposalRefunded",
@@ -14,100 +12,99 @@ export enum AccountActivityType {
   ECO_UNDELEGATE = "EcoUndelegate",
   SECOX_DELEGATE = "sEcoXDelegate",
   SECOX_UNDELEGATE = "sEcoXUndelegate",
+  RANDOM_INFLATION_CLAIM = "RandomInflationClaim",
 }
 
-const activities = {
-  account: {
-    id: "0x0r5r",
-    activities: [
-      {
-        type: AccountActivityType.PROPOSAL_SUBMITTED,
-        timestamp: new Date(),
-        communityProposal: {
-          id: 1,
-          name: "Test One",
-          generationNumber: 333,
-        },
-      },
-      {
-        type: AccountActivityType.PROPOSAL_SUPPORTED,
-        timeStamp: new Date(),
-        communityProposal: {
-          id: 1,
-          name: "Test One",
-          generationNumber: 333,
-        },
-      },
-    ],
-    randomInflation: [],
-    lockupDeposit: [],
-  },
-};
-
-export type AccountActivity = {
+export type Activity = {
   type: AccountActivityType;
   timestamp: Date;
   communityProposal: {
     id: string;
     name: string;
     generationNumber: string;
+    policyVotes: {
+      result: boolean;
+    };
   };
-  randomInflation: {
+  randomInflationClaim: {
     id: string;
   };
   lockupDeposit: {
     id: string;
-    amount: string;
-    withdrawnAt: string;
+  };
+  generation: {
+    number: string;
   };
 };
-export interface AccountActivityQuery {
-  account: {
+
+export type AccountActivity = {
+  type: AccountActivityType;
+  timestamp: string;
+  communityProposal: {
     id: string;
-    activities: {
-      type: AccountActivityType;
-      timestamp: string;
-      communityProposal: {
-        id: string;
-        name: string;
-        generationNumber: string;
-      };
-      randomInflation: {
-        id: string;
-      };
-      lockupDeposit: {
-        id: string;
-        amount: string;
-        withdrawnAt: string;
-      };
-    }[];
+    name: string;
+    generationNumber: string;
+    policyVotes: {
+      result: boolean;
+    };
   };
-}
+  randomInflationClaim: {
+    id: string;
+  };
+  lockupDeposit: {
+    id: string;
+  };
+  generation: {
+    number: string;
+  };
+};
 
 export type AccountActivityQueryResults = {
-  activityRecords: AccountActivityQuery;
+  activityRecords: AccountActivity[];
 };
 
 export const ACCOUNT_ACTIVITY_QUERY = gql`
-  query AccountActivityQuery($address: String!) {
-    account(id: $address) {
-      id
-      activities(first: 30, orderBy: timestamp, orderDirection: desc) {
-        type
-        timestamp
-        communityProposal {
-          id
-          name
-          generationNumber
+  query ACCOUNT_ACTIVITY_QUERY($address: Bytes!) {
+    activityRecords(
+      first: 30
+      where: {
+        triggeredBy: $address
+        type_in: [
+          ProposalSubmitted
+          ProposalSupported
+          ProposalUnsupported
+          ProposalRefunded
+          ProposalVoteFor
+          ProposalVoteAgainst
+          RandomInflationClaim
+          LockupDeposit
+          EcoDelegate
+          EcoUndelegate
+          sEcoXDelegate
+          sEcoXUndelegate
+        ]
+      }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      type
+      timestamp
+      communityProposal {
+        id
+        name
+        generationNumber
+        policyVotes {
+          result
         }
-        randomInflation {
-          id
-        }
-        lockupDeposit {
-          id
-          amount
-          withdrawnAt
-        }
+      }
+      randomInflationClaim {
+        id
+      }
+      lockupDeposit {
+        id
+      }
+      generation {
+        number
       }
     }
   }

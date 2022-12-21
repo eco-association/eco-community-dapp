@@ -105,7 +105,7 @@ const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
     return (
       <CardBase time={activity.timestamp}>
         <Typography variant="body1">
-          You deposited into ECO lockup <b>{activity.lockupDeposit.id}</b>
+          You deposited into an ECO lockup
         </Typography>
       </CardBase>
     );

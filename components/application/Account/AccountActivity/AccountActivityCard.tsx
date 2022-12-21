@@ -63,13 +63,19 @@ const AccountActivityCard = () => {
           votesSubmitted={votesSubmitted}
           proposalsSupported={proposalsSupported}
         />
-        <Sticky>
-          <Column gap="lg">
-            {activities.map((activity) => (
-              <AccountActivityItem key={activity.type} activity={activity} />
-            ))}
-          </Column>
-        </Sticky>
+        {activities.length > 0 ? (
+          <Sticky>
+            <Column gap="lg">
+              {activities.map((activity) => (
+                <AccountActivityItem key={activity.type} activity={activity} />
+              ))}
+            </Column>
+          </Sticky>
+        ) : (
+          <Typography variant="body1" color="secondary">
+            You do not have any account activity yet
+          </Typography>
+        )}
       </Column>
     </Card>
   );

@@ -12,7 +12,11 @@ export const LockupAlert = () => {
       <Alert
         css={{ border: 0 }}
         color="secondary"
-        title="Base Interest Rate • Inactive"
+        title={
+          <Typography variant="body2" color="secondary">
+            <b>Base Interest Rate • Inactive</b>
+          </Typography>
+        }
       >
         <Typography variant="body2" color="secondary">
           Deposit your ECO into a lockup to earn interest.
@@ -24,7 +28,7 @@ export const LockupAlert = () => {
     <Alert
       color="transparent"
       title={
-        <Typography variant="body1" color="primary">
+        <Typography variant="body2" color="primary">
           <b>Base Interest Rate</b>{" "}
           <Typography
             variant="body2"

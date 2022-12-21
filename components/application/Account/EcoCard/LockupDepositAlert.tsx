@@ -9,11 +9,11 @@ import { formatCountdown } from "../../../../utilities";
 
 const lineHeight = css({ lineHeight: 1 });
 
-interface StakeVaultAlertProps {
+interface LockupDepositAlertProps {
   lockup: FundsLockup;
 }
 
-export const LockupDepositAlert = ({ lockup }: StakeVaultAlertProps) => {
+export const LockupDepositAlert = ({ lockup }: LockupDepositAlertProps) => {
   const { depositWindowEndsAt: endsAt } = lockup;
 
   const [active, setActive] = useState(endsAt.getTime() > Date.now());

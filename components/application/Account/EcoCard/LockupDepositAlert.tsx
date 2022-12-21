@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { css } from "@emotion/react";
 import ReactCountdown from "react-countdown";
-import { Alert, Button, Typography } from "@ecoinc/ecomponents";
+import { Alert, Button, Row, Typography } from "@ecoinc/ecomponents";
 import { FundsLockup } from "../../../../types";
 import { LockupDescription } from "../../CommunityGovernance/MonetaryPolicyCard/LockupAlert/LockupDescription";
 import LockupDepositModal from "../../CommunityGovernance/MonetaryPolicyCard/LockupAlert/LockupDepositModal";
@@ -47,14 +47,16 @@ export const LockupDepositAlert = ({ lockup }: LockupDepositAlertProps) => {
         />
       }
       button={
-        <Button
-          size="sm"
-          color="info"
-          variant="outline"
-          onClick={() => setOpen(true)}
-        >
-          Deposit
-        </Button>
+        <Row justify="end">
+          <Button
+            size="sm"
+            color="info"
+            variant="outline"
+            onClick={() => setOpen(true)}
+          >
+            Deposit
+          </Button>
+        </Row>
       }
     >
       <LockupDepositModal

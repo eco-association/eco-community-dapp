@@ -131,12 +131,19 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
         <Column gap="lg" style={{ padding: "0 24px" }}>
           <Typography variant="h2">Lockup</Typography>
           <Typography variant="body1">
-            {/*TODO: Add penalty*/}
-            Stake some or all of your ECO for a defined period of time to earn
-            interest. Note: removing your ECO from the contract early will
-            result in a penalty of xyz.
+            Deposit some or all of your ECO for a defined period of time to earn
+            interest.{" "}
+            <Typography variant="body1" color="info">
+              Note: removing your ECO from the contract early will result in a
+              penalty of {numberFormatter(lockup.interest * 100)}% of your
+              deposited amount.
+            </Typography>
           </Typography>
 
+          <ModalTextItem
+            title="LOCKUP RATE"
+            text={`${numberFormatter(lockup.interest * 100)}%`}
+          />
           <ModalTextItem
             title="DURATION"
             text={`${duration.amount} ${duration.unit}`}
@@ -146,9 +153,6 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
           />
         </Column>
         <Container gap="lg">
-          <Typography variant="h5" style={{ lineHeight: 1 }}>
-            Earn {numberFormatter(lockup.interest)}% Reward
-          </Typography>
           <Column gap="sm">
             <Row items="center">
               <Typography style={{ marginRight: 4 }}>

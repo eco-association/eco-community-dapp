@@ -81,11 +81,15 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
       onRequestClose={onClose}
     >
       <Column gap="xl">
-        <Column gap="md" css={{ padding: "0px 16px" }}>
+        <Column gap="lg" css={{ padding: "0px 16px" }}>
           <Typography variant="h2">Convert ECOx to ECO</Typography>
           <Typography variant="body1">
-            At any time, you can convert your ECOx into ECO. The current
-            exchange rate is {formatNumber(tokensToNumber(exchangeRate))}:1.{" "}
+            You can permanently burn your ECOx to mint new ECO at any time. This
+            removes ECOx forever from the global locked supply. The current
+            conversion rate is{" "}
+            <b>{formatNumber(tokensToNumber(exchangeRate))}:1.</b>
+          </Typography>
+          <Typography variant="body1" color="error">
             <b>Warning:</b> this action is irreversible, and you cannot convert
             ECO back into ECOx.
           </Typography>
@@ -120,7 +124,12 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
                     color={error ? "error" : "active"}
                     onClick={() => setToConvert(ecoXBalance)}
                   >
-                    All
+                    <Typography
+                      color={error ? "error" : "active"}
+                      style={{ lineHeight: 1 }}
+                    >
+                      All
+                    </Typography>
                   </Button>
                 </ButtonGroup>
               }

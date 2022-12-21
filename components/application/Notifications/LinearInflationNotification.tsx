@@ -14,11 +14,13 @@ export const LinearInflationNotification = () => {
   const { currentGeneration } = useCommunity();
   const inflation = useBaseInflation(currentGeneration.blockNumber);
 
-  const [cookies, setCookie] = useCookies(["rebaseBannerDismiss"]);
+  const cookieName = `rebaseBannerDismiss-${currentGeneration.number}`;
+
+  const [cookies, setCookie] = useCookies([cookieName]);
 
   const handleDismiss = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
-    setCookie("rebaseBannerDismiss", "true");
+    setCookie(cookieName, "true");
   };
 
   if (cookies.rebaseBannerDismiss === "true" || inflation === 0) return;
@@ -29,7 +31,7 @@ export const LinearInflationNotification = () => {
         Linear rebasing occurred at the start of this generation on{" "}
         {formatDate(currentGeneration.createdAt)}.{" "}
         <Typography variant="body2">
-          <b>All ECO balances have been updated</b>
+          <b>All ECO balances have been updated</b> accordingly.
         </Typography>
       </Typography>
     </TopBar>

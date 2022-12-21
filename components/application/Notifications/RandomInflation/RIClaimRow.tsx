@@ -59,7 +59,7 @@ export const RIClaimRow: React.FC<RIClaimRowProps> = ({
         recipient.index
       );
       await claimTx.wait();
-      nativeToast(`Successfully claimed random inflation`, toastOpts);
+      nativeToast("Success! Inflation reward claimed.", toastOpts);
       onClaimed(recipient);
     } catch (err) {
       txError("Failed claiming random inflation", err);

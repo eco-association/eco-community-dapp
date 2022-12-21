@@ -12,6 +12,12 @@ import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
 import { displayAddress, txError } from "../../../../../../utilities";
 import { Zero } from "@ethersproject/constants";
 
+interface functionParams {
+  setStep?: (number) => void;
+  onRequestClose?: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const toastOpts: ToastOptions = {
   position: "top-center",
   autoClose: 5000,
@@ -59,9 +65,9 @@ export const useManageDelegation = () => {
   const { dispatch, state } = useDelegationState();
 
   const simpleUndelegate = async (
-    setStep: (number) => void,
-    onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    setStep?: (number) => void,
+    onRequestClose?: React.Dispatch<React.SetStateAction<boolean>>,
+    setLoading?: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     try {
       setLoading(true);
@@ -83,8 +89,6 @@ export const useManageDelegation = () => {
       });
       setLoading(false);
       onRequestClose(false);
-      // eco.delegate('0xEdb4b561b92d843996dd23C8f4aBb861269bC447')
-      // sEcoX.delegate('0xEdb4b561b92d843996dd23C8f4aBb861269bC447')
     } catch (err) {
       setLoading(false);
       txError("Unable to undelegate", err);

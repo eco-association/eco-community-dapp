@@ -183,7 +183,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
           />
           <Column gap="md" items="start">
             <Row gap="lg">
-              {alreadyDelegating && <Button color="success">Edit</Button>}
+              {/* {alreadyDelegating && <Button color="success">Edit</Button>} */}
               <Button
                 type="submit"
                 color={!alreadyDelegating ? "success" : "secondary"}

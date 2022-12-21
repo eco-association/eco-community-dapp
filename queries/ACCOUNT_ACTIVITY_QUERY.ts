@@ -1,4 +1,11 @@
 import { gql } from "@apollo/client";
+import {
+  LockupFragment,
+  LockupFragmentResult,
+} from "./fragments/LockupFragment";
+import { BigNumber } from "ethers";
+import { FundsLockup } from "../types";
+import { FundsLockupWithDeposit } from "../types/FundsLockup";
 
 export enum AccountActivityType {
   PROPOSAL_REFUNDED = "ProposalRefunded",
@@ -18,7 +25,7 @@ export enum AccountActivityType {
 export type Activity = {
   type: AccountActivityType;
   timestamp: Date;
-  communityProposal: {
+  communityProposal?: {
     id: string;
     name: string;
     generationNumber: string;
@@ -26,13 +33,11 @@ export type Activity = {
       result: boolean;
     };
   };
-  randomInflationClaim: {
+  randomInflationClaim?: {
     id: string;
   };
-  lockupDeposit: {
-    id: string;
-  };
-  generation: {
+  lockupDeposit?: FundsLockupWithDeposit;
+  generation?: {
     number: string;
   };
 };
@@ -53,6 +58,11 @@ export type AccountActivity = {
   };
   lockupDeposit: {
     id: string;
+    amount: string;
+    reward: string;
+    delegate: string;
+    withdrawnAt: string | null;
+    lockup: LockupFragmentResult & { generation: { number: string } };
   };
   generation: {
     number: string;
@@ -102,10 +112,21 @@ export const ACCOUNT_ACTIVITY_QUERY = gql`
       }
       lockupDeposit {
         id
+        amount
+        reward
+        delegate
+        withdrawnAt
+        lockup {
+          ...LockupFragment
+          generation {
+            number
+          }
+        }
       }
       generation {
         number
       }
     }
   }
+  ${LockupFragment}
 `;

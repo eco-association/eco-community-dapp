@@ -117,7 +117,6 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
               append={
                 <ButtonGroup>
                   <Button
-                    //style={{ marginTop: -4.5, marginRight: -12 }}
                     variant="outline"
                     color={error ? "error" : "active"}
                     onClick={() => setToConvert(ecoXBalance)}

@@ -1,10 +1,12 @@
-import { Column, Typography } from "@ecoinc/ecomponents";
+import React from "react";
+import { Column, formatNumber, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import {
-  Activity,
   AccountActivityType,
+  Activity,
 } from "../../../../queries/ACCOUNT_ACTIVITY_QUERY";
-import { formatTime } from "../../../../utilities";
+import { formatTime, tokensToNumber } from "../../../../utilities";
+import { useWallet } from "../../../../providers";
 
 const dateTime = css({
   fontSize: "10px",
@@ -73,6 +75,7 @@ const DelegateActivity: React.FC<DelegateActivityProps> = ({
 const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
   activity,
 }) => {
+  const { inflationMultiplier } = useWallet();
   if (activity.type === AccountActivityType.SECOX_UNDELEGATE) {
     return (
       <CardBase time={activity.timestamp}>
@@ -105,7 +108,17 @@ const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
     return (
       <CardBase time={activity.timestamp}>
         <Typography variant="body1">
-          You deposited into an ECO lockup
+          You deposited{" "}
+          <b>
+            {formatNumber(
+              tokensToNumber(
+                activity.lockupDeposit.amount.div(inflationMultiplier)
+              )
+            )}{" "}
+            ECO
+          </b>{" "}
+          into a lockup, earning{" "}
+          {formatNumber(activity.lockupDeposit.interest * 100)}% interest.
         </Typography>
       </CardBase>
     );

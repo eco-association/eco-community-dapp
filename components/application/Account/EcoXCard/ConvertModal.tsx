@@ -115,16 +115,16 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
                 )
               }
               append={
-                <Row>
+                <ButtonGroup>
                   <Button
-                    style={{ marginTop: -4.5, marginRight: -12 }}
+                    //style={{ marginTop: -4.5, marginRight: -12 }}
                     variant="outline"
                     color={error ? "error" : "active"}
                     onClick={() => setToConvert(ecoXBalance)}
                   >
                     All
                   </Button>
-                </Row>
+                </ButtonGroup>
               }
             />
             <Note gap="sm" active={error}>

@@ -7,8 +7,8 @@ import AccountActivityItem from "./AccountActivityItem";
 import ActivityTotalsBar from "./ActivityTotalsBar";
 
 const setMaxHeight = css({
-  maxHeight: 600,
   overflow: "hidden",
+  paddingBottom: 24,
 });
 
 const Sticky = styled.div`

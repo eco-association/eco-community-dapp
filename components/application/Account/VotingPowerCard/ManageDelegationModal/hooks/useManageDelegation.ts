@@ -76,15 +76,15 @@ export const useManageDelegation = () => {
       setStatus("Undelegating Eco");
       const tx1 = await eco.undelegate();
       await tx1.wait();
-      setStep(2);
-      setStatus("Undelegating sEcoX");
-      const tx2 = await sEcoX.undelegate();
-      await tx2.wait();
       dispatch({
         type: DelegateActionType.SetDelegate,
         token: "eco",
         delegate: undefined,
       });
+      setStep(2);
+      setStatus("Undelegating sEcoX");
+      const tx2 = await sEcoX.undelegate();
+      await tx2.wait();
       dispatch({
         type: DelegateActionType.SetDelegate,
         token: "secox",
@@ -115,15 +115,15 @@ export const useManageDelegation = () => {
         setStatus("Delegating ECO");
         const tx1 = await eco.delegate(address);
         await tx1.wait();
-        setStep(2);
-        setStatus("Delegating sECOx");
-        const tx2 = await sEcoX.delegate(address);
-        await tx2.wait();
         dispatch({
           type: DelegateActionType.SetDelegate,
           token: "eco",
           delegate: address,
         });
+        setStep(2);
+        setStatus("Delegating sECOx");
+        const tx2 = await sEcoX.delegate(address);
+        await tx2.wait();
         dispatch({
           type: DelegateActionType.SetDelegate,
           token: "secox",

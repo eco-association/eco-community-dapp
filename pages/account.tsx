@@ -7,6 +7,8 @@ import VotingPowerCard from "../components/application/Account/VotingPowerCard/V
 import EcoXCard from "../components/application/Account/EcoXCard/EcoXCard";
 import { EcoCard } from "../components/application/Account/EcoCard/EcoCard";
 import AccountActivityCard from "../components/application/Account/AccountActivity/AccountActivityCard";
+import { HeaderInfo } from "../components/application/Header/HeaderInfo";
+import { MonoText } from "../components/application/commons/MonoText";
 
 const headerStyle: HeaderProps["styles"] = {
   scrollHeader: { padding: "8px 64px 0 64px" },
@@ -28,13 +30,17 @@ const Account = () => {
       breakpoint={16}
       styles={headerStyle}
       content={
-        <Column gap="md" items="center" style={{ marginTop: 88 }}>
+        <Column gap="lg" items="center" style={{ marginTop: 80 }}>
           <Typography variant="h1" color="white" style={{ lineHeight: 1 }}>
             My Account
           </Typography>
-          <Typography variant="body2" color="success">
-            Manage your balances, your voting power, and see your activity.
-          </Typography>
+          <Column items="center">
+            <HeaderInfo />
+            <MonoText variant="subtitle1" color="success">
+              See your account activity, and manage your balances and voting
+              power.
+            </MonoText>
+          </Column>
         </Column>
       }
     >

@@ -1,4 +1,4 @@
-import { Button, Grid, Typography } from "@ecoinc/ecomponents";
+import { Button, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
 import { useEffect, useState } from "react";
 import { useWallet } from "../../../../providers";
 import StakingModal from "./StakingModal";
@@ -12,6 +12,11 @@ import { css } from "@emotion/react";
 import { AccountCard } from "../AccountCard";
 
 const button = css({ padding: "10px 16px", minWidth: "initial" });
+
+const Box = styled(Row)(({ theme }) => ({
+  padding: 8,
+  backgroundColor: theme.palette.secondary.bg,
+}));
 
 const EcoXCard = () => {
   const wallet = useWallet();
@@ -61,28 +66,30 @@ const EcoXCard = () => {
         onClose={() => setConvertOpen(false)}
       />
       <StakingModal open={stakeOpen} setOpen={setStakeOpen} balances={wallet} />
-      <Grid columns="1fr auto auto" gap="16px" alignItems="center">
-        <Typography variant="body2" color="secondary">
-          Stake ECOx to count towards voting power. Or convert your ECOx to ECO
-          anytime.
-        </Typography>
-        <Button
-          variant="outline"
-          color="secondary"
-          css={button}
-          onClick={openStaking}
-        >
-          Manage Staking
-        </Button>
-        <Button
-          variant="outline"
-          color="secondary"
-          css={button}
-          onClick={openConvertModal}
-        >
-          Convert
-        </Button>
-      </Grid>
+      <Column gap="lg">
+        <Row items="center" justify="space-between" gap="lg">
+          <Typography variant="body2" color="secondary">
+            Stake ECOx to count towards voting power.
+          </Typography>
+          <Button
+            variant="outline"
+            color="secondary"
+            css={button}
+            onClick={openStaking}
+          >
+            Manage Staking
+          </Button>
+        </Row>
+        <Box items="center" justify="space-between" style={{ gap: 56 }}>
+          <Typography variant="body2" color="secondary">
+            You can also burn your ECOx to generate ECO anytime. Note: doing so
+            will permanently remove ECOx supply and is irreversible.
+          </Typography>
+          <Button color="disabled" css={button} onClick={openConvertModal}>
+            Convert
+          </Button>
+        </Box>
+      </Column>
     </AccountCard>
   );
 };

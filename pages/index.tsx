@@ -6,10 +6,8 @@ import { MonetaryPolicyCard } from "../components/application/CommunityGovernanc
 import { ActivityCard } from "../components/application/CommunityGovernance/ActivityCard/ActivityCard";
 import { VotingCard } from "../components/application/CommunityGovernance/VotingCard/VotingCard";
 import { HeaderInfo } from "../components/application/Header/HeaderInfo";
-import { useCommunity } from "../providers";
 
 const Home: React.FC = () => {
-  const { stage, nextGenerationStartsAt } = useCommunity();
   return (
     <Header
       current="home"
@@ -20,12 +18,7 @@ const Home: React.FC = () => {
             <Typography variant="h1" color="white">
               Eco Community Governance
             </Typography>
-            <HeaderInfo
-              home
-              stage={stage.name}
-              endsAt={stage.endsAt}
-              nextGenStartsAt={nextGenerationStartsAt}
-            />
+            <HeaderInfo home />
           </Column>
           <InfoBlocks />
         </Column>

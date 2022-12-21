@@ -100,6 +100,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
           </Typography>
           <Column gap="sm">
             <Input
+              style={{ padding: 0 }}
               type="number"
               min="0"
               placeholder="0.000"
@@ -114,15 +115,16 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
                 )
               }
               append={
-                <ButtonGroup>
+                <Row>
                   <Button
+                    style={{ marginTop: -4.5, marginRight: -12 }}
                     variant="outline"
                     color={error ? "error" : "active"}
                     onClick={() => setToConvert(ecoXBalance)}
                   >
                     All
                   </Button>
-                </ButtonGroup>
+                </Row>
               }
             />
             <Note gap="sm" active={error}>

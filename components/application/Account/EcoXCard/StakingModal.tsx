@@ -61,7 +61,7 @@ const StakingModal: React.FC<StakingModalProps> = ({
   const account = useAccount();
   const gasFee = useGasFee(500_000);
   const { increaseStake, decreaseStake, loading } = useStaking();
-
+  console.log(balances.sEcoXBalance.toString());
   const [staked, setStaked] = useState(balances.sEcoXBalance);
 
   const amountChange = useMemo(() => {
@@ -80,12 +80,12 @@ const StakingModal: React.FC<StakingModalProps> = ({
       decreaseStake(amountChange, onComplete);
     }
   };
-
   const setStake = (e) => {
     e.preventDefault();
     try {
       const _staked =
         e.target.value === "" ? Zero : ethers.utils.parseEther(e.target.value);
+      console.log(_staked.toString());
       setStaked(_staked);
     } catch (e) {}
   };
@@ -117,10 +117,9 @@ const StakingModal: React.FC<StakingModalProps> = ({
         <Container>
           <Input
             type="number"
-            min="0"
             label="Staked"
             css={inputStyle}
-            value={tokensToNumber(staked)}
+            value={staked.isZero() ? "" : tokensToNumber(staked)}
             color={error ? "error" : "secondary"}
             onChange={(e) => setStake(e)}
             placeholder={`${formatStakeAmount(

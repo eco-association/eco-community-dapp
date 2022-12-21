@@ -38,10 +38,11 @@ const VotingPowerSources: React.FC = () => {
   const { address } = useAccount();
   const sources = useVotingPowerSources();
 
-  const lockupTotal = sources.fundsLockedUp.reduce(
+  const lockupTotal = sources.fundsLockupDelegated.reduce(
     (acc, lockup) => acc.add(lockup.amount),
     Zero
   );
+
   const totalDelegated = [sources.ecoDelegatedToMe, sources.sEcoXDelegatedToMe]
     .flatMap((token) => token.map((delegate) => delegate.amount))
     .reduce((acc, amount) => acc.add(amount), Zero);
@@ -76,66 +77,9 @@ const VotingPowerSources: React.FC = () => {
             tokensToNumber(totalDelegated),
             false
           )} voting power`}
-          subtitle="from others"
+          subtitle="from others wallets"
         />
       ) : null}
-
-      {sources.fundsLockedUp.map((lockup) => (
-        <Row key={lockup.id} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(lockup.amount), false)} ECO
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            from Lockup ending {moment(lockup.endsAt).format("L")}
-          </Typography>
-        </Row>
-      ))}
-      {sources.ecoDelegatedToMe.map((delegate) => (
-        <Row key={delegate.address} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(delegate.amount), false)} ECO
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            delegated from wallet {displayAddress(delegate.address)}
-          </Typography>
-        </Row>
-      ))}
-      {sources.sEcoXDelegatedToMe.map((delegate) => (
-        <Row key={delegate.address} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(delegate.amount), false)} staked ECOx
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            delegated from wallet {displayAddress(delegate.address)}
-          </Typography>
-        </Row>
-      ))}
-      {sources.fundsLockupDelegated.map((lockup) => (
-        <Row key={lockup.id} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(lockup.amount), false)} ECO
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            delegated from Vault ending {moment(lockup.endsAt).format("L")}
-          </Typography>
-        </Row>
-      ))}
     </Container>
   );
 };

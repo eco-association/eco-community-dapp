@@ -13,18 +13,11 @@ export type VotingPowerSourceQueryResult = {
       ECO: string;
     }[];
     fundsLockupDepositsDelegatedToMe: {
-      id: string;
       amount: string;
-      duration: string;
-      depositWindowEndsAt: string;
-    }[];
-    fundsLockupDeposits: {
-      id: string;
-      amount: string;
-      duration: string;
-      depositWindowEndsAt: string;
-      delegate: {
+      lockup: {
         id: string;
+        duration: string;
+        depositWindowEndsAt: string;
       };
     }[];
   };
@@ -38,7 +31,7 @@ export type VotingPowerSourceQueryVariables = {
 };
 
 export const VOTING_POWER_SOURCES = gql`
-  query VotingPowerSources($address: String!) {
+  query VOTING_POWER_SOURCES($address: String!) {
     account(id: $address) {
       ECO
       sECOx
@@ -51,18 +44,11 @@ export const VOTING_POWER_SOURCES = gql`
         ECO
       }
       fundsLockupDepositsDelegatedToMe {
-        id
         amount
-        duration
-        depositWindowEndsAt
-      }
-      fundsLockupDeposits {
-        id
-        amount
-        duration
-        depositWindowEndsAt
-        delegate {
+        lockup {
           id
+          duration
+          depositWindowEndsAt
         }
       }
     }

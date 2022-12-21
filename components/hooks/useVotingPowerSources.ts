@@ -9,6 +9,7 @@ import {
 import { BigNumber } from "ethers";
 import { convertDate } from "../../utilities/convertDate";
 import { WeiPerEther, Zero } from "@ethersproject/constants";
+import { adjustVotingPower } from "../../utilities/adjustVotingPower";
 
 interface Lockup {
   id: string;
@@ -28,7 +29,6 @@ export interface VotingPowerSources {
   ecoDelegatedToMe: TokenDelegate[];
   sEcoXDelegatedToMe: TokenDelegate[];
   fundsLockupDelegated: Lockup[];
-  fundsLockedUp: Lockup[];
 }
 
 const DEFAULT_VALUE: VotingPowerSources = {
@@ -37,7 +37,6 @@ const DEFAULT_VALUE: VotingPowerSources = {
   ecoDelegatedToMe: [],
   sEcoXDelegatedToMe: [],
   fundsLockupDelegated: [],
-  fundsLockedUp: [],
 };
 
 function formatSourceData(
@@ -48,7 +47,6 @@ function formatSourceData(
   const {
     ECO,
     sECOx,
-    fundsLockupDeposits,
     fundsLockupDepositsDelegatedToMe,
     ECODelegatedToMe,
     sECOxDelegatedToMe,
@@ -72,23 +70,17 @@ function formatSourceData(
   }));
 
   const fundsLockupDelegated = fundsLockupDepositsDelegatedToMe.map(
-    (lockup) => ({
-      id: lockup.id,
-      amount: BigNumber.from(lockup.amount).div(inflationMultiplier).div(10),
+    (delegate) => ({
+      id: delegate.lockup.id,
+      amount: adjustVotingPower(
+        BigNumber.from(delegate.amount).div(inflationMultiplier)
+      ),
       endsAt: convertDate(
-        parseInt(lockup.depositWindowEndsAt) + parseInt(lockup.duration)
+        parseInt(delegate.lockup.depositWindowEndsAt) +
+          parseInt(delegate.lockup.duration)
       ),
     })
   );
-
-  const fundsLockedUp = fundsLockupDeposits.map((lockup) => ({
-    id: lockup.id,
-    amount: BigNumber.from(lockup.amount).div(inflationMultiplier).div(10),
-    delegate: lockup.delegate?.id,
-    endsAt: convertDate(
-      parseInt(lockup.depositWindowEndsAt) + parseInt(lockup.duration)
-    ),
-  }));
 
   return {
     eco,
@@ -96,13 +88,14 @@ function formatSourceData(
     ecoDelegatedToMe,
     sEcoXDelegatedToMe,
     fundsLockupDelegated,
-    fundsLockedUp,
   };
 }
 
 export const useVotingPowerSources = () => {
-  const [votingSources, setVotingSources] = useState(DEFAULT_VALUE);
   const { address } = useAccount();
+
+  const [votingSources, setVotingSources] = useState(DEFAULT_VALUE);
+
   const {
     data: sources,
     startPolling,

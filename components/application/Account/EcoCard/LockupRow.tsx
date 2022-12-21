@@ -80,7 +80,7 @@ export const LockupRow: React.FC<LockupRowProps> = ({ lockup, onClick }) => {
       </td>
       <td>
         <Typography variant="body2" color={color}>
-          {numberFormatter(getLockupAPY(lockup))}%
+          {numberFormatter(lockup.interest)}%
         </Typography>
       </td>
       <td>

@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
 import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
 import { Zero } from "@ethersproject/constants";
+import { BigNumber } from "ethers";
 
 const Container = styled(Column)({ width: "100%" });
 
@@ -34,18 +35,19 @@ const Sources: React.FC<SourcesProps> = ({ title, subtitle }) => {
   );
 };
 
-const VotingPowerSources: React.FC = () => {
+interface VotingPowerSourcesProps {
+  votingPower: BigNumber;
+}
+
+const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
+  votingPower,
+}) => {
   const { address } = useAccount();
   const sources = useVotingPowerSources();
 
-  const lockupTotal = sources.fundsLockupDelegated.reduce(
-    (acc, lockup) => acc.add(lockup.amount),
-    Zero
-  );
-
-  const totalDelegated = [sources.ecoDelegatedToMe, sources.sEcoXDelegatedToMe]
-    .flatMap((token) => token.map((delegate) => delegate.amount))
-    .reduce((acc, amount) => acc.add(amount), Zero);
+  //TODO: Calculate voting power from lockups and wallets delegating to current wallet
+  const lockupTotal = Zero;
+  const totalDelegated = votingPower.sub(sources.eco).sub(sources.sEcoX);
 
   return (
     <Container gap="lg">

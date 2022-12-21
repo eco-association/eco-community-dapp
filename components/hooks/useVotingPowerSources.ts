@@ -10,6 +10,7 @@ import { BigNumber } from "ethers";
 import { convertDate } from "../../utilities/convertDate";
 import { WeiPerEther, Zero } from "@ethersproject/constants";
 import { adjustVotingPower } from "../../utilities/adjustVotingPower";
+import { useCommunity } from "../../providers";
 
 interface Lockup {
   id: string;
@@ -45,8 +46,8 @@ function formatSourceData(
   if (!data?.account) return DEFAULT_VALUE;
 
   const {
-    ECO,
-    sECOx,
+    historicalECOBalances,
+    historicalsECOxBalances,
     fundsLockupDepositsDelegatedToMe,
     ECODelegatedToMe,
     sECOxDelegatedToMe,
@@ -56,8 +57,17 @@ function formatSourceData(
     ? BigNumber.from(data.inflationMultipliers[0].value)
     : WeiPerEther;
 
-  const eco = BigNumber.from(ECO).div(inflationMultiplier).div(10);
-  const sEcoX = BigNumber.from(sECOx);
+  const eco = historicalECOBalances.length
+    ? BigNumber.from(historicalECOBalances[0].value)
+        .div(inflationMultiplier)
+        .div(10)
+    : Zero;
+
+  const sEcoX = historicalsECOxBalances.length
+    ? BigNumber.from(historicalsECOxBalances[0].value)
+        .div(inflationMultiplier)
+        .div(10)
+    : Zero;
 
   const ecoDelegatedToMe = ECODelegatedToMe.map((delegated) => ({
     address: delegated.id,
@@ -93,6 +103,7 @@ function formatSourceData(
 
 export const useVotingPowerSources = () => {
   const { address } = useAccount();
+  const { currentGeneration } = useCommunity();
 
   const [votingSources, setVotingSources] = useState(DEFAULT_VALUE);
 
@@ -103,7 +114,10 @@ export const useVotingPowerSources = () => {
   } = useQuery<VotingPowerSourceQueryResult, VotingPowerSourceQueryVariables>(
     VOTING_POWER_SOURCES,
     {
-      variables: { address: address?.toLowerCase() },
+      variables: {
+        address: address?.toLowerCase(),
+        blocknumber: currentGeneration.blockNumber,
+      },
     }
   );
 

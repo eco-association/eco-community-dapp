@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 
 export type VotingPowerSourceQueryResult = {
   account: {
-    sECOx: string;
-    ECO: string;
+    historicalECOBalances: { value: string }[];
+    historicalsECOxBalances: { value: string }[];
     sECOxDelegatedToMe: {
       id: string;
       sECOx: string;
@@ -28,13 +28,28 @@ export type VotingPowerSourceQueryResult = {
 
 export type VotingPowerSourceQueryVariables = {
   address: string;
+  blocknumber: string | number;
 };
 
 export const VOTING_POWER_SOURCES = gql`
-  query VOTING_POWER_SOURCES($address: String!) {
+  query VOTING_POWER_SOURCES($address: String!, $blocknumber: BigInt!) {
     account(id: $address) {
-      ECO
-      sECOx
+      historicalECOBalances(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { blockNumber_lte: $blocknumber }
+      ) {
+        value
+      }
+      historicalsECOxBalances(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { blockNumber_lte: $blocknumber }
+      ) {
+        value
+      }
       sECOxDelegatedToMe {
         id
         sECOx
@@ -52,7 +67,12 @@ export const VOTING_POWER_SOURCES = gql`
         }
       }
     }
-    inflationMultipliers(first: 1, orderBy: blockNumber, orderDirection: desc) {
+    inflationMultipliers(
+      first: 1
+      orderBy: blockNumber
+      orderDirection: desc
+      where: { blockNumber_lte: $blocknumber }
+    ) {
       value
     }
   }

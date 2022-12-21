@@ -17,32 +17,25 @@ import { AccountCard } from "../AccountCard";
 import { VotingState } from "./VotingState";
 
 const VotingPowerCard = () => {
-  const community = useCommunity();
   const account = useAccount();
-  const { votingPower } = useVotingPower();
-  const { votingPower: currentGenVotingPower } = useVotingPower(
-    community.currentGeneration.blockNumber
-  );
+  const { currentGeneration } = useCommunity();
+  const { votingPower } = useVotingPower(currentGeneration.blockNumber);
 
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <ManageDelegationProvider>
       <AccountCard
-        title={`${formatNumber(
-          tokensToNumber(currentGenVotingPower)
-        )} Voting Power`}
+        title={`${formatNumber(tokensToNumber(votingPower))} Voting Power`}
         right={<VotingState />}
       >
         <ManageDelegationModal
           key={account.address}
           open={modalOpen}
-          votingPower={votingPower}
-          currentGenVotingPower={currentGenVotingPower}
           onRequestClose={() => setModalOpen(false)}
         />
         <Column gap="xl">
-          <VotingPowerSources />
+          <VotingPowerSources votingPower={votingPower} />
           <Grid columns="1fr auto" gap="24px" alignItems="center">
             <Typography variant="body2" color="secondary">
               Manage delegating your votes to others, or become a delegate

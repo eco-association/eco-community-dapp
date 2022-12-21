@@ -65,16 +65,19 @@ export const useManageDelegation = () => {
   const { dispatch, state } = useDelegationState();
 
   const simpleUndelegate = async (
-    setStep?: (number) => void,
-    onRequestClose?: React.Dispatch<React.SetStateAction<boolean>>,
-    setLoading?: React.Dispatch<React.SetStateAction<boolean>>
+    setStep: (number) => void,
+    onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setStatus: React.Dispatch<React.SetStateAction<string>>
   ) => {
     try {
       setLoading(true);
       setStep(1);
+      setStatus("Undelegating Eco");
       const tx1 = await eco.undelegate();
       await tx1.wait();
       setStep(2);
+      setStatus("Undelegating sEcoX");
       const tx2 = await sEcoX.undelegate();
       await tx2.wait();
       dispatch({
@@ -100,7 +103,8 @@ export const useManageDelegation = () => {
     setInvalidAddress: (string) => void,
     setStep: (number) => void,
     onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setStatus: React.Dispatch<React.SetStateAction<string>>
   ) => {
     try {
       setLoading(true);
@@ -108,9 +112,11 @@ export const useManageDelegation = () => {
       const ecoXEnabled = await sEcoX.delegationToAddressEnabled(address);
       if (ecoEnabled && ecoXEnabled) {
         setStep(1);
+        setStatus("Delegating ECO");
         const tx1 = await eco.delegate(address);
         await tx1.wait();
         setStep(2);
+        setStatus("Delegating sECOx");
         const tx2 = await sEcoX.delegate(address);
         await tx2.wait();
         dispatch({
@@ -210,7 +216,13 @@ export const useManageDelegation = () => {
     }
   };
 
-  const manageBothTokens = async (enabled: boolean, runValidation = true) => {
+  const manageBothTokens = async (
+    enabled: boolean,
+    runValidation = true,
+    setStep: React.Dispatch<React.SetStateAction<number>>,
+    setStatus: React.Dispatch<React.SetStateAction<string>>,
+    onRequestClose?: () => void
+  ) => {
     if (runValidation) {
       const actions: DelegateAction[] = [];
       const ecoValidation = validateToken(state.eco, enabled);
@@ -237,7 +249,6 @@ export const useManageDelegation = () => {
         return;
       }
     }
-
     dispatch({
       type: DelegateActionType.Batch,
       actions: [
@@ -255,18 +266,23 @@ export const useManageDelegation = () => {
     });
     const actions: DelegateAction[] = [];
     try {
+      setStep(1);
+      setStatus(enabled ? "Enabling ECO Delegation" : "Disabling ECO");
       await manageDelegation("eco", enabled);
       actions.push({
         type: DelegateActionType.SetEnabled,
         token: "eco",
         enabled,
       });
+      setStep(2);
+      setStatus(enabled ? "Enabling sECOx Delegation" : "Disabling sECOx");
       await manageDelegation("secox", enabled);
       actions.push({
         type: DelegateActionType.SetEnabled,
         token: "secox",
         enabled,
       });
+      onRequestClose();
     } catch (err) {
       actions.push(
         {

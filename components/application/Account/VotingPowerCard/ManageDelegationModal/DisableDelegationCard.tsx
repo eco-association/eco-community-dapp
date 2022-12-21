@@ -12,9 +12,11 @@ import {
 import { tokensToNumber } from "../../../../../utilities";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import LoaderAnimation from "../../../Loader";
+import { Steps } from "./Steps";
 
 interface DisableDelegationCardProps {
   state: ManageDelegationState;
+  onRequestClose: () => void;
 }
 
 const ErrorBox = styled(Column)(() => ({
@@ -44,9 +46,12 @@ const InfoBox = styled(Column)(({ theme }) => ({
 
 const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
   state,
+  onRequestClose,
 }) => {
   const { manageBothTokens } = useManageDelegation();
   const [totalDelegatedToMe, setTotalDelegatedToMe] = useState<string>();
+  const [step, setStep] = useState(0);
+  const [status, setStatus] = useState("");
   const loading = state.eco.loading || state.secox.loading;
   useMemo(() => {
     const totalBN = Zero;
@@ -84,15 +89,28 @@ const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
               you won&apos;t be able to delegate any you have to anyone else.
             </Typography>
           </Column>
-          <Button
-            disabled={hasDelegatedToMe}
-            variant="outline"
-            color="active"
-            css={{ height: 31, padding: 0, marginLeft: 12 }}
-            onClick={() => manageBothTokens(false, false)}
-          >
-            {loading ? <LoaderAnimation /> : "Disable"}
-          </Button>
+          <Column gap="md" items="right">
+            <Button
+              disabled={hasDelegatedToMe}
+              variant="outline"
+              color="active"
+              css={{ height: 31, padding: 0 }}
+              onClick={() =>
+                manageBothTokens(
+                  false,
+                  false,
+                  setStep,
+                  setStatus,
+                  onRequestClose
+                )
+              }
+            >
+              {loading ? <LoaderAnimation /> : "Disable"}
+            </Button>
+            {loading && (
+              <Steps currentStep={step} totalSteps={2} status={status} center />
+            )}
+          </Column>
         </Row>
         {hasDelegatedToMe && (
           <ErrorBox>

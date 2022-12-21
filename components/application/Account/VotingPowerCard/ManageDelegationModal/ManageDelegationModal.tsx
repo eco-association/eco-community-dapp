@@ -100,8 +100,11 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
       style={{ card: { width: 545, padding: "40px 24px" } }}
     >
       {advanced && <AdvancedDelegation />}
-      {openDelegation && !advanced ? (
-        <EnableDelegationScreen back={() => setOpenDelegation(false)} />
+      {openDelegation && !advanced && !delegationEnabled ? (
+        <EnableDelegationScreen
+          back={() => setOpenDelegation(false)}
+          onRequestClose={() => onRequestClose()}
+        />
       ) : (
         !advanced && (
           <Column gap="xl">
@@ -112,7 +115,12 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
                 <Typography variant="body1" color="primary">
                   All changes take effect at the start of the next generation.
                 </Typography>
-                {delegationEnabled && <DisableDelegationCard state={state} />}
+                {delegationEnabled && (
+                  <DisableDelegationCard
+                    state={state}
+                    onRequestClose={onRequestClose}
+                  />
+                )}
                 {!delegationEnabled && (
                   <Typography variant="body1" color="secondary">
                     Or you can choose to become a delegate and receive voting

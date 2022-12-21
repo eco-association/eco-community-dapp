@@ -27,6 +27,7 @@ import chevronDown from "../../../../../public/images/chevron-down.svg";
 import Image from "next/image";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import { invalid } from "moment";
+import { Steps } from "./Steps";
 
 interface DelegateCardProps {
   onRequestClose?: () => void;
@@ -90,6 +91,8 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
+  const [totalSteps, setTotalSteps] = useState(0);
+  const [status, setStatus] = useState("");
   // An invalid address does not have delegation enabled
   const [invalidAddress, setInvalidAddress] = useState<string>();
   const alreadyDelegating = state.eco.delegate || state.secox.delegate;
@@ -109,7 +112,8 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
     const contract = option === Option.SEcoXMyWallet ? ecoX : eco;
 
     if (alreadyDelegating) {
-      return simpleUndelegate(setStep, onRequestClose, setLoading);
+      setTotalSteps(2);
+      return simpleUndelegate(setStep, onRequestClose, setLoading, setStatus);
     }
 
     if (fromAdvanced) {
@@ -143,12 +147,14 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
       }
     } else {
       setLoading(true);
+      setTotalSteps(2);
       await simpleDelegation(
         address,
         setInvalidAddress,
         setStep,
         onRequestClose,
-        setLoading
+        setLoading,
+        setStatus
       );
     }
     setLoading(false);
@@ -198,7 +204,13 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
                   "Undelegate"
                 )}
               </Button>
-              {loading && <TextLoader />}
+              {loading && (
+                <Steps
+                  currentStep={step}
+                  totalSteps={totalSteps}
+                  status={status}
+                />
+              )}
             </Row>
 
             <GasFee gasLimit={500_000} />

@@ -61,7 +61,6 @@ const StakingModal: React.FC<StakingModalProps> = ({
   const account = useAccount();
   const gasFee = useGasFee(500_000);
   const { increaseStake, decreaseStake, loading } = useStaking();
-  console.log(balances.sEcoXBalance.toString());
   const [staked, setStaked] = useState(balances.sEcoXBalance);
 
   const amountChange = useMemo(() => {
@@ -85,7 +84,6 @@ const StakingModal: React.FC<StakingModalProps> = ({
     try {
       const _staked =
         e.target.value === "" ? Zero : ethers.utils.parseEther(e.target.value);
-      console.log(_staked.toString());
       setStaked(_staked);
     } catch (e) {}
   };

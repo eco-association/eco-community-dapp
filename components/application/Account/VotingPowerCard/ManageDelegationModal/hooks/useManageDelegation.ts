@@ -58,13 +58,48 @@ export const useManageDelegation = () => {
   const sEcoX = useECOxStaking();
   const { dispatch, state } = useDelegationState();
 
+  const simpleUndelegate = async (
+    setStep: (number) => void,
+    onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    try {
+      setLoading(true);
+      setStep(1);
+      const tx1 = await eco.undelegate();
+      await tx1.wait();
+      setStep(2);
+      const tx2 = await sEcoX.undelegate();
+      await tx2.wait();
+      dispatch({
+        type: DelegateActionType.SetDelegate,
+        token: "eco",
+        delegate: undefined,
+      });
+      dispatch({
+        type: DelegateActionType.SetDelegate,
+        token: "secox",
+        delegate: undefined,
+      });
+      setLoading(false);
+      onRequestClose(false);
+      // eco.delegate('0xEdb4b561b92d843996dd23C8f4aBb861269bC447')
+      // sEcoX.delegate('0xEdb4b561b92d843996dd23C8f4aBb861269bC447')
+    } catch (err) {
+      setLoading(false);
+      txError("Unable to undelegate", err);
+    }
+  };
+
   const simpleDelegation = async (
     address: string,
     setInvalidAddress: (string) => void,
     setStep: (number) => void,
-    onRequestClose: () => void
+    onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     try {
+      setLoading(true);
       const ecoEnabled = await eco.delegationToAddressEnabled(address);
       const ecoXEnabled = await sEcoX.delegationToAddressEnabled(address);
       if (ecoEnabled && ecoXEnabled) {
@@ -84,9 +119,11 @@ export const useManageDelegation = () => {
           token: "secox",
           delegate: address,
         });
-        onRequestClose();
+        onRequestClose(false);
         nativeToast(getToastText(address), toastOpts);
+        setLoading(false);
       } else {
+        setLoading(false);
         setInvalidAddress(address);
         txError(
           "Failed to delegate",
@@ -96,6 +133,7 @@ export const useManageDelegation = () => {
         );
       }
     } catch (err) {
+      setLoading(false);
       txError("Failed to delegate", err);
     }
   };
@@ -250,5 +288,6 @@ export const useManageDelegation = () => {
     manageBothTokens,
     manageOneToken,
     simpleDelegation,
+    simpleUndelegate,
   };
 };

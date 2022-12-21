@@ -26,6 +26,7 @@ import TextLoader from "../../../commons/TextLoader";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
 import Image from "next/image";
 import { useManageDelegation } from "./hooks/useManageDelegation";
+import { invalid } from "moment";
 
 interface DelegateCardProps {
   onRequestClose?: () => void;
@@ -82,8 +83,8 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   const eco = useECO();
   const ecoX = useECOxStaking();
   const account = useAccount();
-  const { dispatch } = useDelegationState();
-  const { simpleDelegation } = useManageDelegation();
+  const { dispatch, state } = useDelegationState();
+  const { simpleDelegation, simpleUndelegate } = useManageDelegation();
 
   const theme = useTheme();
 
@@ -91,6 +92,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   const [step, setStep] = useState(0);
   // An invalid address does not have delegation enabled
   const [invalidAddress, setInvalidAddress] = useState<string>();
+  const alreadyDelegating = state.eco.delegate || state.secox.delegate;
 
   const {
     control,
@@ -106,9 +108,13 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
     const address = data.ethAddress.toLowerCase().trim();
     const contract = option === Option.SEcoXMyWallet ? ecoX : eco;
 
-    setLoading(true);
+    if (alreadyDelegating) {
+      return simpleUndelegate(setStep, onRequestClose, setLoading);
+    }
+
     if (fromAdvanced) {
       try {
+        setLoading(true);
         const enabled = await contract.delegationToAddressEnabled(address);
         if (enabled) {
           const tx = await contract.delegate(address);
@@ -120,7 +126,9 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
             delegate: address,
           });
           nativeToast(getToastText(address), toastOpts);
+          setLoading(false);
         } else {
+          setLoading(false);
           setInvalidAddress(address);
           txError(
             "Failed to delegate",
@@ -130,16 +138,36 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
           );
         }
       } catch (err) {
+        setLoading(false);
         txError("Failed to delegate", err);
       }
     } else {
-      simpleDelegation(address, setInvalidAddress, setStep, onRequestClose);
+      setLoading(true);
+      await simpleDelegation(
+        address,
+        setInvalidAddress,
+        setStep,
+        onRequestClose,
+        setLoading
+      );
     }
     setLoading(false);
   };
 
   const ethAddress = getValues().ethAddress.toLowerCase().trim();
   const secondaryColor = theme.palette.secondary.main;
+
+  const isButtonDisabled = () => {
+    if (alreadyDelegating) return false;
+    if (
+      !ethAddress ||
+      ethAddress === invalidAddress ||
+      ethAddress === account.address.toLowerCase() ||
+      ethAddress === delegate?.toLowerCase()
+    )
+      return true;
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit(submitHandler)}>
@@ -155,21 +183,24 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
           />
           <Column gap="md" items="start">
             <Row gap="lg">
+              {alreadyDelegating && <Button color="success">Edit</Button>}
               <Button
                 type="submit"
-                color="success"
+                color={!alreadyDelegating ? "success" : "secondary"}
                 variant="fill"
-                disabled={
-                  !ethAddress ||
-                  ethAddress === invalidAddress ||
-                  ethAddress === account.address.toLowerCase() ||
-                  ethAddress === delegate?.toLowerCase()
-                }
+                disabled={isButtonDisabled()}
               >
-                {loading ? <LoaderAnimation /> : "Confirm"}
+                {loading ? (
+                  <LoaderAnimation />
+                ) : !alreadyDelegating ? (
+                  "Confirm"
+                ) : (
+                  "Undelegate"
+                )}
               </Button>
               {loading && <TextLoader />}
             </Row>
+
             <GasFee gasLimit={500_000} />
           </Column>
         </Column>

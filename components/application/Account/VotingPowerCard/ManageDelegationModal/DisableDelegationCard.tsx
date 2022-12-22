@@ -14,7 +14,6 @@ import { useManageDelegation } from "./hooks/useManageDelegation";
 import LoaderAnimation from "../../../Loader";
 import { Steps } from "./Steps";
 import { useVotingPowerSources } from "../../../../hooks/useVotingPowerSources";
-import { BigNumber } from "ethers";
 
 interface DisableDelegationCardProps {
   state: ManageDelegationState;

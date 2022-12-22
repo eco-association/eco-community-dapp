@@ -100,6 +100,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
           </Typography>
           <Column gap="sm">
             <Input
+              style={{ padding: 0 }}
               type="number"
               min="0"
               placeholder="0.000"

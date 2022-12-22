@@ -1,33 +1,38 @@
 import {
-  AccountActivity,
-  AccountActivityQuery,
-  AccountActivityQueryResults,
   ACCOUNT_ACTIVITY_QUERY,
-} from "./../../queries/ACCOUNT_ACTIVITY_QUERY";
-import { useEffect, useMemo, useState } from "react";
+  AccountActivityQueryResults,
+  Activity,
+} from "../../queries/ACCOUNT_ACTIVITY_QUERY";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import { convertDate } from "../../utilities/convertDate";
-import {
-  Activity,
-  ActivityNotificationType,
-} from "../../queries/ACTIVITY_QUERY";
-import { useCommunity } from "../../providers";
-import { CommunityInterface, GenerationStage } from "../../types";
-import { hasVotingStagePassed } from "../../providers/CommunityProvider";
-import { SubgraphVoteResult } from "../../queries/CURRENT_GENERATION";
 import { useAccount } from "wagmi";
+import { formatLockup } from "../../utilities";
+import { BigNumber } from "ethers";
 
-export const useAccountActivity = (): AccountActivity[] => {
+export const useAccountActivity = (): Activity[] => {
   const account = useAccount();
 
-  function formatData(result: AccountActivityQuery): AccountActivity[] {
-    const activities = result.account.activities?.map(
-      (activity): AccountActivity => ({
+  function formatData(result: AccountActivityQueryResults): Activity[] {
+    return result.activityRecords?.map(
+      (activity): Activity => ({
         ...activity,
         timestamp: convertDate(activity.timestamp),
+        lockupDeposit: activity.lockupDeposit && {
+          ...formatLockup(
+            parseInt(activity.lockupDeposit.lockup.generation.number),
+            activity.lockupDeposit.lockup
+          ),
+          id: activity.lockupDeposit.id,
+          delegate: activity.lockupDeposit.delegate,
+          amount: BigNumber.from(activity.lockupDeposit.amount),
+          reward: BigNumber.from(activity.lockupDeposit.reward),
+          withdrawnAt:
+            activity.lockupDeposit.withdrawnAt &&
+            convertDate(activity.lockupDeposit.withdrawnAt),
+        },
       })
     );
-    return activities;
   }
 
   const { data, startPolling, stopPolling } =
@@ -43,7 +48,7 @@ export const useAccountActivity = (): AccountActivity[] => {
   }, [startPolling, stopPolling]);
 
   return useMemo(() => {
-    if (!data || !data.activityRecords.account.activities) return [];
-    return formatData(data.activityRecords);
+    if (!data || data.activityRecords.length === 0) return [];
+    return formatData(data);
   }, [data]);
 };

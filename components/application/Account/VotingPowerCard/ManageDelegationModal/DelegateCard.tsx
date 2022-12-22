@@ -25,8 +25,12 @@ import { useForm } from "react-hook-form";
 import TextLoader from "../../../commons/TextLoader";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
 import Image from "next/image";
+import { useManageDelegation } from "./hooks/useManageDelegation";
+import { invalid } from "moment";
+import { Steps } from "./Steps";
 
 interface DelegateCardProps {
+  onRequestClose?: () => void;
   fromAdvanced?: boolean;
   lockup?: string;
   delegate?: string;
@@ -75,17 +79,23 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   option,
   delegate,
   setOpenAdvanced,
+  onRequestClose,
 }) => {
   const eco = useECO();
   const ecoX = useECOxStaking();
   const account = useAccount();
-  const { dispatch } = useDelegationState();
+  const { dispatch, state } = useDelegationState();
+  const { simpleDelegation, simpleUndelegate } = useManageDelegation();
 
   const theme = useTheme();
 
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(0);
+  const [totalSteps, setTotalSteps] = useState(0);
+  const [status, setStatus] = useState("");
   // An invalid address does not have delegation enabled
   const [invalidAddress, setInvalidAddress] = useState<string>();
+  const alreadyDelegating = state.eco.delegate || state.secox.delegate;
 
   const {
     control,
@@ -101,36 +111,69 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
     const address = data.ethAddress.toLowerCase().trim();
     const contract = option === Option.SEcoXMyWallet ? ecoX : eco;
 
-    setLoading(true);
-    try {
-      const enabled = await contract.delegationToAddressEnabled(address);
-      if (enabled) {
-        const tx = await contract.delegate(address);
-        await tx.wait();
+    if (alreadyDelegating) {
+      setTotalSteps(2);
+      return simpleUndelegate(setStep, onRequestClose, setLoading, setStatus);
+    }
 
-        dispatch({
-          type: DelegateActionType.SetDelegate,
-          token: option === Option.SEcoXMyWallet ? "secox" : "eco",
-          delegate: address,
-        });
-        nativeToast(getToastText(address), toastOpts);
-      } else {
-        setInvalidAddress(address);
-        txError(
-          "Failed to delegate",
-          new Error(
-            `${displayAddress(address)} doesn't have enabled delegation`
-          )
-        );
+    if (fromAdvanced) {
+      try {
+        setLoading(true);
+        const enabled = await contract.delegationToAddressEnabled(address);
+        if (enabled) {
+          const tx = await contract.delegate(address);
+          await tx.wait();
+
+          dispatch({
+            type: DelegateActionType.SetDelegate,
+            token: option === Option.SEcoXMyWallet ? "secox" : "eco",
+            delegate: address,
+          });
+          nativeToast(getToastText(address), toastOpts);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          setInvalidAddress(address);
+          txError(
+            "Failed to delegate",
+            new Error(
+              `${displayAddress(address)} doesn't have enabled delegation`
+            )
+          );
+        }
+      } catch (err) {
+        setLoading(false);
+        txError("Failed to delegate", err);
       }
-    } catch (err) {
-      txError("Failed to delegate", err);
+    } else {
+      setLoading(true);
+      setTotalSteps(2);
+      await simpleDelegation(
+        address,
+        setInvalidAddress,
+        setStep,
+        onRequestClose,
+        setLoading,
+        setStatus
+      );
     }
     setLoading(false);
   };
 
   const ethAddress = getValues().ethAddress.toLowerCase().trim();
   const secondaryColor = theme.palette.secondary.main;
+
+  const isButtonDisabled = () => {
+    if (alreadyDelegating) return false;
+    if (
+      !ethAddress ||
+      ethAddress === invalidAddress ||
+      ethAddress === account.address.toLowerCase() ||
+      ethAddress === delegate?.toLowerCase()
+    )
+      return true;
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit(submitHandler)}>
@@ -148,20 +191,27 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
             <Row gap="lg">
               <Button
                 type="submit"
-                color="success"
+                color={!alreadyDelegating ? "success" : "secondary"}
                 variant="fill"
-                disabled={
-                  !isValid ||
-                  !ethAddress ||
-                  ethAddress === invalidAddress ||
-                  ethAddress === account.address.toLowerCase() ||
-                  ethAddress === delegate?.toLowerCase()
-                }
+                disabled={isButtonDisabled()}
               >
-                {loading ? <LoaderAnimation /> : "Confirm"}
+                {loading ? (
+                  <LoaderAnimation />
+                ) : !alreadyDelegating ? (
+                  "Confirm"
+                ) : (
+                  "Undelegate"
+                )}
               </Button>
-              {loading && <TextLoader />}
+              {loading && (
+                <Steps
+                  currentStep={step}
+                  totalSteps={totalSteps}
+                  status={status}
+                />
+              )}
             </Row>
+
             <GasFee gasLimit={500_000} />
           </Column>
         </Column>

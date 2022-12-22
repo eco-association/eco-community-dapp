@@ -6,10 +6,38 @@ import {
   TokenDelegation,
   useDelegationState,
 } from "../provider/ManageDelegationProvider";
+import { toast as nativeToast, ToastOptions } from "react-toastify";
 import { useECO } from "../../../../../hooks/contract/useECO";
 import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
-import { txError } from "../../../../../../utilities";
+import { displayAddress, txError } from "../../../../../../utilities";
 import { Zero } from "@ethersproject/constants";
+
+interface functionParams {
+  setStep?: (number) => void;
+  onRequestClose?: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const toastOpts: ToastOptions = {
+  position: "top-center",
+  autoClose: 5000,
+  hideProgressBar: true,
+  theme: "colored",
+  style: {
+    backgroundColor: "#F7FEFC",
+    border: "solid 1px #5AE4BF",
+    color: "#22313A",
+    top: "115px",
+  },
+};
+
+const getToastText = (delegate: string) => {
+  if (!delegate) {
+    return `🚀 Successfully un-delegated`;
+  } else {
+    return `🚀 Successfully delegated to ${displayAddress(delegate)}`;
+  }
+};
 
 const validateToken = (
   state: TokenDelegation,
@@ -35,6 +63,90 @@ export const useManageDelegation = () => {
   const eco = useECO();
   const sEcoX = useECOxStaking();
   const { dispatch, state } = useDelegationState();
+
+  const simpleUndelegate = async (
+    setStep: (number) => void,
+    onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setStatus: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    try {
+      setLoading(true);
+      setStep(1);
+      setStatus("Undelegating Eco");
+      const tx1 = await eco.undelegate();
+      await tx1.wait();
+      dispatch({
+        type: DelegateActionType.SetDelegate,
+        token: "eco",
+        delegate: undefined,
+      });
+      setStep(2);
+      setStatus("Undelegating sEcoX");
+      const tx2 = await sEcoX.undelegate();
+      await tx2.wait();
+      dispatch({
+        type: DelegateActionType.SetDelegate,
+        token: "secox",
+        delegate: undefined,
+      });
+      setLoading(false);
+      onRequestClose(false);
+    } catch (err) {
+      setLoading(false);
+      txError("Unable to undelegate", err);
+    }
+  };
+
+  const simpleDelegation = async (
+    address: string,
+    setInvalidAddress: (string) => void,
+    setStep: (number) => void,
+    onRequestClose: React.Dispatch<React.SetStateAction<boolean>>,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setStatus: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    try {
+      setLoading(true);
+      const ecoEnabled = await eco.delegationToAddressEnabled(address);
+      const ecoXEnabled = await sEcoX.delegationToAddressEnabled(address);
+      if (ecoEnabled && ecoXEnabled) {
+        setStep(1);
+        setStatus("Delegating ECO");
+        const tx1 = await eco.delegate(address);
+        await tx1.wait();
+        dispatch({
+          type: DelegateActionType.SetDelegate,
+          token: "eco",
+          delegate: address,
+        });
+        setStep(2);
+        setStatus("Delegating sECOx");
+        const tx2 = await sEcoX.delegate(address);
+        await tx2.wait();
+        dispatch({
+          type: DelegateActionType.SetDelegate,
+          token: "secox",
+          delegate: address,
+        });
+        onRequestClose(false);
+        nativeToast(getToastText(address), toastOpts);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        setInvalidAddress(address);
+        txError(
+          "Failed to delegate",
+          new Error(
+            `${displayAddress(address)} doesn't have enabled delegation`
+          )
+        );
+      }
+    } catch (err) {
+      setLoading(false);
+      txError("Failed to delegate", err);
+    }
+  };
 
   const manageDelegation = async (token: DelegableToken, enabled: boolean) => {
     const tokenState = state[token];
@@ -104,7 +216,13 @@ export const useManageDelegation = () => {
     }
   };
 
-  const manageBothTokens = async (enabled: boolean, runValidation = true) => {
+  const manageBothTokens = async (
+    enabled: boolean,
+    runValidation = true,
+    setStep: React.Dispatch<React.SetStateAction<number>>,
+    setStatus: React.Dispatch<React.SetStateAction<string>>,
+    onRequestClose?: () => void
+  ) => {
     if (runValidation) {
       const actions: DelegateAction[] = [];
       const ecoValidation = validateToken(state.eco, enabled);
@@ -131,7 +249,6 @@ export const useManageDelegation = () => {
         return;
       }
     }
-
     dispatch({
       type: DelegateActionType.Batch,
       actions: [
@@ -149,18 +266,23 @@ export const useManageDelegation = () => {
     });
     const actions: DelegateAction[] = [];
     try {
+      setStep(1);
+      setStatus(enabled ? "Enabling ECO Delegation" : "Disabling ECO");
       await manageDelegation("eco", enabled);
       actions.push({
         type: DelegateActionType.SetEnabled,
         token: "eco",
         enabled,
       });
+      setStep(2);
+      setStatus(enabled ? "Enabling sECOx Delegation" : "Disabling sECOx");
       await manageDelegation("secox", enabled);
       actions.push({
         type: DelegateActionType.SetEnabled,
         token: "secox",
         enabled,
       });
+      onRequestClose();
     } catch (err) {
       actions.push(
         {
@@ -185,5 +307,7 @@ export const useManageDelegation = () => {
   return {
     manageBothTokens,
     manageOneToken,
+    simpleDelegation,
+    simpleUndelegate,
   };
 };

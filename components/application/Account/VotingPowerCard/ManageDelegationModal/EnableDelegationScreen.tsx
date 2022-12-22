@@ -1,14 +1,16 @@
 import { Button, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useDelegationState } from "./provider/ManageDelegationProvider";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import { GasFee } from "../../../commons/GasFee";
 import LoaderAnimation from "../../../Loader";
 import ChevronLeft from "../../../../../public/images/chevron-left.svg";
+import { Steps } from "./Steps";
 
 interface EnableDelegationBoxProps {
   back(): void;
+  onRequestClose(): void;
 }
 
 const Note = styled(Column)(({ active }) => ({
@@ -23,9 +25,14 @@ const Note = styled(Column)(({ active }) => ({
   padding: 16,
 }));
 
-const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({ back }) => {
+const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({
+  back,
+  onRequestClose,
+}) => {
   const { state } = useDelegationState();
   const { manageBothTokens } = useManageDelegation();
+  const [step, setStep] = useState(0);
+  const [status, setStatus] = useState("");
 
   const loading = state.eco.loading || state.secox.loading;
   const alreadyDelegating = state.eco.delegate || state.secox.delegate;
@@ -97,7 +104,12 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({ back }) => {
           <Button color="disabled" onClick={back}>
             Go back
           </Button>
-          <Button color="success" onClick={() => manageBothTokens(true, false)}>
+          <Button
+            color="success"
+            onClick={() =>
+              manageBothTokens(true, false, setStep, setStatus, onRequestClose)
+            }
+          >
             {loading ? (
               <LoaderAnimation />
             ) : !alreadyDelegating ? (
@@ -106,6 +118,9 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({ back }) => {
               "Undelegate"
             )}
           </Button>
+          {loading && (
+            <Steps status={status} currentStep={step} totalSteps={2} />
+          )}
         </Row>
         <GasFee gasLimit={500_000} />
       </Column>

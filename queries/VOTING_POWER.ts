@@ -26,7 +26,7 @@ export const VOTING_POWER = gql`
       orderDirection: desc
       where: {
         account: $address
-        token: "secox"
+        token: "sEcox"
         blockNumber_lte: $blockNumber
       }
     ) {

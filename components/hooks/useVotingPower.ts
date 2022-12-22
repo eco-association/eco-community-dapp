@@ -18,17 +18,15 @@ function formatVotingPower(data?: VotingPowerQueryResult) {
       votingPower: Zero,
     };
   const ecoVotingPower = data.ECOVotingPower.length
-    ? BigNumber.from(data.ECOVotingPower[0].value)
+    ? adjustVotingPower(BigNumber.from(data.ECOVotingPower[0].value))
     : Zero;
   const secoxVotingPower = data.sECOXVotingPower.length
     ? BigNumber.from(data.sECOXVotingPower[0].value)
     : Zero;
   return {
-    ecoVotingPower: ecoVotingPower.div(10),
-    ecoXVotingPower: secoxVotingPower.div(10),
-    votingPower: adjustVotingPower(
-      ecoVotingPower.add(secoxVotingPower.mul(10))
-    ),
+    ecoVotingPower,
+    ecoXVotingPower: secoxVotingPower,
+    votingPower: secoxVotingPower.add(ecoVotingPower),
   };
 }
 

@@ -57,8 +57,9 @@ export const VotingCard: React.FC<VotingCardProps> = ({ small }) => {
   }, [community]);
 
   if (
-    !isVotingInProgress(stage) &&
-    (!enactionDate || enactionDate.getTime() < Date.now())
+    !community.selectedProposal ||
+    (!isVotingInProgress(stage) &&
+      (!enactionDate || enactionDate.getTime() < Date.now()))
   )
     return null;
 

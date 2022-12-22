@@ -35,7 +35,7 @@ import Favicon from "../public/favicon.png";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/neat.css";
 import "./index.css";
-import { VotingPowerSourcesProvider } from "../providers/UseVotingPowerSources";
+import { VotingPowerSourcesProvider } from "../providers/VotingPowerSourcesProvider";
 import { ManageDelegationProvider } from "../components/application/Account/VotingPowerCard/ManageDelegationModal/provider/ManageDelegationProvider";
 
 const PAGE_TITLE = process.env.NEXT_PUBLIC_DAPP_NAME;

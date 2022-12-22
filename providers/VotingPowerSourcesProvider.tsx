@@ -64,13 +64,13 @@ function formatSourceData(
     : Zero;
 
   const ecoVotingPower = ecoVotingPowerRaw.length
-    ? BigNumber.from(ecoVotingPowerRaw[0].value)
+    ? adjustVotingPower(BigNumber.from(ecoVotingPowerRaw[0].value))
     : Zero;
 
   const eco = historicalECOBalances.length
-    ? BigNumber.from(historicalECOBalances[0].value)
-        .div(inflationMultiplier)
-        .div(10)
+    ? adjustVotingPower(
+        BigNumber.from(historicalECOBalances[0].value).div(inflationMultiplier)
+      )
     : Zero;
 
   const sEcoX = historicalsECOxBalances.length

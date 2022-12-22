@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import { useAccount, useProvider } from "wagmi";
-import { TokenDelegate } from "../../../../../../providers/UseVotingPowerSources";
+import { TokenDelegate } from "../../../../../../providers/VotingPowerSourcesProvider";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import {
   ECO__factory,

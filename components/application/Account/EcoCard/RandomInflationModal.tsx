@@ -14,6 +14,9 @@ import {
   RandomInflationActionType,
   useRandomInflation,
 } from "../../../../providers/RandomInflationProvider";
+import { useWallet } from "../../../../providers";
+import { WalletActionType } from "../../../../providers/WalletProvider";
+import { Zero } from "@ethersproject/constants";
 
 const Content = styled(Column)({ padding: "0 24px" });
 
@@ -27,12 +30,19 @@ export const RandomInflationModal = () => {
     claimableRandomInflations: claimRIs,
   } = useRandomInflation();
 
+  const { dispatch: dispatchWallet } = useWallet();
+
   const onClaimed = (recipient: RandomInflationRecipient) => {
     dispatch({
       type: RandomInflationActionType.Claim,
       recipient: recipient.recipient,
       sequence: recipient.sequenceNumber,
       randomInflationId: recipient.randomInflation.address,
+    });
+    dispatchWallet({
+      type: WalletActionType.IncrementBalance,
+      ecoAmount: recipient.randomInflation.reward,
+      ecoXAmount: Zero,
     });
   };
 

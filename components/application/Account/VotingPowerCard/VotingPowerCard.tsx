@@ -14,7 +14,7 @@ import { useVotingPower } from "../../../hooks/useVotingPower";
 import { useAccount } from "wagmi";
 import { AccountCard } from "../AccountCard";
 import { VotingState } from "./VotingState";
-import { useVotingPowerSources } from "../../../../providers/UseVotingPowerSources";
+import { useVotingPowerSources } from "../../../../providers/VotingPowerSourcesProvider";
 
 const VotingPowerCard = () => {
   const account = useAccount();

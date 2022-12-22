@@ -78,7 +78,7 @@ const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
             tokensToNumber(totalDelegated),
             false
           )} voting power`}
-          subtitle="from others wallets"
+          subtitle="from other wallets"
         />
       ) : null}
     </Container>

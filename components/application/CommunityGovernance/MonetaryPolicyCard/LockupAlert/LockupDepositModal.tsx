@@ -114,10 +114,10 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
           <Typography variant="body1">
             Deposit some or all of your ECO for a defined period of time to earn
             interest.{" "}
-            <Typography variant="body1" color="info">
+            <b>
               Note: removing your ECO from the contract early will result in a
               penalty of {numberFormatter(tokensToNumber(penalty))} ECO.
-            </Typography>
+            </b>
           </Typography>
           <ModalTextItem
             title="LOCKUP RATE"

@@ -6,13 +6,11 @@ import {
   Dialog,
   DialogProps,
   formatNumber,
-  Input,
   Row,
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
 import { Zero } from "@ethersproject/constants";
-import { ethers } from "ethers";
 import { FundsLockup } from "../../../../../types";
 import { GasFee } from "../../../commons/GasFee";
 import { useBlockExit } from "../../../../hooks/useBlockExit";
@@ -34,6 +32,7 @@ import { useAccount } from "wagmi";
 import { useECO } from "../../../../hooks/contract/useECO";
 import { WalletActionType } from "../../../../../providers/WalletProvider";
 import { ModalTextItem } from "../../../Account/EcoCard/ModalTextItem";
+import InputTokenAmount from "../../../commons/InputTokenAmount";
 
 interface LockupModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockup;
@@ -46,16 +45,6 @@ const Container = styled(Column)(({ theme }) => ({
   borderRadius: 4,
   backgroundColor: theme.palette.background.paper,
 }));
-
-const MaxButton = styled(Button)({
-  height: 24,
-  fontSize: 13,
-  lineHeight: 1,
-  padding: "4px 8px",
-  alignSelf: "center",
-  minWidth: "initial",
-  fontWeight: "initial",
-});
 
 const LockupDepositModal: React.FC<LockupModalProps> = ({
   isOpen,
@@ -100,15 +89,6 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
       txError("Failed to deposit", error);
     }
     setLoading(false);
-  };
-
-  const setAmount = (e) => {
-    e.preventDefault();
-    try {
-      const _amount =
-        e.target.value === "" ? Zero : ethers.utils.parseEther(e.target.value);
-      setDepositAmount(_amount);
-    } catch (e) {}
   };
 
   const error = depositAmount.gt(wallet.ecoBalance);
@@ -165,24 +145,13 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
                 {formatNumber(tokensToNumber(wallet.ecoBalance))} Available
               </Typography>
             </Row>
-            <Input
-              type="number"
-              min="0"
-              disabled={disabled || error}
-              value={tokensToNumber(depositAmount)}
-              color={error ? "error" : "secondary"}
-              onChange={(e) => setAmount(e)}
+            <InputTokenAmount
               placeholder="0.000 ECO"
-              append={
-                <MaxButton
-                  disabled={disabled}
-                  variant="outline"
-                  color={error ? "primary" : "active"}
-                  onClick={() => setDepositAmount(wallet.ecoBalance)}
-                >
-                  Max
-                </MaxButton>
-              }
+              value={depositAmount}
+              maxValue={wallet.ecoBalance}
+              onChange={setDepositAmount}
+              disabled={disabled}
+              color={error ? "error" : "secondary"}
             />
           </Column>
           <Column gap="md" items="start">

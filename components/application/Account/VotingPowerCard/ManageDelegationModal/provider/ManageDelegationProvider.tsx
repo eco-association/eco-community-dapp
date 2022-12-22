@@ -241,12 +241,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   );
 
   useEffect(() => {
-    if (
-      !account.isConnected ||
-      state.secox.loading ||
-      state.eco.loading ||
-      Date.now() - INTERVAL_DURATION <= lastUpdate
-    )
+    if (!account.isConnected || state.secox.loading || state.eco.loading)
       return;
 
     setLastUpdate(Date.now());

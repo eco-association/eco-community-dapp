@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import { useAccount, useProvider } from "wagmi";
 import { useECO } from "../../../../../hooks/contract/useECO";
 import {
@@ -180,8 +174,6 @@ const delegateReducer: React.Reducer<ManageDelegationState, DelegateAction> = (
   }
 };
 
-const INTERVAL_DURATION = 5_000;
-
 export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
@@ -192,8 +184,6 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
   const eco = useECO({ useProvider: true });
   const secox = useECOxStaking({ useProvider: true });
-
-  const [lastUpdate, setLastUpdate] = useState(Date.now() - INTERVAL_DURATION);
 
   const multicall = useMemo(
     () => new Multicall({ ethersProvider: provider, tryAggregate: true }),
@@ -244,8 +234,6 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
     if (!account.isConnected || state.secox.loading || state.eco.loading)
       return;
 
-    setLastUpdate(Date.now());
-
     (async () => {
       const { results } = await multicall.call(multicallPaylood);
 
@@ -282,7 +270,6 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   }, [
     account.address,
     account.isConnected,
-    lastUpdate,
     multicall,
     multicallPaylood,
     sources.ecoDelegatedToMe,

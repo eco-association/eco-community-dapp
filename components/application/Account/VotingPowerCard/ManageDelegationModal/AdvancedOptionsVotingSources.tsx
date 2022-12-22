@@ -7,19 +7,18 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import moment from "moment";
 import { BigNumber } from "ethers";
 import { displayAddress, tokensToNumber } from "../../../../../utilities";
 import Image from "next/image";
 import chevronUp from "../../../../../public/images/chevron-up.svg";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
-import { useVotingPowerSources } from "../../../../../providers/UseVotingPowerSources";
 import {
   DelegateValidation,
   useDelegationState,
 } from "./provider/ManageDelegationProvider";
 import { useWallet } from "../../../../../providers";
 import DelegateCard from "./DelegateCard";
+import { adjustVotingPower } from "../../../../../utilities/adjustVotingPower";
 
 export enum Option {
   None,
@@ -29,7 +28,7 @@ export enum Option {
 }
 
 interface DropdownBoxProps {
-  open: boolean;
+  open?: boolean;
   amount: BigNumber;
   title: string;
   delegate?: string;
@@ -97,12 +96,11 @@ const DropdownBox: React.FC<React.PropsWithChildren<DropdownBoxProps>> = ({
   );
 };
 
-const AdvancedOptionsVotingSources = () => {
-  const sources = useVotingPowerSources();
+const AdvancedOptionsVotingSources: React.FC = () => {
   const { state } = useDelegationState();
   const { ecoBalance, sEcoXBalance } = useWallet();
+
   const [option, setOption] = useState(Option.None);
-  const [selectedLockup, setSelectedLockup] = useState<string>(null);
 
   const handleDropdownClick = (option: Option) => setOption(option);
 
@@ -112,7 +110,7 @@ const AdvancedOptionsVotingSources = () => {
     <Column gap="xl">
       <DropdownBox
         title="ECO from your wallet"
-        amount={ecoBalance}
+        amount={adjustVotingPower(ecoBalance)}
         delegate={state.eco.delegate}
         red={state.eco.validate === DelegateValidation.Confirm}
         open={
@@ -127,15 +125,15 @@ const AdvancedOptionsVotingSources = () => {
       >
         {!state.eco.enabled && !loading && (
           <DelegateCard
-            fromAdvanced={true}
-            delegate={state.eco.delegate}
+            fromAdvanced
             option={Option.EcoMyWallet}
+            delegate={state.eco.delegate}
             setOpenAdvanced={() => console.log("void")}
           />
         )}
       </DropdownBox>
       <DropdownBox
-        title="sECOx from your wallet"
+        title="staked ECOx from your wallet"
         amount={sEcoXBalance.mul(10)}
         delegate={state.secox.delegate}
         red={state.secox.validate === DelegateValidation.Confirm}
@@ -151,38 +149,13 @@ const AdvancedOptionsVotingSources = () => {
       >
         {!state.secox.enabled && !loading && (
           <DelegateCard
-            fromAdvanced={true}
-            delegate={state.secox.delegate}
+            fromAdvanced
             option={Option.SEcoXMyWallet}
+            delegate={state.secox.delegate}
             setOpenAdvanced={() => console.log("void")}
           />
         )}
       </DropdownBox>
-      {sources.fundsLockupDelegated.map((lockup) => (
-        <DropdownBox
-          key={lockup.id}
-          title={`ECO from Lockup ending ${moment(lockup.endsAt).format("L")}`}
-          open={option === Option.Lockup && selectedLockup === lockup.id}
-          amount={lockup.amount}
-          delegate={lockup.delegate}
-          onToggle={() => {
-            setSelectedLockup(lockup.id);
-            handleDropdownClick(
-              option === Option.Lockup ? Option.None : Option.Lockup
-            );
-          }}
-        >
-          {!state.eco.enabled && !loading && (
-            <DelegateCard
-              fromAdvanced={true}
-              lockup={lockup.id}
-              delegate={lockup.delegate}
-              option={Option.Lockup}
-              setOpenAdvanced={() => console.log("")}
-            />
-          )}
-        </DropdownBox>
-      ))}
     </Column>
   );
 };

@@ -4,7 +4,7 @@ import {
   Button,
   Column,
   formatNumber,
-  Row,
+  Grid,
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
@@ -12,34 +12,29 @@ import { tokensToNumber } from "../../../../../utilities";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import LoaderAnimation from "../../../Loader";
 import { Steps } from "./Steps";
-import { BigNumber } from "ethers";
+import { useWallet } from "../../../../../providers";
+import { Zero } from "@ethersproject/constants";
+import { adjustVotingPower } from "../../../../../utilities/adjustVotingPower";
 
 interface DisableDelegationCardProps {
   state: ManageDelegationState;
   onRequestClose: () => void;
-  totalDelegated: BigNumber;
 }
 
-const ErrorBox = styled(Column)(() => ({
-  border: "solid 1px #6F8EFF",
-  background: "rgba(111, 142, 255, 0.05)",
+const ErrorBox = styled(Column)(({ theme }) => ({
+  padding: 16,
   borderRadius: 6,
-  height: 76,
-  padding: "12px 16px",
+  background: theme.palette.info.bg,
+  border: `solid 1px ${theme.palette.info.main}`,
 }));
 
 const ActionBox = styled(Column)(() => ({
-  background:
-    "linear-gradient(0deg, #FFFFFF, #FFFFFF), rgba(111, 195, 255, 0.05)",
+  padding: 16,
   borderRadius: 6,
   border: "1px solid #DCE9F0",
-  padding: 12,
-  width: "110%",
-  marginLeft: "-20px",
 }));
 
 const InfoBox = styled(Column)(({ theme }) => ({
-  height: 64,
   background: theme.palette.background.paper,
   padding: 12,
   justifyContent: "center",
@@ -48,45 +43,64 @@ const InfoBox = styled(Column)(({ theme }) => ({
 const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
   state,
   onRequestClose,
-  totalDelegated,
 }) => {
+  const wallet = useWallet();
   const { manageBothTokens } = useManageDelegation();
+
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState("");
-  const loading = state.eco.loading || state.secox.loading;
 
+  const loading = state.eco.loading || state.secox.loading;
   const hasDelegatedToMe =
-    state.eco.delegatesToMe.length > 0 || state.secox.delegatesToMe.length > 0;
+    state.eco.delegatesToMe.length || state.secox.delegatesToMe.length;
+
+  const totalDelegated = [
+    ...wallet.ecoDelegatedToMe.map((delegate) =>
+      adjustVotingPower(delegate.amount)
+    ),
+    ...wallet.sEcoXDelegatedToMe.map((delegate) => delegate.amount),
+  ].reduce((acc, amount) => acc.add(amount), Zero);
+
   return (
     <Column gap="xl">
-      <InfoBox gap="lg">
-        <Typography variant="body1">
-          {formatNumber(tokensToNumber(totalDelegated), false)}{" "}
-          <Typography inline color="active">
-            • delegated from others
-          </Typography>
+      <Column gap="lg" style={{ padding: "0 8px" }}>
+        <Typography variant="h2">Manage Voting Delegation</Typography>
+        <Typography variant="body1" color="primary">
+          Any change takes effect starting next generation.
         </Typography>
-      </InfoBox>
+        <InfoBox gap="lg">
+          <Typography variant="body1">
+            <b>{formatNumber(tokensToNumber(totalDelegated), false)} </b>
+            <Typography inline color="active">
+              <b>• delegated from others</b>
+            </Typography>
+          </Typography>
+        </InfoBox>
+      </Column>
       <ActionBox gap="lg">
-        <Row items="center">
-          <Column>
-            <Typography variant="h5">
-              Delegate status{" "}
-              <Typography inline color="active">
-                • Active
+        <Grid columns="1fr 90px" alignItems="center" gap="24px">
+          <Column gap="sm">
+            <Typography variant="body2">
+              <b>Delegate status </b>
+              <Typography variant="body2" color="active">
+                <b>• Active</b>
               </Typography>
             </Typography>
-            <Typography variant="body1" color="secondary">
+            <Typography
+              variant="body2"
+              color="secondary"
+              style={{ lineHeight: "15.73px" }}
+            >
               As a delegate, you can receive delegated votes from others, but
               you won&apos;t be able to delegate any you have to anyone else.
             </Typography>
           </Column>
           <Column gap="md" items="right">
             <Button
-              disabled={hasDelegatedToMe}
+              size="sm"
               variant="outline"
               color="active"
-              css={{ height: 31, padding: 0 }}
+              disabled={Boolean(hasDelegatedToMe)}
               onClick={() =>
                 manageBothTokens(
                   false,
@@ -103,21 +117,18 @@ const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
               <Steps currentStep={step} totalSteps={2} status={status} center />
             )}
           </Column>
-        </Row>
-        {hasDelegatedToMe && (
+        </Grid>
+        {hasDelegatedToMe ? (
           <ErrorBox>
-            <Typography
-              variant="body2"
-              css={{ color: "#6F8EFF", fontWeight: 700 }}
-            >
-              Note:
+            <Typography variant="body2" color="info">
+              <b>Note:</b>
             </Typography>
             <Typography variant="body2">
               You cannot stop being a delegate as long as others are delegating
               their voting power to you.
             </Typography>
           </ErrorBox>
-        )}
+        ) : null}
       </ActionBox>
     </Column>
   );

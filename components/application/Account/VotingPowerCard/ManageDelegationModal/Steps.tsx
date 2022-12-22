@@ -15,10 +15,18 @@ export const Steps: React.FC<StepsProps> = ({
 }) => {
   return (
     <Column items={center ? "center" : ""}>
-      <Typography variant="body3" color="secondary">
+      <Typography
+        variant="body3"
+        color="secondary"
+        style={center ? { textAlign: "center" } : undefined}
+      >
         STEP {currentStep} OF {totalSteps}
       </Typography>
-      <Typography variant="body2" color="active">
+      <Typography
+        variant="body2"
+        color="active"
+        style={center ? { textAlign: "center" } : undefined}
+      >
         {status}
       </Typography>
     </Column>

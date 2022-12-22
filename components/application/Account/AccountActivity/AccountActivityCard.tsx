@@ -1,6 +1,5 @@
 import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
-import { useMemo, useState } from "react";
 import { AccountActivityType } from "../../../../queries/ACCOUNT_ACTIVITY_QUERY";
 import { useAccountActivity } from "../../../hooks/useAccountActivity";
 import AccountActivityItem from "./AccountActivityItem";
@@ -14,6 +13,7 @@ const setMaxHeight = css({
 const Sticky = styled.div`
   overflow: scroll;
   max-height: 500px;
+
   ::-webkit-scrollbar {
     background: white;
     width: 9px;

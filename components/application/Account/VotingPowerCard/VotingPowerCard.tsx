@@ -11,7 +11,6 @@ import { tokensToNumber } from "../../../../utilities";
 import { useCommunity } from "../../../../providers";
 import ManageDelegationModal from "./ManageDelegationModal/ManageDelegationModal";
 import { useVotingPower } from "../../../hooks/useVotingPower";
-import { ManageDelegationProvider } from "./ManageDelegationModal/provider/ManageDelegationProvider";
 import { useAccount } from "wagmi";
 import { AccountCard } from "../AccountCard";
 import { VotingState } from "./VotingState";
@@ -36,7 +35,6 @@ const VotingPowerCard = () => {
         key={account.address}
         open={modalOpen}
         onRequestClose={() => setModalOpen(false)}
-        totalDelegated={totalDelegated}
       />
       <Column gap="xl">
         <VotingPowerSources totalDelegated={totalDelegated} />

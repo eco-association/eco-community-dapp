@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import { useAccount, useProvider } from "wagmi";
-import { useECO } from "../../../../../hooks/contract/useECO";
-import {
-  TokenDelegate,
-  useVotingPowerSources,
-} from "../../../../../../providers/UseVotingPowerSources";
-import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
+import { TokenDelegate } from "../../../../../../providers/UseVotingPowerSources";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import {
   ECO__factory,
   ECOxStaking__factory,
 } from "../../../../../../types/contracts";
+import { useContractAddresses, useWallet } from "../../../../../../providers";
 
 export enum DelegateValidation {
   Confirm = "Confirm",
@@ -22,6 +18,7 @@ export interface TokenDelegation {
   validate?: DelegateValidation;
   delegate?: string;
   loading: boolean;
+  loadingDelegation: boolean;
   delegatesToMe: TokenDelegate[];
 }
 
@@ -32,12 +29,14 @@ export type ManageDelegationState = Record<DelegableToken, TokenDelegation>;
 const defaultValue: ManageDelegationState = {
   eco: {
     loading: false,
+    loadingDelegation: false,
     enabled: false,
     delegate: undefined,
     delegatesToMe: [],
   },
   secox: {
     loading: false,
+    loadingDelegation: false,
     enabled: false,
     delegate: undefined,
     delegatesToMe: [],
@@ -56,6 +55,7 @@ export enum DelegateActionType {
   Batch,
   SetState,
   SetLoading,
+  SetLoadingDelegation,
   SetEnabled,
   SetDelegate,
   SetTokenData,
@@ -82,7 +82,9 @@ export type DelegateAction =
       delegate: string;
     }
   | {
-      type: DelegateActionType.SetLoading;
+      type:
+        | DelegateActionType.SetLoading
+        | DelegateActionType.SetLoadingDelegation;
       token: DelegableToken;
       loading: boolean;
     }
@@ -148,6 +150,7 @@ const delegateReducer: React.Reducer<ManageDelegationState, DelegateAction> = (
           ),
       });
     case DelegateActionType.SetLoading:
+    case DelegateActionType.SetLoadingDelegation:
       newState = delegateReducer(state, {
         type: DelegateActionType.ResetValidations,
       });
@@ -155,7 +158,9 @@ const delegateReducer: React.Reducer<ManageDelegationState, DelegateAction> = (
         ...newState,
         [action.token]: {
           ...newState[action.token],
-          loading: action.loading,
+          [action.type === DelegateActionType.SetLoading
+            ? "loading"
+            : "loadingDelegation"]: action.loading,
         },
       };
     case DelegateActionType.Validate:
@@ -179,11 +184,10 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
   const account = useAccount();
   const provider = useProvider();
-  const sources = useVotingPowerSources();
+  const wallet = useWallet();
+  const { eco, sEcoX } = useContractAddresses();
 
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
-  const eco = useECO({ useProvider: true });
-  const secox = useECOxStaking({ useProvider: true });
 
   const multicall = useMemo(
     () => new Multicall({ ethersProvider: provider, tryAggregate: true }),
@@ -194,7 +198,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
     () => [
       {
         reference: "eco",
-        contractAddress: eco.address,
+        contractAddress: eco,
         abi: [...ECO__factory.abi],
         calls: [
           {
@@ -211,7 +215,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
       },
       {
         reference: "secox",
-        contractAddress: secox.address,
+        contractAddress: sEcoX,
         abi: [...ECOxStaking__factory.abi],
         calls: [
           {
@@ -227,7 +231,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
         ],
       },
     ],
-    [account.address, eco.address, secox.address]
+    [account.address, eco, sEcoX]
   );
 
   useEffect(() => {
@@ -248,21 +252,23 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
         state: {
           eco: {
             loading: false,
+            loadingDelegation: false,
             enabled: ecoEnabled,
             delegate:
               ECODelegator?.toLowerCase() === account.address.toLowerCase()
                 ? undefined
                 : ECODelegator,
-            delegatesToMe: sources.ecoDelegatedToMe,
+            delegatesToMe: wallet.ecoDelegatedToMe,
           },
           secox: {
             loading: false,
+            loadingDelegation: false,
             enabled: sEcoXEnabled,
             delegate:
               sECOxDelegator?.toLowerCase() === account.address.toLowerCase()
                 ? undefined
                 : sECOxDelegator,
-            delegatesToMe: sources.sEcoXDelegatedToMe,
+            delegatesToMe: wallet.sEcoXDelegatedToMe,
           },
         },
       });
@@ -272,8 +278,8 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
     account.isConnected,
     multicall,
     multicallPaylood,
-    sources.ecoDelegatedToMe,
-    sources.sEcoXDelegatedToMe,
+    wallet.ecoDelegatedToMe,
+    wallet.sEcoXDelegatedToMe,
     state.eco.loading,
     state.secox.loading,
   ]);

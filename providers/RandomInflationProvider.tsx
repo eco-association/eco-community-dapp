@@ -158,15 +158,8 @@ function getReceiptID(receipt: RandomInflationRecipient): string {
   return `${receipt.randomInflation.address}-${receipt.sequenceNumber}`;
 }
 
-function isClaimable(
-  recipient: RandomInflationRecipient,
-  address: string
-): boolean {
-  return (
-    !recipient.claimed &&
-    recipient.recipient === address &&
-    Date.now() > recipient.claimableAt.getTime()
-  );
+function isClaimable(recipient: RandomInflationRecipient): boolean {
+  return !recipient.claimed && Date.now() > recipient.claimableAt.getTime();
 }
 
 const getClaimId = (recipient: string, sequence: number) =>
@@ -260,11 +253,14 @@ export const RandomInflationProvider: React.FC<React.PropsWithChildren> = ({
 
   const pendingClaims = claimableRandomInflations
     .flatMap((ri) => ri.recipients)
-    .filter((r) => isClaimable(r, address));
+    .filter((r) => r.recipient === address && isClaimable(r));
 
   const activeRecipients = claimableRandomInflations
     .flatMap((ri) => ri.recipients)
-    .filter((r) => availableClaims.includes(getReceiptID(r)));
+    .filter(
+      (r) =>
+        r.recipient === address && availableClaims.includes(getReceiptID(r))
+    );
 
   const claimableAmount = pendingClaims.reduce(
     (acc, reward) => acc.add(reward.randomInflation.reward),
@@ -274,7 +270,7 @@ export const RandomInflationProvider: React.FC<React.PropsWithChildren> = ({
   useEffect(() => {
     if (called && !loading) {
       const ids = items
-        .filter((ri) => ri.recipients.some((r) => isClaimable(r, address)))
+        .filter((ri) => ri.recipients.some((r) => isClaimable(r)))
         .map((ri) => ri.address);
       setRandomInflationIds(ids);
     }
@@ -284,7 +280,7 @@ export const RandomInflationProvider: React.FC<React.PropsWithChildren> = ({
     if (!availableClaims.length) {
       const recipientIDs = claimableRandomInflations
         .flatMap((ri) => ri.recipients)
-        .filter((r) => isClaimable(r, address))
+        .filter((r) => isClaimable(r))
         .map(getReceiptID);
       setAvailableClaims(recipientIDs);
     }

@@ -56,7 +56,7 @@ export const LockupRow: React.FC<LockupRowProps> = ({ lockup, onClick }) => {
       ? `ENDED ON ${formatDate(dates.end)}`
       : `${formatDate(dates.start)} - ${formatDate(dates.end)}`;
 
-  const amount = lockup.reward.mul(1e9).div(lockup.interest * 1e7);
+  const amount = lockup.reward.mul(1e9).div((lockup.interest * 1e7).toFixed(0));
 
   return (
     <LockupTableRow

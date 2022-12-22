@@ -6,6 +6,7 @@ import {
 } from "../../queries/BASE_INFLATION";
 import { BigNumberish } from "ethers";
 import { tokensToNumber } from "../../utilities";
+import { WeiPerEther } from "@ethersproject/constants";
 
 function calcPercentage(numerator?: BigNumberish, base?: BigNumberish) {
   if (!numerator || !base) return 0;
@@ -31,7 +32,7 @@ export const useBaseInflation = (block: string | number) => {
         previous: [prev],
         current: [curr],
       } = data;
-      setPercentage(calcPercentage(prev?.value, curr?.value));
+      setPercentage(calcPercentage(prev?.value || WeiPerEther, curr?.value));
     }
   }, [data]);
 

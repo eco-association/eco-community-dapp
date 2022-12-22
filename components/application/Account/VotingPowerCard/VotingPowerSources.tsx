@@ -8,7 +8,7 @@ import {
 } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
-import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
+import { useVotingPowerSources } from "../../../../providers/UseVotingPowerSources";
 import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "ethers";
 

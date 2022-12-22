@@ -13,7 +13,7 @@ import { displayAddress, tokensToNumber } from "../../../../../utilities";
 import Image from "next/image";
 import chevronUp from "../../../../../public/images/chevron-up.svg";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
-import { useVotingPowerSources } from "../../../../hooks/useVotingPowerSources";
+import { useVotingPowerSources } from "../../../../../providers/UseVotingPowerSources";
 import {
   DelegateValidation,
   useDelegationState,

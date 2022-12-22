@@ -33,6 +33,7 @@ export const EcoCard = () => {
   const [selected, setSelected] = useState<FundsLockupWithDeposit["id"]>();
 
   const amountLocked = lockups
+    .filter((lockup) => !lockup.withdrawnAt)
     .reduce((acc, lockup) => acc.add(lockup.amount), Zero)
     .div(inflationMultiplier);
 

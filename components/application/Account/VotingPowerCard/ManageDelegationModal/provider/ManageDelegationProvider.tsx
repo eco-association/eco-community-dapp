@@ -4,7 +4,7 @@ import { useECO } from "../../../../../hooks/contract/useECO";
 import {
   TokenDelegate,
   useVotingPowerSources,
-} from "../../../../../hooks/useVotingPowerSources";
+} from "../../../../../../providers/UseVotingPowerSources";
 import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import {

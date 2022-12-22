@@ -8,7 +8,7 @@ import {
 } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
-import { useVotingPowerSources } from "../../../../providers/UseVotingPowerSources";
+import { useVotingPowerSources } from "../../../../providers/VotingPowerSourcesProvider";
 import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "ethers";
 
@@ -71,7 +71,7 @@ const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
         />
       ) : null}
 
-      {!totalDelegated.isZero() ? (
+      {totalDelegated.gt("0") ? (
         <Sources
           title={`${formatNumber(
             tokensToNumber(totalDelegated),

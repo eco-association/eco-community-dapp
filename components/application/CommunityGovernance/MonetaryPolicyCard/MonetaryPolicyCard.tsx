@@ -10,8 +10,8 @@ export const MonetaryPolicyCard = () => {
       <Column gap="lg">
         <Typography variant="h3">Current Monetary Policy</Typography>
         <Column gap="md">
-          <RandomInflationAlert />
           <BaseInflationAlert />
+          <RandomInflationAlert />
           <LockupAlert />
         </Column>
       </Column>

@@ -1,5 +1,4 @@
 import { FundsLockup } from "../types";
-import { SECONDS_PER_DAY } from "./formatDuration";
 import { LockupFragmentResult } from "../queries/fragments/LockupFragment";
 import { BigNumber, utils } from "ethers";
 import { convertDate } from "./convertDate";
@@ -35,24 +34,21 @@ export function getLockupDates(lockup: FundsLockup | FundsLockupWithDeposit) {
   return { end, start };
 }
 
-export function getLockupAPY(lockup: FundsLockup): number {
-  return (SECONDS_PER_DAY * 365 * lockup.interest) / lockup.duration;
-}
-
 export function formatLockup(
   generation: number,
   lockup?: LockupFragmentResult
 ): FundsLockup {
   if (!lockup) return;
   const duration = parseInt(lockup.duration) * 1000;
+  const depositWindowEndsAt = convertDate(lockup.depositWindowEndsAt);
   return {
     duration,
     generation,
+    depositWindowEndsAt,
     address: lockup.id,
     interest: parseFloat(utils.formatUnits(lockup.interest, 7)),
-    depositWindowEndsAt: convertDate(lockup.depositWindowEndsAt),
     depositWindowDuration: parseInt(lockup.depositWindowDuration) * 1000,
-    endsAt: new Date(parseInt(lockup.depositWindowEndsAt) + duration),
+    endsAt: new Date(depositWindowEndsAt.getTime() + duration),
   };
 }
 

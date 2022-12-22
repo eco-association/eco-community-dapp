@@ -55,8 +55,8 @@ const Account = () => {
         }}
       >
         <Column gap="xl">
-          <EcoXCard />
           <EcoCard />
+          <EcoXCard />
           <VotingPowerCard />
         </Column>
         <AccountActivityCard />

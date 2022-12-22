@@ -6,7 +6,6 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import moment from "moment";
 import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
 import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";

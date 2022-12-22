@@ -85,7 +85,12 @@ const EcoXCard = () => {
             You can also burn your ECOx to generate ECO anytime. Note: doing so
             will permanently remove ECOx supply and is irreversible.
           </Typography>
-          <Button color="disabled" css={button} onClick={openConvertModal}>
+          <Button
+            variant="outline"
+            color="secondary"
+            css={button}
+            onClick={openConvertModal}
+          >
             Convert
           </Button>
         </Box>

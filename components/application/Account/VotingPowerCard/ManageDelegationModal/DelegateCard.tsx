@@ -22,11 +22,9 @@ import {
 } from "./provider/ManageDelegationProvider";
 import { GasFee } from "../../../commons/GasFee";
 import { useForm } from "react-hook-form";
-import TextLoader from "../../../commons/TextLoader";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
 import Image from "next/image";
 import { useManageDelegation } from "./hooks/useManageDelegation";
-import { invalid } from "moment";
 import { Steps } from "./Steps";
 
 interface DelegateCardProps {

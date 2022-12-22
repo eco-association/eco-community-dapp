@@ -1,3 +1,4 @@
+import React from "react";
 import {
   DelegableToken,
   DelegateAction,
@@ -11,12 +12,6 @@ import { useECO } from "../../../../../hooks/contract/useECO";
 import { useECOxStaking } from "../../../../../hooks/contract/useECOxStaking";
 import { displayAddress, txError } from "../../../../../../utilities";
 import { Zero } from "@ethersproject/constants";
-
-interface functionParams {
-  setStep?: (number) => void;
-  onRequestClose?: React.Dispatch<React.SetStateAction<boolean>>;
-  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-}
 
 const toastOpts: ToastOptions = {
   position: "top-center",

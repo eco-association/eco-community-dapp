@@ -2,7 +2,6 @@ import React from "react";
 import moment from "moment";
 import { Color, formatNumber, Row, Typography } from "@ecoinc/ecomponents";
 import {
-  getLockupAPY,
   getLockupDates,
   isLockupClaimable,
   numberFormatter,

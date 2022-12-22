@@ -65,8 +65,6 @@ function formatSourceData(
 
   const sEcoX = historicalsECOxBalances.length
     ? BigNumber.from(historicalsECOxBalances[0].value)
-        .div(inflationMultiplier)
-        .div(10)
     : Zero;
 
   const ecoDelegatedToMe = ECODelegatedToMe.map((delegated) => ({

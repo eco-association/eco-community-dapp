@@ -71,7 +71,7 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({
             <Typography variant="body1">
               Making a post to the Community in the{" "}
               <a
-                href="https://forums.eco.org/"
+                href="https://forums.eco.org/c/a-place-to-to-talk-about-becoming-a-delegate-in-eco/16"
                 target="_blank"
                 rel="noreferrer"
                 style={{

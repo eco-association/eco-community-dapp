@@ -28,11 +28,7 @@ export const BaseInflationAlert = () => {
             {!inflation ? (
               "• Inactive"
             ) : (
-              <Typography
-                variant="body2"
-                css={fontWeight}
-                color={inflation === 0 ? "secondary" : "info"}
-              >
+              <Typography variant="body2" css={fontWeight} color="active">
                 • {format(inflation * 100)}%
               </Typography>
             )}

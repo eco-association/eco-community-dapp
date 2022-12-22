@@ -3,11 +3,7 @@ import { Alert, Typography } from "@ecoinc/ecomponents";
 import { useBaseInflation } from "../../../hooks/useBaseInflation";
 import { useCommunity } from "../../../../providers";
 import { css } from "@emotion/react";
-
-export const { format } = new Intl.NumberFormat("en-EN", {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 1,
-});
+import { numberFormatter } from "../../../../utilities";
 
 const fontWeight = css({ fontWeight: "bold" });
 
@@ -29,7 +25,7 @@ export const BaseInflationAlert = () => {
               "• Inactive"
             ) : (
               <Typography variant="body2" css={fontWeight} color="active">
-                • {format(inflation * 100)}%
+                • {numberFormatter(inflation * 100)}%
               </Typography>
             )}
           </b>

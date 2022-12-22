@@ -2,7 +2,11 @@ import React from "react";
 import { Alert, Typography } from "@ecoinc/ecomponents";
 import { LockupAlertContent } from "./LockupAlertContent";
 import { useCommunity } from "../../../../../providers";
-import { format } from "../BaseInflationAlert";
+
+const { format } = new Intl.NumberFormat("en-EN", {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 1,
+});
 
 export const LockupAlert = () => {
   const { lockup } = useCommunity();
@@ -34,7 +38,7 @@ export const LockupAlert = () => {
             variant="body2"
             color={lockup.interest === 0 ? "secondary" : "active"}
           >
-            <b>• {format(lockup.interest * 100)}%</b>
+            <b>• {format(lockup.interest)}%</b>
           </Typography>{" "}
         </Typography>
       }

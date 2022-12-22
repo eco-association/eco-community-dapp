@@ -52,7 +52,7 @@ export function formatLockup(
     interest: parseFloat(utils.formatUnits(lockup.interest, 7)),
     depositWindowEndsAt: convertDate(lockup.depositWindowEndsAt),
     depositWindowDuration: parseInt(lockup.depositWindowDuration) * 1000,
-    endsAt: new Date(lockup.depositWindowEndsAt + duration),
+    endsAt: new Date(parseInt(lockup.depositWindowEndsAt) + duration),
   };
 }
 

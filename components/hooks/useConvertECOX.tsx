@@ -53,9 +53,9 @@ const useConvertECOX = () => {
 
       onComplete();
       nativeToast(
-        `🚀 Converted ${formatNumber(
+        `💪 Success! You've converted ${formatNumber(
           tokensToNumber(amount)
-        )} ECOx to ECO successfully`,
+        )} ECOx to ${formatNumber(tokensToNumber(value))} ECO.`,
         successfulToastStyle
       );
       setLoading(false);

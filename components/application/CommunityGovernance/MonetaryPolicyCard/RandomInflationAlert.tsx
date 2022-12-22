@@ -5,8 +5,6 @@ import { Alert, Typography } from "@ecoinc/ecomponents";
 import { useCommunity, useWallet } from "../../../../providers";
 import { numberFormatter } from "../../../../utilities";
 
-const fontWeight = css({ fontWeight: "bold" });
-
 export const RandomInflationAlert = () => {
   const { randomInflation } = useCommunity();
   const { ecoTotalSupply } = useWallet();
@@ -17,14 +15,13 @@ export const RandomInflationAlert = () => {
         css={{ border: 0 }}
         color="secondary"
         title={
-          <Typography variant="body1" color="secondary" css={fontWeight}>
-            Random Inflation • Inactive
+          <Typography variant="body2" color="secondary">
+            <b>Random Inflation • Inactive</b>
           </Typography>
         }
       >
         <Typography variant="body2" color="secondary">
-          User addresses are randomly selected to receive a share of new ECO
-          supply.
+          There is no random inflation this generation.
         </Typography>
       </Alert>
     );
@@ -41,28 +38,19 @@ export const RandomInflationAlert = () => {
     <Alert
       color="transparent"
       title={
-        <Typography variant="body1" css={fontWeight}>
-          Random inflation{" "}
-          <Typography variant="body2" css={fontWeight} color="active">
-            • {percent}%
-          </Typography>
+        <Typography variant="body2">
+          <b>
+            Random inflation{" "}
+            <Typography variant="body2" color="active">
+              • {percent}%
+            </Typography>
+          </b>
         </Typography>
       }
     >
       <Typography variant="body2" color="secondary">
-        Random Inflation is active, ECO supply will increase by{" "}
-        <Typography inline variant="body2" color="black" css={fontWeight}>
-          {percent}%.
-        </Typography>{" "}
-        <Typography
-          link
-          href="https://docs.eco.org/core-concepts/monetary-governance/monetary-policy-levers#2-randomized-supply-inflation"
-          variant="body2"
-          target="_blank"
-          color="secondary"
-        >
-          Learn more
-        </Typography>
+        User addresses are randomly selected to receive a share of new ECO
+        supply.
       </Typography>
     </Alert>
   );

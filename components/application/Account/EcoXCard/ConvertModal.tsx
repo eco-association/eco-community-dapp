@@ -1,25 +1,22 @@
 import {
   Button,
-  ButtonGroup,
   Column,
   Dialog,
   formatNumber,
-  Input,
   Row,
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import { css } from "@emotion/react";
-import { BigNumber, ethers } from "ethers";
-import React, { useEffect, useState } from "react";
+import { BigNumber } from "ethers";
+import React, { useMemo, useState } from "react";
 import { tokensToNumber } from "../../../../utilities";
 import useConvertECOX from "../../../hooks/useConvertECOX";
 import { WeiPerEther, Zero } from "@ethersproject/constants";
 
 import LoaderAnimation from "../../Loader";
-import { useConnectContext } from "../../../../providers/ConnectModalProvider";
 import TextLoader from "../../commons/TextLoader";
 import { GasFee } from "../../commons/GasFee";
+import InputTokenAmount from "../../commons/InputTokenAmount";
 
 interface ConvertModalProps {
   ecoXBalance: BigNumber;
@@ -42,13 +39,6 @@ const Note = styled(Column)<{ active: boolean }>(({ active }) => ({
   transitionProperty: "marginTop height opacity",
 }));
 
-const inputStyle = css({
-  "&::placeholder": {
-    opacity: 0.7,
-    color: "#5F869F",
-  },
-});
-
 const ConvertModal: React.FC<ConvertModalProps> = ({
   ecoXBalance,
   exchangeRate,
@@ -56,20 +46,15 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   onClose,
 }) => {
   const { convertEcoX, loading } = useConvertECOX();
-  const { preventUnauthenticatedActions } = useConnectContext();
 
-  const [error, setError] = useState(false);
-  const [toConvert, setToConvert] = useState<BigNumber>(Zero);
+  const [toConvert, setToConvert] = useState(Zero);
 
-  useEffect(() => {
-    toConvert && setError(toConvert.gt(ecoXBalance));
-  }, [ecoXBalance, toConvert]);
+  const error = useMemo(
+    () => toConvert && toConvert.gt(ecoXBalance),
+    [ecoXBalance, toConvert]
+  );
 
-  const convert = () => {
-    if (preventUnauthenticatedActions()) {
-      convertEcoX(toConvert, onClose);
-    }
-  };
+  const convert = () => convertEcoX(toConvert, onClose);
 
   return (
     <Dialog
@@ -81,11 +66,15 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
       onRequestClose={onClose}
     >
       <Column gap="xl">
-        <Column gap="md" css={{ padding: "0px 16px" }}>
+        <Column gap="lg" css={{ padding: "0px 16px" }}>
           <Typography variant="h2">Convert ECOx to ECO</Typography>
           <Typography variant="body1">
-            At any time, you can convert your ECOx into ECO. The current
-            exchange rate is {formatNumber(tokensToNumber(exchangeRate))}:1.{" "}
+            You can permanently burn your ECOx to mint new ECO at any time. This
+            removes ECOx forever from the global locked supply. The current
+            conversion rate is{" "}
+            <b>{formatNumber(tokensToNumber(exchangeRate))}:1.</b>
+          </Typography>
+          <Typography variant="body1" color="error">
             <b>Warning:</b> this action is irreversible, and you cannot convert
             ECO back into ECOx.
           </Typography>
@@ -99,32 +88,12 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
             How much would you like to convert?
           </Typography>
           <Column gap="sm">
-            <Input
-              style={{ padding: 0 }}
-              type="number"
-              min="0"
+            <InputTokenAmount
               placeholder="0.000"
-              css={inputStyle}
+              value={toConvert}
+              maxValue={ecoXBalance}
+              onChange={setToConvert}
               color={error ? "error" : "secondary"}
-              value={toConvert.isZero() ? "" : tokensToNumber(toConvert)}
-              onChange={(e) =>
-                setToConvert(
-                  e.currentTarget.value === ""
-                    ? Zero
-                    : ethers.utils.parseEther(e.currentTarget.value)
-                )
-              }
-              append={
-                <ButtonGroup>
-                  <Button
-                    variant="outline"
-                    color={error ? "error" : "active"}
-                    onClick={() => setToConvert(ecoXBalance)}
-                  >
-                    All
-                  </Button>
-                </ButtonGroup>
-              }
             />
             <Note gap="sm" active={error}>
               <Typography variant="body3" color="error">

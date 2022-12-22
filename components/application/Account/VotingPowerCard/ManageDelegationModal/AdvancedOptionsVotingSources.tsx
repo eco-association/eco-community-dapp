@@ -158,7 +158,7 @@ const AdvancedOptionsVotingSources = () => {
           />
         )}
       </DropdownBox>
-      {sources.fundsLockedUp.map((lockup) => (
+      {sources.fundsLockupDelegated.map((lockup) => (
         <DropdownBox
           key={lockup.id}
           title={`ECO from Lockup ending ${moment(lockup.endsAt).format("L")}`}

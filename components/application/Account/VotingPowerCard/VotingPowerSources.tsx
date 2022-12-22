@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
 import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
 import { Zero } from "@ethersproject/constants";
+import { BigNumber } from "ethers";
 
 const Container = styled(Column)({ width: "100%" });
 
@@ -34,17 +35,19 @@ const Sources: React.FC<SourcesProps> = ({ title, subtitle }) => {
   );
 };
 
-const VotingPowerSources: React.FC = () => {
+interface VotingPowerSourcesProps {
+  votingPower: BigNumber;
+}
+
+const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
+  votingPower,
+}) => {
   const { address } = useAccount();
   const sources = useVotingPowerSources();
 
-  const lockupTotal = sources.fundsLockedUp.reduce(
-    (acc, lockup) => acc.add(lockup.amount),
-    Zero
-  );
-  const totalDelegated = [sources.ecoDelegatedToMe, sources.sEcoXDelegatedToMe]
-    .flatMap((token) => token.map((delegate) => delegate.amount))
-    .reduce((acc, amount) => acc.add(amount), Zero);
+  //TODO: Calculate voting power from lockups and wallets delegating to current wallet
+  const lockupTotal = Zero;
+  const totalDelegated = votingPower.sub(sources.eco).sub(sources.sEcoX);
 
   return (
     <Container gap="lg">
@@ -76,66 +79,9 @@ const VotingPowerSources: React.FC = () => {
             tokensToNumber(totalDelegated),
             false
           )} voting power`}
-          subtitle="from others"
+          subtitle="from others wallets"
         />
       ) : null}
-
-      {sources.fundsLockedUp.map((lockup) => (
-        <Row key={lockup.id} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(lockup.amount), false)} ECO
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            from Lockup ending {moment(lockup.endsAt).format("L")}
-          </Typography>
-        </Row>
-      ))}
-      {sources.ecoDelegatedToMe.map((delegate) => (
-        <Row key={delegate.address} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(delegate.amount), false)} ECO
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            delegated from wallet {displayAddress(delegate.address)}
-          </Typography>
-        </Row>
-      ))}
-      {sources.sEcoXDelegatedToMe.map((delegate) => (
-        <Row key={delegate.address} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(delegate.amount), false)} staked ECOx
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            delegated from wallet {displayAddress(delegate.address)}
-          </Typography>
-        </Row>
-      ))}
-      {sources.fundsLockupDelegated.map((lockup) => (
-        <Row key={lockup.id} gap="md" justify="space-between">
-          <Typography variant="body1">
-            {formatNumber(tokensToNumber(lockup.amount), false)} ECO
-          </Typography>
-          <Typography
-            variant="body1"
-            color="secondary"
-            style={{ textAlign: "right" }}
-          >
-            delegated from Vault ending {moment(lockup.endsAt).format("L")}
-          </Typography>
-        </Row>
-      ))}
     </Container>
   );
 };

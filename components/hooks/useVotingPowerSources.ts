@@ -9,6 +9,8 @@ import {
 import { BigNumber } from "ethers";
 import { convertDate } from "../../utilities/convertDate";
 import { WeiPerEther, Zero } from "@ethersproject/constants";
+import { adjustVotingPower } from "../../utilities/adjustVotingPower";
+import { useCommunity } from "../../providers";
 
 interface Lockup {
   id: string;
@@ -28,7 +30,6 @@ export interface VotingPowerSources {
   ecoDelegatedToMe: TokenDelegate[];
   sEcoXDelegatedToMe: TokenDelegate[];
   fundsLockupDelegated: Lockup[];
-  fundsLockedUp: Lockup[];
 }
 
 const DEFAULT_VALUE: VotingPowerSources = {
@@ -37,7 +38,6 @@ const DEFAULT_VALUE: VotingPowerSources = {
   ecoDelegatedToMe: [],
   sEcoXDelegatedToMe: [],
   fundsLockupDelegated: [],
-  fundsLockedUp: [],
 };
 
 function formatSourceData(
@@ -46,9 +46,8 @@ function formatSourceData(
   if (!data?.account) return DEFAULT_VALUE;
 
   const {
-    ECO,
-    sECOx,
-    fundsLockupDeposits,
+    historicalECOBalances,
+    historicalsECOxBalances,
     fundsLockupDepositsDelegatedToMe,
     ECODelegatedToMe,
     sECOxDelegatedToMe,
@@ -58,8 +57,17 @@ function formatSourceData(
     ? BigNumber.from(data.inflationMultipliers[0].value)
     : WeiPerEther;
 
-  const eco = BigNumber.from(ECO).div(inflationMultiplier).div(10);
-  const sEcoX = BigNumber.from(sECOx);
+  const eco = historicalECOBalances.length
+    ? BigNumber.from(historicalECOBalances[0].value)
+        .div(inflationMultiplier)
+        .div(10)
+    : Zero;
+
+  const sEcoX = historicalsECOxBalances.length
+    ? BigNumber.from(historicalsECOxBalances[0].value)
+        .div(inflationMultiplier)
+        .div(10)
+    : Zero;
 
   const ecoDelegatedToMe = ECODelegatedToMe.map((delegated) => ({
     address: delegated.id,
@@ -72,23 +80,17 @@ function formatSourceData(
   }));
 
   const fundsLockupDelegated = fundsLockupDepositsDelegatedToMe.map(
-    (lockup) => ({
-      id: lockup.id,
-      amount: BigNumber.from(lockup.amount).div(inflationMultiplier).div(10),
+    (delegate) => ({
+      id: delegate.lockup.id,
+      amount: adjustVotingPower(
+        BigNumber.from(delegate.amount).div(inflationMultiplier)
+      ),
       endsAt: convertDate(
-        parseInt(lockup.depositWindowEndsAt) + parseInt(lockup.duration)
+        parseInt(delegate.lockup.depositWindowEndsAt) +
+          parseInt(delegate.lockup.duration)
       ),
     })
   );
-
-  const fundsLockedUp = fundsLockupDeposits.map((lockup) => ({
-    id: lockup.id,
-    amount: BigNumber.from(lockup.amount).div(inflationMultiplier).div(10),
-    delegate: lockup.delegate?.id,
-    endsAt: convertDate(
-      parseInt(lockup.depositWindowEndsAt) + parseInt(lockup.duration)
-    ),
-  }));
 
   return {
     eco,
@@ -96,13 +98,15 @@ function formatSourceData(
     ecoDelegatedToMe,
     sEcoXDelegatedToMe,
     fundsLockupDelegated,
-    fundsLockedUp,
   };
 }
 
 export const useVotingPowerSources = () => {
-  const [votingSources, setVotingSources] = useState(DEFAULT_VALUE);
   const { address } = useAccount();
+  const { currentGeneration } = useCommunity();
+
+  const [votingSources, setVotingSources] = useState(DEFAULT_VALUE);
+
   const {
     data: sources,
     startPolling,
@@ -110,7 +114,10 @@ export const useVotingPowerSources = () => {
   } = useQuery<VotingPowerSourceQueryResult, VotingPowerSourceQueryVariables>(
     VOTING_POWER_SOURCES,
     {
-      variables: { address: address?.toLowerCase() },
+      variables: {
+        address: address?.toLowerCase(),
+        blocknumber: currentGeneration.blockNumber,
+      },
     }
   );
 

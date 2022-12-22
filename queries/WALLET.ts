@@ -24,7 +24,9 @@ type SubgraphAccount = {
     id: string;
     amount: string;
     reward: string;
-    delegate: string;
+    delegate: {
+      id: string;
+    };
     withdrawnAt: string | null;
     lockup: LockupFragmentResult & { generation: { number: string } };
   }[];
@@ -60,7 +62,9 @@ export const WALLET = gql`
         id
         amount
         reward
-        delegate
+        delegate {
+          id
+        }
         withdrawnAt
         lockup {
           ...LockupFragment

@@ -60,7 +60,7 @@ function getLockups(data?: WalletQueryResult): FundsLockupWithDeposit[] {
       return {
         ...formatLockup(generation, lockupDeposit.lockup),
         id: lockupDeposit.id,
-        delegate: lockupDeposit.delegate,
+        delegate: lockupDeposit.delegate.id,
         amount: BigNumber.from(lockupDeposit.amount),
         reward: BigNumber.from(lockupDeposit.reward),
         withdrawnAt:

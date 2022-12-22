@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 
 export type VotingPowerSourceQueryResult = {
   account: {
-    sECOx: string;
-    ECO: string;
+    historicalECOBalances: { value: string }[];
+    historicalsECOxBalances: { value: string }[];
     sECOxDelegatedToMe: {
       id: string;
       sECOx: string;
@@ -13,18 +13,11 @@ export type VotingPowerSourceQueryResult = {
       ECO: string;
     }[];
     fundsLockupDepositsDelegatedToMe: {
-      id: string;
       amount: string;
-      duration: string;
-      depositWindowEndsAt: string;
-    }[];
-    fundsLockupDeposits: {
-      id: string;
-      amount: string;
-      duration: string;
-      depositWindowEndsAt: string;
-      delegate: {
+      lockup: {
         id: string;
+        duration: string;
+        depositWindowEndsAt: string;
       };
     }[];
   };
@@ -35,13 +28,28 @@ export type VotingPowerSourceQueryResult = {
 
 export type VotingPowerSourceQueryVariables = {
   address: string;
+  blocknumber: string | number;
 };
 
 export const VOTING_POWER_SOURCES = gql`
-  query VotingPowerSources($address: String!) {
+  query VOTING_POWER_SOURCES($address: String!, $blocknumber: BigInt!) {
     account(id: $address) {
-      ECO
-      sECOx
+      historicalECOBalances(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { blockNumber_lte: $blocknumber }
+      ) {
+        value
+      }
+      historicalsECOxBalances(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { blockNumber_lte: $blocknumber }
+      ) {
+        value
+      }
       sECOxDelegatedToMe {
         id
         sECOx
@@ -51,22 +59,20 @@ export const VOTING_POWER_SOURCES = gql`
         ECO
       }
       fundsLockupDepositsDelegatedToMe {
-        id
         amount
-        duration
-        depositWindowEndsAt
-      }
-      fundsLockupDeposits {
-        id
-        amount
-        duration
-        depositWindowEndsAt
-        delegate {
+        lockup {
           id
+          duration
+          depositWindowEndsAt
         }
       }
     }
-    inflationMultipliers(first: 1, orderBy: blockNumber, orderDirection: desc) {
+    inflationMultipliers(
+      first: 1
+      orderBy: blockNumber
+      orderDirection: desc
+      where: { blockNumber_lte: $blocknumber }
+    ) {
       value
     }
   }

@@ -1,4 +1,5 @@
-import { Column, Row, Typography } from "@ecoinc/ecomponents";
+import React from "react";
+import { Column, Row, styled, Typography } from "@ecoinc/ecomponents";
 
 interface ActivityTotalsBarProps {
   proposalsSubmitted: number;
@@ -6,27 +7,26 @@ interface ActivityTotalsBarProps {
   proposalsSupported: number;
 }
 
+const Box = styled(Row)(({ theme }) => ({
+  borderRadius: 12,
+  padding: "12px 16px",
+  justifyContent: "space-between",
+  background: theme.palette.secondary.bg,
+}));
+
 const ActivityTotalsBar: React.FC<ActivityTotalsBarProps> = ({
   proposalsSubmitted,
   votesSubmitted,
   proposalsSupported,
 }) => {
   return (
-    <Row
-      gap="xl"
-      style={{
-        padding: "12px",
-        background: "#F6F9FB",
-        borderRadius: "5px",
-        justifyContent: "space-between",
-      }}
-    >
+    <Box gap="xl">
       <Column>
         <Typography variant="h5">
           {proposalsSupported ? proposalsSupported : 0}
         </Typography>
         <Typography variant="subtitle1" color="secondary">
-          PROPOSED
+          SUPPORTED
         </Typography>
       </Column>
       <Column>
@@ -45,7 +45,7 @@ const ActivityTotalsBar: React.FC<ActivityTotalsBarProps> = ({
           SUBMITTED
         </Typography>
       </Column>
-    </Row>
+    </Box>
   );
 };
 

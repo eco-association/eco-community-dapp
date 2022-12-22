@@ -25,8 +25,6 @@ export enum Option {
 
 interface ManageDelegationModal {
   open: boolean;
-  votingPower: BigNumber;
-  currentGenVotingPower: BigNumber;
   onRequestClose: () => void;
 }
 

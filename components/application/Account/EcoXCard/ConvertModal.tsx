@@ -70,8 +70,10 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
           <Typography variant="h2">Convert ECOx to ECO</Typography>
           <Typography variant="body1">
             You can permanently burn your ECOx to mint new ECO at any time. This
-            removes ECOx forever from the global supply. The current conversion
-            rate is <b>1:{formatNumber(tokensToNumber(exchangeRate))}.</b>
+            removes ECOx forever from the supply. <br />
+            <br />
+            The current conversion rate is{" "}
+            <b>1:{formatNumber(tokensToNumber(exchangeRate))}.</b>
           </Typography>
           <Typography variant="body1" color="error">
             <b>Warning:</b> this action is irreversible, and you cannot convert

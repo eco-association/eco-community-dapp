@@ -91,8 +91,8 @@ const StakingModal: React.FC<StakingModalProps> = ({
         <Column gap="lg" style={{ padding: "0 16px" }}>
           <Typography variant="h2">Manage your ECOx Staking</Typography>
           <Typography variant="body1">
-            You have <b>{formatStakedAmount(totalECOx)} ECOx</b>. You can stake
-            or unstake any amount at any time to change your voting power.{" "}
+            You can stake or unstake any amount at any time to change your
+            voting power.{" "}
             <b>ECOx must be staked in order to count toward voting power.</b>
           </Typography>
         </Column>

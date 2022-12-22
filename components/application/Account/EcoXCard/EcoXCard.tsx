@@ -50,7 +50,7 @@ const EcoXCard = () => {
       logo={EcoXLogo}
       balances={[
         {
-          title: "YOUR ECOX",
+          title: "UNSTAKED ECOX",
           balance: wallet.ecoXBalance.add(wallet.sEcoXBalance),
         },
         {

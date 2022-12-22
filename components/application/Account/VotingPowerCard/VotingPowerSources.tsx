@@ -60,7 +60,7 @@ const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
         title={`${formatNumber(
           tokensToNumber(sources.sEcoX),
           false
-        )} staked ECO`}
+        )} staked ECOx`}
         subtitle={`from your wallet ${displayAddress(address)}`}
       />
 

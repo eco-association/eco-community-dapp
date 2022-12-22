@@ -7,6 +7,7 @@ import { GasFee } from "../../../commons/GasFee";
 import LoaderAnimation from "../../../Loader";
 import ChevronLeft from "../../../../../public/images/chevron-left.svg";
 import { Steps } from "./Steps";
+import { displayAddress } from "../../../../../utilities";
 
 interface EnableDelegationBoxProps {
   back(): void;
@@ -95,8 +96,8 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({
           <Note gap="sm" active={true}>
             <Typography variant="body2" color="primary">
               Note: because you are currently delegating your votes to{" "}
-              {state.eco.delegate}, you must first undelegate your votes from
-              this address to become a delegate.
+              {displayAddress(state.eco.delegate)}, you must first undelegate
+              your votes from this address to become a delegate.
             </Typography>
           </Note>
         )}

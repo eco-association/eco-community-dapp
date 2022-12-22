@@ -252,10 +252,10 @@
     react-toastify "^9.0.4"
     tailwindcss "^3.1.4"
 
-"@ecoinc/ecomponents@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@ecoinc/ecomponents/-/ecomponents-0.2.4.tgz#02f1432687b203e8022b6f125d8f8854853d8c1d"
-  integrity sha512-ADTfWvhsf4l4K/jLX+oZqvOMCPX88mjiQ+NhCU923k7GpA8VO7EuQ7sEfAcMb7yhkkA8tZfbVSJdgpbV7bwunQ==
+"@ecoinc/ecomponents@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@ecoinc/ecomponents/-/ecomponents-0.2.5.tgz#646775c1f7437d53f89b5230bc070ecc28a61f7c"
+  integrity sha512-xlLS/s2awwU30wmdJVqzFwQRPT+nAURtp/f2b5f9PMZSqFkow6KLxrCDyUJjm16ii9j7js9cxj868JO8BBsDcw==
   dependencies:
     "@babel/runtime" "^7.17.0"
     clsx "^1.2.1"

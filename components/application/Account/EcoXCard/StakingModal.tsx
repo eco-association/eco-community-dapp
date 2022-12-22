@@ -1,16 +1,14 @@
 import React, { useMemo, useState } from "react";
 import {
   Button,
-  ButtonGroup,
   Column,
   Dialog,
-  Input,
   Row,
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
-import { displayAddress, tokensToNumber } from "../../../../utilities";
+import { displayAddress } from "../../../../utilities";
 import { useGasFee } from "../../../hooks/useGasFee";
 import useStaking, {
   formatStakeAmount,
@@ -19,10 +17,8 @@ import useStaking, {
 import LoaderAnimation from "../../Loader";
 import { useBlockExit } from "../../../hooks/useBlockExit";
 import { WalletInterface } from "../../../../types";
-import { css } from "@emotion/react";
 import TextLoader from "../../commons/TextLoader";
-import { Zero } from "@ethersproject/constants";
-import { ethers } from "ethers";
+import InputTokenAmount from "../../commons/InputTokenAmount";
 
 interface StakingModalProps {
   open: boolean;
@@ -45,13 +41,6 @@ const Note = styled(Column)(({ theme, active, error }) => ({
   transitionDuration: "0.2s",
   transitionProperty: "marginTop,height opacity",
 }));
-
-const inputStyle = css({
-  "&::placeholder": {
-    opacity: 0.7,
-    color: "#5F869F",
-  },
-});
 
 const StakingModal: React.FC<StakingModalProps> = ({
   open,
@@ -81,20 +70,13 @@ const StakingModal: React.FC<StakingModalProps> = ({
     }
   };
 
-  const setStake = (e) => {
-    e.preventDefault();
-    try {
-      const _staked =
-        e.target.value === "" ? Zero : ethers.utils.parseEther(e.target.value);
-      setStaked(_staked);
-    } catch (e) {}
-  };
-
   const totalECOx = balances.ecoXBalance.add(balances.sEcoXBalance);
   const error = staked.gt(totalECOx);
   const hasChanged = !amountChange.isZero();
   const showStakeAlert = balances.sEcoXBalance.lt(staked);
   const showUnstakeAlert = balances.sEcoXBalance.gt(staked);
+
+  const formattedStakedAmount = formatStakeAmount(balances.sEcoXBalance);
 
   return (
     <Dialog
@@ -115,35 +97,13 @@ const StakingModal: React.FC<StakingModalProps> = ({
           </Typography>
         </Column>
         <Container>
-          <Input
-            type="number"
-            min="0"
+          <InputTokenAmount
             label="Staked"
-            css={inputStyle}
-            value={tokensToNumber(staked)}
+            value={staked}
+            maxValue={totalECOx}
+            onChange={setStaked}
             color={error ? "error" : "secondary"}
-            onChange={(e) => setStake(e)}
-            placeholder={`${formatStakeAmount(
-              balances.sEcoXBalance
-            )} currently staked`}
-            append={
-              <ButtonGroup>
-                <Button
-                  variant="outline"
-                  color={error ? "primary" : "active"}
-                  onClick={() => setStaked(totalECOx)}
-                >
-                  All
-                </Button>
-                <Button
-                  variant="outline"
-                  color={error ? "primary" : "active"}
-                  onClick={() => setStaked(Zero)}
-                >
-                  None
-                </Button>
-              </ButtonGroup>
-            }
+            placeholder={`${formattedStakedAmount} currently staked`}
           />
           <Note gap="sm" active={error} error={error}>
             <Typography variant="body3" color="error">

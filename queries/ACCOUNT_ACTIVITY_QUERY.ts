@@ -1,6 +1,11 @@
 import { gql } from "@apollo/client";
-import { timeStamp } from "console";
-import Account from "../pages/account";
+import {
+  LockupFragment,
+  LockupFragmentResult,
+} from "./fragments/LockupFragment";
+import { BigNumber } from "ethers";
+import { FundsLockup } from "../types";
+import { FundsLockupWithDeposit } from "../types/FundsLockup";
 
 export enum AccountActivityType {
   PROPOSAL_REFUNDED = "ProposalRefunded",
@@ -14,101 +19,114 @@ export enum AccountActivityType {
   ECO_UNDELEGATE = "EcoUndelegate",
   SECOX_DELEGATE = "sEcoXDelegate",
   SECOX_UNDELEGATE = "sEcoXUndelegate",
+  RANDOM_INFLATION_CLAIM = "RandomInflationClaim",
 }
 
-const activities = {
-  account: {
-    id: "0x0r5r",
-    activities: [
-      {
-        type: AccountActivityType.PROPOSAL_SUBMITTED,
-        timestamp: new Date(),
-        communityProposal: {
-          id: 1,
-          name: "Test One",
-          generationNumber: 333,
-        },
-      },
-      {
-        type: AccountActivityType.PROPOSAL_SUPPORTED,
-        timeStamp: new Date(),
-        communityProposal: {
-          id: 1,
-          name: "Test One",
-          generationNumber: 333,
-        },
-      },
-    ],
-    randomInflation: [],
-    lockupDeposit: [],
-  },
+export type Activity = {
+  type: AccountActivityType;
+  timestamp: Date;
+  communityProposal?: {
+    id: string;
+    name: string;
+    generationNumber: string;
+    policyVotes: {
+      result: boolean;
+    };
+  };
+  randomInflationClaim?: {
+    id: string;
+  };
+  lockupDeposit?: FundsLockupWithDeposit;
+  generation?: {
+    number: string;
+  };
 };
 
 export type AccountActivity = {
   type: AccountActivityType;
-  timestamp: Date;
+  timestamp: string;
   communityProposal: {
     id: string;
     name: string;
     generationNumber: string;
+    policyVotes: {
+      result: boolean;
+    };
   };
-  randomInflation: {
+  randomInflationClaim: {
     id: string;
   };
   lockupDeposit: {
     id: string;
     amount: string;
-    withdrawnAt: string;
+    reward: string;
+    delegate: string;
+    withdrawnAt: string | null;
+    lockup: LockupFragmentResult & { generation: { number: string } };
+  };
+  generation: {
+    number: string;
   };
 };
-export interface AccountActivityQuery {
-  account: {
-    id: string;
-    activities: {
-      type: AccountActivityType;
-      timestamp: string;
-      communityProposal: {
-        id: string;
-        name: string;
-        generationNumber: string;
-      };
-      randomInflation: {
-        id: string;
-      };
-      lockupDeposit: {
-        id: string;
-        amount: string;
-        withdrawnAt: string;
-      };
-    }[];
-  };
-}
 
 export type AccountActivityQueryResults = {
-  activityRecords: AccountActivityQuery;
+  activityRecords: AccountActivity[];
 };
 
 export const ACCOUNT_ACTIVITY_QUERY = gql`
-  query AccountActivityQuery($address: String!) {
-    account(id: $address) {
-      id
-      activities(first: 30, orderBy: timestamp, orderDirection: desc) {
-        type
-        timestamp
-        communityProposal {
-          id
-          name
-          generationNumber
+  query ACCOUNT_ACTIVITY_QUERY($address: Bytes!) {
+    activityRecords(
+      first: 30
+      where: {
+        triggeredBy: $address
+        type_in: [
+          ProposalSubmitted
+          ProposalSupported
+          ProposalUnsupported
+          ProposalRefunded
+          ProposalVoteFor
+          ProposalVoteAgainst
+          RandomInflationClaim
+          LockupDeposit
+          EcoDelegate
+          EcoUndelegate
+          sEcoXDelegate
+          sEcoXUndelegate
+        ]
+      }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      type
+      timestamp
+      communityProposal {
+        id
+        name
+        generationNumber
+        policyVotes {
+          result
         }
-        randomInflation {
-          id
+      }
+      randomInflationClaim {
+        id
+      }
+      lockupDeposit {
+        id
+        amount
+        reward
+        delegate
+        withdrawnAt
+        lockup {
+          ...LockupFragment
+          generation {
+            number
+          }
         }
-        lockupDeposit {
-          id
-          amount
-          withdrawnAt
-        }
+      }
+      generation {
+        number
       }
     }
   }
+  ${LockupFragment}
 `;

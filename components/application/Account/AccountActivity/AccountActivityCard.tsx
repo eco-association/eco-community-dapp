@@ -1,98 +1,61 @@
-import { Card, Column, Typography } from "@ecoinc/ecomponents";
+import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
+import { css } from "@emotion/react";
 import { useMemo, useState } from "react";
 import { AccountActivityType } from "../../../../queries/ACCOUNT_ACTIVITY_QUERY";
 import { useAccountActivity } from "../../../hooks/useAccountActivity";
 import AccountActivityItem from "./AccountActivityItem";
 import ActivityTotalsBar from "./ActivityTotalsBar";
 
+const setMaxHeight = css({
+  overflow: "hidden",
+  paddingBottom: 24,
+});
+
+const Sticky = styled.div`
+  overflow: scroll;
+  max-height: 500px;
+  ::-webkit-scrollbar {
+    background: white;
+    width: 9px;
+    height: 0px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #dce9f0;
+    border-radius: 43px;
+  }
+
+  scrollbar-color: #dce9f0 white;
+`;
+
 const AccountActivityCard = () => {
-  //const activities = useAccountActivity();
+  const activities = useAccountActivity();
   const [proposalsSubmitted, setProposalsSubmitted] = useState<number>();
   const [votesSubmitted, setVotesSubmitted] = useState<number>();
   const [proposalsSupported, setProposalsSupported] = useState<number>();
 
-  const activities = {
-    account: {
-      id: "0x0r5r",
-      activities: [
-        {
-          type: AccountActivityType.PROPOSAL_SUBMITTED,
-          timestamp: new Date(),
-          communityProposal: {
-            id: 1,
-            name: "Test One",
-            generationNumber: 333,
-          },
-        },
-        {
-          type: AccountActivityType.PROPOSAL_SUPPORTED,
-          timestamp: new Date(),
-          communityProposal: {
-            id: 1,
-            name: "Test One",
-            generationNumber: 333,
-          },
-        },
-        {
-          type: AccountActivityType.PROPOSAL_VOTED_AGAINST,
-          timestamp: new Date(),
-          communityProposal: {
-            id: 2,
-            name: "Test Two",
-            generationNumber: 334,
-          },
-        },
-        {
-          type: AccountActivityType.PROPOSAL_REFUNDED,
-          timestamp: new Date(),
-          communityProposal: {
-            id: 3,
-            name: "Refunded proposal",
-            generationNumber: 332,
-          },
-        },
-        {
-          type: AccountActivityType.PROPOSAL_UNSUPPORTED,
-          timestamp: new Date(),
-          communityProposal: {
-            id: 4,
-            name: "Did not support",
-            generationNumber: 3345,
-          },
-        },
-        {
-          type: AccountActivityType.LOCKUP_DEPOSIT,
-          timestamp: new Date(),
-          lockupDeposit: {
-            amount: 55,
-          },
-        },
-      ],
-    },
-  };
-
-  // useMemo(() => {
-  //   setProposalsSubmitted(
-  //     activities.account.activities.filter(
-  //       (a) => a.type === AccountActivityType.PROPOSAL_SUBMITTED
-  //     ).length
-  //   );
-  //   setVotesSubmitted(
-  //     activities.account.activities.filter(
-  //       (a) => a.type === AccountActivityType.PROPOSAL_VOTED_AGAINST
-  //     ).length +
-  //       activities.account.activities.filter(
-  //         (a) => a.type === AccountActivityType.PROPOSAL_VOTED_FOR
-  //       ).length
-  //   );
-  //   setProposalsSupported(
-  //     activities.account.activities.filter(
-  //       (a) => a.type === AccountActivityType.PROPOSAL_SUPPORTED
-  //     ).length
-  //   );
-  // }, [activities]);
+  useMemo(() => {
+    setProposalsSubmitted(
+      activities.filter(
+        (a) => a.type === AccountActivityType.PROPOSAL_SUBMITTED
+      ).length
+    );
+    setVotesSubmitted(
+      activities.filter(
+        (a) => a.type === AccountActivityType.PROPOSAL_VOTED_AGAINST
+      ).length +
+        activities.filter(
+          (a) => a.type === AccountActivityType.PROPOSAL_VOTED_FOR
+        ).length
+    );
+    setProposalsSupported(
+      activities.filter(
+        (a) => a.type === AccountActivityType.PROPOSAL_SUPPORTED
+      ).length
+    );
+  }, [activities]);
   return (
-    <Card>
+    <Card css={setMaxHeight}>
       <Column gap="lg">
         <Typography variant="h2">Activity</Typography>
         <ActivityTotalsBar
@@ -100,9 +63,19 @@ const AccountActivityCard = () => {
           votesSubmitted={votesSubmitted}
           proposalsSupported={proposalsSupported}
         />
-        {activities.account.activities.map((activity) => (
-          <AccountActivityItem key={activity.type} activity={activity as any} />
-        ))}
+        {activities.length > 0 ? (
+          <Sticky>
+            <Column gap="lg">
+              {activities.map((activity) => (
+                <AccountActivityItem key={activity.type} activity={activity} />
+              ))}
+            </Column>
+          </Sticky>
+        ) : (
+          <Typography variant="body1" color="secondary">
+            You do not have any account activity yet
+          </Typography>
+        )}
       </Column>
     </Card>
   );

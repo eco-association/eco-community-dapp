@@ -3,8 +3,6 @@ import {
   LockupFragment,
   LockupFragmentResult,
 } from "./fragments/LockupFragment";
-import { BigNumber } from "ethers";
-import { FundsLockup } from "../types";
 import { FundsLockupWithDeposit } from "../types/FundsLockup";
 
 export enum AccountActivityType {
@@ -23,6 +21,7 @@ export enum AccountActivityType {
 }
 
 export type Activity = {
+  id: string;
   type: AccountActivityType;
   timestamp: Date;
   communityProposal?: {
@@ -43,6 +42,7 @@ export type Activity = {
 };
 
 export type AccountActivity = {
+  id: string;
   type: AccountActivityType;
   timestamp: string;
   communityProposal: {
@@ -60,7 +60,7 @@ export type AccountActivity = {
     id: string;
     amount: string;
     reward: string;
-    delegate: string;
+    delegate: { id: string };
     withdrawnAt: string | null;
     lockup: LockupFragmentResult & { generation: { number: string } };
   };
@@ -97,6 +97,7 @@ export const ACCOUNT_ACTIVITY_QUERY = gql`
       orderBy: timestamp
       orderDirection: desc
     ) {
+      id
       type
       timestamp
       communityProposal {
@@ -114,7 +115,9 @@ export const ACCOUNT_ACTIVITY_QUERY = gql`
         id
         amount
         reward
-        delegate
+        delegate {
+          id
+        }
         withdrawnAt
         lockup {
           ...LockupFragment

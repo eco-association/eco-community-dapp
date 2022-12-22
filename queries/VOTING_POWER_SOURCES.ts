@@ -4,6 +4,8 @@ export type VotingPowerSourceQueryResult = {
   account: {
     historicalECOBalances: { value: string }[];
     historicalsECOxBalances: { value: string }[];
+    ecoVotingPower: { value: string }[];
+    sEcoXVotingPower: { value: string }[];
     sECOxDelegatedToMe: {
       id: string;
       sECOx: string;
@@ -38,7 +40,7 @@ export const VOTING_POWER_SOURCES = gql`
         first: 1
         orderBy: blockNumber
         orderDirection: desc
-        where: { blockNumber_lte: $blocknumber }
+        where: { blockNumber_lt: $blocknumber }
       ) {
         value
       }
@@ -46,7 +48,23 @@ export const VOTING_POWER_SOURCES = gql`
         first: 1
         orderBy: blockNumber
         orderDirection: desc
-        where: { blockNumber_lte: $blocknumber }
+        where: { blockNumber_lt: $blocknumber }
+      ) {
+        value
+      }
+      ecoVotingPower: historicalVotingPowers(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { token: "eco", blockNumber_lt: $blocknumber }
+      ) {
+        value
+      }
+      sEcoXVotingPower: historicalVotingPowers(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { token: "sEcox", blockNumber_lt: $blocknumber }
       ) {
         value
       }
@@ -71,7 +89,7 @@ export const VOTING_POWER_SOURCES = gql`
       first: 1
       orderBy: blockNumber
       orderDirection: desc
-      where: { blockNumber_lte: $blocknumber }
+      where: { blockNumber_lt: $blocknumber }
     ) {
       value
     }

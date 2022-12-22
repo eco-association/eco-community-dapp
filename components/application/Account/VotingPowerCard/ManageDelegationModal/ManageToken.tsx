@@ -34,21 +34,26 @@ export const ManageToken: React.FC<ManageTokenProps> = ({
     : DelegateOption.Delegate;
 
   return (
-    <Column gap="xs">
+    <Column gap="md">
       <Column gap="xs">
-        <Typography variant="h5">{name}</Typography>
-        <Row gap="md">
+        <Typography variant="h5" style={{ lineHeight: 1 }}>
+          <b>{name}</b>
+        </Typography>
+        <Row gap="md" items="center">
           <Typography variant="h5">
             Receive delegation:{" "}
-            <Typography inline color="secondary">
-              {value === DelegateOption.Receive ? "enabled" : "disabled"}
+            <Typography color="secondary">
+              <b>{value === DelegateOption.Receive ? "enabled" : "disabled"}</b>
             </Typography>
           </Typography>
           {loading ? (
             <LoaderAnimation />
           ) : (
             <ToggleSlider
-              barStylesActive={{ backgroundColor: "#47b699" }}
+              barBackgroundColorActive="#47b699"
+              barBackgroundColor="#0000000C"
+              handleSize={20}
+              handleStyles={{ boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.25)" }}
               active={value === DelegateOption.Receive}
               onToggle={() => {
                 manageOneToken(tokenId, value === DelegateOption.Delegate);

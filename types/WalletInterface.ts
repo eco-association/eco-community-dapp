@@ -14,5 +14,8 @@ export interface WalletInterface {
   ECODelegator: string | null;
   sECOxDelegator: string | null;
 
+  ecoDelegatedToMe: { address: string; amount: BigNumber }[];
+  sEcoXDelegatedToMe: { address: string; amount: BigNumber }[];
+
   lockups: FundsLockupWithDeposit[];
 }

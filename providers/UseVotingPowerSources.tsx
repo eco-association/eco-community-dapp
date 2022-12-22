@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { useAccount } from "wagmi";
 import {
   VOTING_POWER_SOURCES,
   VotingPowerSourceQueryResult,
   VotingPowerSourceQueryVariables,
-} from "../../queries/VOTING_POWER_SOURCES";
+} from "../queries/VOTING_POWER_SOURCES";
 import { BigNumber } from "ethers";
-import { convertDate } from "../../utilities/convertDate";
+import { convertDate } from "../utilities/convertDate";
 import { WeiPerEther, Zero } from "@ethersproject/constants";
-import { adjustVotingPower } from "../../utilities/adjustVotingPower";
-import { useCommunity } from "../../providers";
+import { adjustVotingPower } from "../utilities/adjustVotingPower";
+import { useCommunity } from "./index";
 
 interface Lockup {
   id: string;
@@ -48,6 +48,8 @@ function formatSourceData(
   const {
     historicalECOBalances,
     historicalsECOxBalances,
+    sEcoXVotingPower: sEcoXVotingPowerRaw,
+    ecoVotingPower: ecoVotingPowerRaw,
     fundsLockupDepositsDelegatedToMe,
     ECODelegatedToMe,
     sECOxDelegatedToMe,
@@ -56,6 +58,14 @@ function formatSourceData(
   const inflationMultiplier = data.inflationMultipliers.length
     ? BigNumber.from(data.inflationMultipliers[0].value)
     : WeiPerEther;
+
+  const sEcoXVotingPower = sEcoXVotingPowerRaw.length
+    ? BigNumber.from(sEcoXVotingPowerRaw[0].value)
+    : Zero;
+
+  const ecoVotingPower = ecoVotingPowerRaw.length
+    ? BigNumber.from(ecoVotingPowerRaw[0].value)
+    : Zero;
 
   const eco = historicalECOBalances.length
     ? BigNumber.from(historicalECOBalances[0].value)
@@ -91,15 +101,19 @@ function formatSourceData(
   );
 
   return {
-    eco,
-    sEcoX,
+    eco: ecoVotingPower.gt(eco) ? eco : ecoVotingPower,
+    sEcoX: sEcoXVotingPower.gt(sEcoX) ? sEcoX : sEcoXVotingPower,
     ecoDelegatedToMe,
     sEcoXDelegatedToMe,
     fundsLockupDelegated,
   };
 }
 
-export const useVotingPowerSources = () => {
+const VotingPowerSourcesContext = React.createContext(DEFAULT_VALUE);
+
+export const VotingPowerSourcesProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   const { address } = useAccount();
   const { currentGeneration } = useCommunity();
 
@@ -128,5 +142,12 @@ export const useVotingPowerSources = () => {
     if (sources) setVotingSources(formatSourceData(sources));
   }, [sources]);
 
-  return votingSources;
+  return (
+    <VotingPowerSourcesContext.Provider value={votingSources}>
+      {children}
+    </VotingPowerSourcesContext.Provider>
+  );
 };
+
+export const useVotingPowerSources = () =>
+  React.useContext(VotingPowerSourcesContext);

@@ -1,6 +1,5 @@
 import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
-import { useMemo, useState } from "react";
 import { AccountActivityType } from "../../../../queries/ACCOUNT_ACTIVITY_QUERY";
 import { useAccountActivity } from "../../../hooks/useAccountActivity";
 import AccountActivityItem from "./AccountActivityItem";
@@ -14,6 +13,7 @@ const setMaxHeight = css({
 const Sticky = styled.div`
   overflow: scroll;
   max-height: 500px;
+
   ::-webkit-scrollbar {
     background: white;
     width: 9px;
@@ -30,44 +30,39 @@ const Sticky = styled.div`
 
 const AccountActivityCard = () => {
   const activities = useAccountActivity();
-  const [proposalsSubmitted, setProposalsSubmitted] = useState<number>();
-  const [votesSubmitted, setVotesSubmitted] = useState<number>();
-  const [proposalsSupported, setProposalsSupported] = useState<number>();
 
-  useMemo(() => {
-    setProposalsSubmitted(
-      activities.filter(
-        (a) => a.type === AccountActivityType.PROPOSAL_SUBMITTED
-      ).length
-    );
-    setVotesSubmitted(
-      activities.filter(
-        (a) => a.type === AccountActivityType.PROPOSAL_VOTED_AGAINST
-      ).length +
-        activities.filter(
-          (a) => a.type === AccountActivityType.PROPOSAL_VOTED_FOR
-        ).length
-    );
-    setProposalsSupported(
-      activities.filter(
-        (a) => a.type === AccountActivityType.PROPOSAL_SUPPORTED
-      ).length
-    );
-  }, [activities]);
+  const { length: proposalsSubmitted } = activities.filter(
+    (a) => a.type === AccountActivityType.PROPOSAL_SUBMITTED
+  );
+
+  const { length: proposalsVotedAgainst } = activities.filter(
+    (a) => a.type === AccountActivityType.PROPOSAL_VOTED_AGAINST
+  );
+
+  const { length: proposalsVotedFor } = activities.filter(
+    (a) => a.type === AccountActivityType.PROPOSAL_VOTED_FOR
+  );
+
+  const { length: proposalsSupported } = activities.filter(
+    (a) => a.type === AccountActivityType.PROPOSAL_SUPPORTED
+  );
+
+  const votesSubmitted = proposalsVotedFor + proposalsVotedAgainst;
+
   return (
     <Card css={setMaxHeight}>
       <Column gap="lg">
         <Typography variant="h2">Activity</Typography>
         <ActivityTotalsBar
-          proposalsSubmitted={proposalsSubmitted}
           votesSubmitted={votesSubmitted}
+          proposalsSubmitted={proposalsSubmitted}
           proposalsSupported={proposalsSupported}
         />
         {activities.length > 0 ? (
           <Sticky>
             <Column gap="lg">
               {activities.map((activity) => (
-                <AccountActivityItem key={activity.type} activity={activity} />
+                <AccountActivityItem key={activity.id} activity={activity} />
               ))}
             </Column>
           </Sticky>

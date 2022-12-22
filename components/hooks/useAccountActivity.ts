@@ -10,30 +10,30 @@ import { useAccount } from "wagmi";
 import { formatLockup } from "../../utilities";
 import { BigNumber } from "ethers";
 
+function formatData(result: AccountActivityQueryResults): Activity[] {
+  return result.activityRecords?.map(
+    (activity): Activity => ({
+      ...activity,
+      timestamp: convertDate(activity.timestamp),
+      lockupDeposit: activity.lockupDeposit && {
+        ...formatLockup(
+          parseInt(activity.lockupDeposit.lockup.generation.number),
+          activity.lockupDeposit.lockup
+        ),
+        id: activity.lockupDeposit.id,
+        delegate: activity.lockupDeposit.delegate.id,
+        amount: BigNumber.from(activity.lockupDeposit.amount),
+        reward: BigNumber.from(activity.lockupDeposit.reward),
+        withdrawnAt:
+          activity.lockupDeposit.withdrawnAt &&
+          convertDate(activity.lockupDeposit.withdrawnAt),
+      },
+    })
+  );
+}
+
 export const useAccountActivity = (): Activity[] => {
   const account = useAccount();
-
-  function formatData(result: AccountActivityQueryResults): Activity[] {
-    return result.activityRecords?.map(
-      (activity): Activity => ({
-        ...activity,
-        timestamp: convertDate(activity.timestamp),
-        lockupDeposit: activity.lockupDeposit && {
-          ...formatLockup(
-            parseInt(activity.lockupDeposit.lockup.generation.number),
-            activity.lockupDeposit.lockup
-          ),
-          id: activity.lockupDeposit.id,
-          delegate: activity.lockupDeposit.delegate,
-          amount: BigNumber.from(activity.lockupDeposit.amount),
-          reward: BigNumber.from(activity.lockupDeposit.reward),
-          withdrawnAt:
-            activity.lockupDeposit.withdrawnAt &&
-            convertDate(activity.lockupDeposit.withdrawnAt),
-        },
-      })
-    );
-  }
 
   const { data, startPolling, stopPolling } =
     useQuery<AccountActivityQueryResults>(ACCOUNT_ACTIVITY_QUERY, {

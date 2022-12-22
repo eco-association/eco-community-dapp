@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BigNumber } from "ethers";
-import {
-  Column,
-  Dialog,
-  Grid,
-  Row,
-  styled,
-  Typography,
-} from "@ecoinc/ecomponents";
+import { Column, Dialog, styled, Typography } from "@ecoinc/ecomponents";
 
 import DelegateCard from "./DelegateCard";
 import { useDelegationState } from "./provider/ManageDelegationProvider";
@@ -15,6 +8,7 @@ import { useDelegationState } from "./provider/ManageDelegationProvider";
 import EnableDelegationScreen from "./EnableDelegationScreen";
 import DisableDelegationCard from "./DisableDelegationCard";
 import AdvancedDelegation from "./AdvancedDelegation";
+import { isAdvancedDelegation } from "../../../../../utilities/votingPower";
 
 export enum Option {
   None,
@@ -26,7 +20,6 @@ export enum Option {
 interface ManageDelegationModal {
   open: boolean;
   onRequestClose: () => void;
-  totalDelegated: BigNumber;
 }
 
 interface DropdownBoxProps {
@@ -47,43 +40,22 @@ const DropdownBoxStyle = styled(Column)<Pick<DropdownBoxProps, "red">>(
   })
 );
 
-const DelegateInputArea: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return (
-    <DropdownBoxStyle gap="lg">
-      <Grid columns="1fr 16px" gap="8px" style={{ alignItems: "center" }}>
-        <Row items="center" gap="sm" style={{ flexWrap: "wrap" }}>
-          <Typography variant="body1" color="primary" style={{ lineHeight: 1 }}>
-            Delegate your voting power to someone?{" "}
-            <Typography inline color="secondary">
-              (optional)
-            </Typography>
-          </Typography>
-        </Row>
-      </Grid>
-      {children}
-    </DropdownBoxStyle>
-  );
-};
-
 const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   open,
   onRequestClose,
-  totalDelegated,
 }) => {
   const { state } = useDelegationState();
-  const [advanced, setAdvanced] = useState(
-    state.eco.enabled !== state.secox.enabled
-  );
+  const [advanced, setAdvanced] = useState(isAdvancedDelegation(state));
   const [openDelegation, setOpenDelegation] = useState(false);
 
   const loading = state.eco.loading || state.secox.loading;
   const delegationEnabled = state.eco.enabled || state.secox.enabled;
 
   useEffect(() => {
-    if (state.eco.enabled !== state.secox.enabled) {
+    if (isAdvancedDelegation(state)) {
       setAdvanced(true);
     }
-  }, [advanced, state.eco.enabled, state.secox.enabled]);
+  }, [state]);
 
   const handleClose = () => {
     onRequestClose();
@@ -97,62 +69,77 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}
-      style={{ card: { width: 545, padding: "40px 24px" } }}
+      style={{
+        card: {
+          width: 540,
+          padding: advanced
+            ? "44px 40px"
+            : !(openDelegation && !delegationEnabled) && delegationEnabled
+            ? "44px 32px 32px 32px"
+            : "40px 24px",
+        },
+      }}
     >
-      {advanced && <AdvancedDelegation />}
-      {openDelegation && !advanced && !delegationEnabled ? (
+      {advanced ? (
+        <AdvancedDelegation onClose={() => setAdvanced(false)} />
+      ) : openDelegation && !delegationEnabled ? (
         <EnableDelegationScreen
           back={() => setOpenDelegation(false)}
           onRequestClose={() => onRequestClose()}
         />
       ) : (
-        !advanced && (
-          <Column gap="xl">
-            <Column gap="xl" style={{ padding: "0 16px" }}>
-              <Column gap="lg" style={{ padding: 14 }}>
+        <Column gap="xl">
+          <Column
+            gap="xl"
+            style={{ padding: !delegationEnabled ? "0 16px" : 0 }}
+          >
+            {delegationEnabled ? (
+              <DisableDelegationCard
+                state={state}
+                onRequestClose={onRequestClose}
+              />
+            ) : (
+              <Column gap="lg">
                 <Typography variant="h2">Manage Voting Delegation</Typography>
-
                 <Typography variant="body1" color="primary">
                   All changes take effect at the start of the next generation.
                 </Typography>
-                {delegationEnabled && (
-                  <DisableDelegationCard
-                    state={state}
-                    onRequestClose={onRequestClose}
-                    totalDelegated={totalDelegated}
-                  />
-                )}
-                {!delegationEnabled && (
-                  <Typography variant="body1" color="secondary">
-                    Or you can choose to become a delegate and receive voting
-                    power from others. (Note that you cannot choose to both
-                    delegate your voting power, and be a delegate yourself) Want
-                    to receive others votes and{" "}
-                    <Typography
-                      onClick={() => setOpenDelegation(!openDelegation)}
-                      inline
-                      variant="h5"
-                      color="secondary"
-                      css={{ textDecoration: "underline", cursor: "pointer" }}
-                    >
-                      become a delegate?
-                    </Typography>
+                <Typography variant="body1" color="secondary">
+                  Or you can choose to become a delegate and receive voting
+                  power from others. (Note that you cannot choose to both
+                  delegate your voting power, and be a delegate yourself) Want
+                  to receive others votes and{" "}
+                  <Typography
+                    variant="body1"
+                    color="secondary"
+                    onClick={() => setOpenDelegation(!openDelegation)}
+                    css={{ textDecoration: "underline", cursor: "pointer" }}
+                  >
+                    <b>become a delegate?</b>
                   </Typography>
-                )}
+                </Typography>
               </Column>
-              {!delegationEnabled && (
-                <DelegateInputArea>
-                  <DelegateCard
-                    setOpenAdvanced={() => setAdvanced(true)}
-                    delegate={state.eco.delegate}
-                    option={Option.EcoMyWallet}
-                    onRequestClose={onRequestClose}
-                  />
-                </DelegateInputArea>
-              )}
-            </Column>
+            )}
+            {!delegationEnabled ? (
+              <DropdownBoxStyle gap="lg">
+                <Typography
+                  variant="body1"
+                  color="primary"
+                  style={{ lineHeight: 1 }}
+                >
+                  Delegate your voting power to someone?{" "}
+                  <Typography color="secondary">(optional)</Typography>
+                </Typography>
+                <DelegateCard
+                  option={Option.EcoMyWallet}
+                  delegate={state.eco.delegate}
+                  onRequestClose={onRequestClose}
+                  setOpenAdvanced={() => setAdvanced(true)}
+                />
+              </DropdownBoxStyle>
+            ) : null}
           </Column>
-        )
+        </Column>
       )}
     </Dialog>
   );

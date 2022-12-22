@@ -35,6 +35,8 @@ import Favicon from "../public/favicon.png";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/neat.css";
 import "./index.css";
+import { VotingPowerSourcesProvider } from "../providers/UseVotingPowerSources";
+import { ManageDelegationProvider } from "../components/application/Account/VotingPowerCard/ManageDelegationModal/provider/ManageDelegationProvider";
 
 const PAGE_TITLE = process.env.NEXT_PUBLIC_DAPP_NAME;
 
@@ -98,8 +100,12 @@ const App = ({ Component, pageProps }) => {
                       <ConnectModalProvider>
                         <ProposalTabProvider>
                           <RandomInflationProvider>
-                            <Notifications />
-                            <Component {...pageProps} />
+                            <ManageDelegationProvider>
+                              <VotingPowerSourcesProvider>
+                                <Notifications />
+                                <Component {...pageProps} />
+                              </VotingPowerSourcesProvider>
+                            </ManageDelegationProvider>
                           </RandomInflationProvider>
                         </ProposalTabProvider>
                       </ConnectModalProvider>

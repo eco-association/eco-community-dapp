@@ -73,7 +73,10 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
       const tx = await lockupContract.deposit(depositAmount);
       await tx.wait();
 
-      const reward = depositAmount.mul(lockup.interest * 1e7).div(1e9);
+      const reward = depositAmount
+        .mul((lockup.interest * 1e7).toFixed(0))
+        .div(1e9);
+
       wallet.dispatch({
         type: WalletActionType.LockupDeposit,
         lockup,
@@ -97,7 +100,10 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
   const duration = formatDuration(lockup.duration);
 
   const disabled = loading || wallet.ecoBalance.isZero();
-  const penalty = depositAmount.mul(lockup.interest * 1e7).div(1e9);
+
+  const penalty = depositAmount
+    .mul((lockup.interest * 1e7).toFixed(0))
+    .div(1e9);
 
   return (
     <Dialog

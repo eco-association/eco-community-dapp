@@ -37,6 +37,8 @@ const DEFAULT_WALLET: WalletInterface = {
   ECODelegator: null,
   sECOxDelegator: null,
   lockups: [],
+  ecoDelegatedToMe: [],
+  sEcoXDelegatedToMe: [],
 };
 
 const DEFAULT_INFLATION = WeiPerEther;
@@ -103,12 +105,26 @@ function getWalletBalances(
       ECODelegator: null,
       sECOxDelegator: null,
       lockups: [],
+      ecoDelegatedToMe: [],
+      sEcoXDelegatedToMe: [],
     };
 
   const balances = data.account;
 
+  const ecoDelegatedToMe = data.account.ECODelegatedToMe.map((data) => ({
+    address: data.address,
+    amount: BigNumber.from(data.amount).div(currentInflationMultiplier),
+  }));
+
+  const sEcoXDelegatedToMe = data.account.sECOxDelegatedToMe.map((data) => ({
+    address: data.address,
+    amount: BigNumber.from(data.amount).div(currentInflationMultiplier),
+  }));
+
   return {
     ...tokensData,
+    ecoDelegatedToMe,
+    sEcoXDelegatedToMe,
     ecoBalance: BigNumber.from(balances.ECO).div(currentInflationMultiplier),
     ecoXBalance: BigNumber.from(balances.ECOx),
     sEcoXBalance: BigNumber.from(balances.sECOx),

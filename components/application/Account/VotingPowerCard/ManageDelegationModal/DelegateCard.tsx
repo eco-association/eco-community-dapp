@@ -2,30 +2,22 @@ import React, { useState } from "react";
 import {
   Button,
   Column,
-  FormTextField,
+  Input,
   Row,
   styled,
   Typography,
-  useTheme,
 } from "@ecoinc/ecomponents";
-import { toast as nativeToast, ToastOptions } from "react-toastify";
-import { displayAddress, txError } from "../../../../../utilities";
-import { useECO } from "../../../../hooks/contract/useECO";
-import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
 import LoaderAnimation from "../../../Loader";
 import { Option } from "./ManageDelegationModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
-import {
-  DelegateActionType,
-  useDelegationState,
-} from "./provider/ManageDelegationProvider";
+import { useDelegationState } from "./provider/ManageDelegationProvider";
 import { GasFee } from "../../../commons/GasFee";
-import { useForm } from "react-hook-form";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
 import Image from "next/image";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import { Steps } from "./Steps";
+import TextLoader from "../../../commons/TextLoader";
 
 interface DelegateCardProps {
   onRequestClose?: () => void;
@@ -33,14 +25,10 @@ interface DelegateCardProps {
   lockup?: string;
   delegate?: string;
   option: Option;
-  setOpenAdvanced: () => void;
+  setOpenAdvanced?: () => void;
 }
 
-type FormValues = {
-  ethAddress: string;
-};
-
-const AdvancedSelectBox = styled(Row)(() => ({
+const AdvancedSelectBox = styled(Row)({
   width: "max-content",
   justifyContent: "flex-end",
   backgroundColor: "#DEE6EB",
@@ -49,28 +37,7 @@ const AdvancedSelectBox = styled(Row)(() => ({
   marginBottom: -12,
   padding: "0 8px",
   cursor: "pointer",
-}));
-
-const toastOpts: ToastOptions = {
-  position: "top-center",
-  autoClose: 5000,
-  hideProgressBar: true,
-  theme: "colored",
-  style: {
-    backgroundColor: "#F7FEFC",
-    border: "solid 1px #5AE4BF",
-    color: "#22313A",
-    top: "115px",
-  },
-};
-
-const getToastText = (delegate: string) => {
-  if (!delegate) {
-    return `🚀 Successfully un-delegated`;
-  } else {
-    return `🚀 Successfully delegated to ${displayAddress(delegate)}`;
-  }
-};
+});
 
 const DelegateCard: React.FC<DelegateCardProps> = ({
   fromAdvanced,
@@ -79,155 +46,141 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   setOpenAdvanced,
   onRequestClose,
 }) => {
-  const eco = useECO();
-  const ecoX = useECOxStaking();
   const account = useAccount();
-  const { dispatch, state } = useDelegationState();
-  const { simpleDelegation, simpleUndelegate } = useManageDelegation();
+  const { state } = useDelegationState();
+  const {
+    delegateToken,
+    delegateBothTokens,
+    undelegateToken,
+    undelegateBothTokens,
+  } = useManageDelegation();
 
-  const theme = useTheme();
-
-  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
-  const [totalSteps, setTotalSteps] = useState(0);
   const [status, setStatus] = useState("");
+  const [totalSteps, setTotalSteps] = useState(0);
   // An invalid address does not have delegation enabled
   const [invalidAddress, setInvalidAddress] = useState<string>();
-  const alreadyDelegating = state.eco.delegate || state.secox.delegate;
 
-  const {
-    control,
-    getValues,
-    handleSubmit,
-    formState: { isValid },
-  } = useForm<FormValues>({
-    defaultValues: { ethAddress: delegate || "" },
-    mode: "onChange",
-  });
+  const [address, setAddress] = useState(delegate || "");
 
-  const submitHandler = async (data: FormValues) => {
-    const address = data.ethAddress.toLowerCase().trim();
-    const contract = option === Option.SEcoXMyWallet ? ecoX : eco;
+  const alreadyDelegating = !!(fromAdvanced
+    ? option === Option.SEcoXMyWallet
+      ? state.secox.delegate
+      : state.eco.delegate
+    : state.eco.delegate || state.secox.delegate);
 
-    if (alreadyDelegating) {
-      setTotalSteps(2);
-      return simpleUndelegate(setStep, onRequestClose, setLoading, setStatus);
-    }
-
+  const submitHandler = async () => {
     if (fromAdvanced) {
-      try {
-        setLoading(true);
-        const enabled = await contract.delegationToAddressEnabled(address);
-        if (enabled) {
-          const tx = await contract.delegate(address);
-          await tx.wait();
-
-          dispatch({
-            type: DelegateActionType.SetDelegate,
-            token: option === Option.SEcoXMyWallet ? "secox" : "eco",
-            delegate: address,
-          });
-          nativeToast(getToastText(address), toastOpts);
-          setLoading(false);
-        } else {
-          setLoading(false);
-          setInvalidAddress(address);
-          txError(
-            "Failed to delegate",
-            new Error(
-              `${displayAddress(address)} doesn't have enabled delegation`
-            )
-          );
-        }
-      } catch (err) {
-        setLoading(false);
-        txError("Failed to delegate", err);
+      setTotalSteps(1);
+      if (alreadyDelegating) {
+        setStatus(
+          "Undelegating " +
+            (option === Option.SEcoXMyWallet ? "staked ecoX" : "eco")
+        );
+        const onComplete = () => {
+          setAddress("");
+          onRequestClose && onRequestClose();
+        };
+        await undelegateToken(
+          option === Option.SEcoXMyWallet ? "secox" : "eco",
+          onComplete
+        );
+        return;
       }
+      await delegateToken(
+        option === Option.SEcoXMyWallet ? "secox" : "eco",
+        address,
+        setInvalidAddress
+      );
     } else {
-      setLoading(true);
       setTotalSteps(2);
-      await simpleDelegation(
+      if (alreadyDelegating) {
+        await undelegateBothTokens(setStep, setStatus, onRequestClose);
+        return;
+      }
+      await delegateBothTokens(
         address,
         setInvalidAddress,
         setStep,
-        onRequestClose,
-        setLoading,
-        setStatus
+        setStatus,
+        onRequestClose
       );
     }
-    setLoading(false);
   };
 
-  const ethAddress = getValues().ethAddress.toLowerCase().trim();
-  const secondaryColor = theme.palette.secondary.main;
+  const loading = state.eco.loadingDelegation || state.secox.loadingDelegation;
 
-  const isButtonDisabled = () => {
-    if (alreadyDelegating) return false;
-    if (
-      !ethAddress ||
-      ethAddress === invalidAddress ||
-      ethAddress === account.address.toLowerCase() ||
-      ethAddress === delegate?.toLowerCase()
-    )
-      return true;
-  };
+  const isButtonDisabled =
+    loading ||
+    (!alreadyDelegating &&
+      (!address ||
+        !ethers.utils.isAddress(address) ||
+        address === invalidAddress ||
+        address === account.address.toLowerCase() ||
+        address === delegate?.toLowerCase()));
 
   return (
     <div>
-      <form onSubmit={handleSubmit(submitHandler)}>
-        <Column gap="lg">
-          <FormTextField
-            label=""
-            control={control}
-            name="ethAddress"
-            color="secondary"
-            placeholder="Eth Address"
-            style={{ color: secondaryColor }}
-            rules={{ required: false, validate: ethers.utils.isAddress }}
-          />
-          <Column gap="md" items="start">
-            <Row gap="lg">
-              <Button
-                type="submit"
-                color={!alreadyDelegating ? "success" : "secondary"}
-                variant="fill"
-                disabled={isButtonDisabled()}
-              >
-                {loading ? (
-                  <LoaderAnimation />
-                ) : !alreadyDelegating ? (
-                  "Confirm"
-                ) : (
-                  "Undelegate"
-                )}
-              </Button>
-              {loading && (
+      <Column gap="lg">
+        <Input
+          label=""
+          value={address}
+          disabled={loading || alreadyDelegating}
+          name="ethAddress"
+          color="secondary"
+          placeholder="Eth Address"
+          onChange={(e) => setAddress(e.currentTarget.value)}
+        />
+        <Column gap="md">
+          <Row gap="lg" items="center">
+            <Button
+              variant="fill"
+              onClick={submitHandler}
+              disabled={isButtonDisabled}
+              color={alreadyDelegating ? "secondary" : "success"}
+              style={
+                alreadyDelegating
+                  ? { background: "#BDCBD3", minWidth: "initial" }
+                  : { minWidth: "initial" }
+              }
+            >
+              {loading ? (
+                <LoaderAnimation />
+              ) : alreadyDelegating ? (
+                "Undelegate"
+              ) : (
+                "Confirm"
+              )}
+            </Button>
+            {loading ? (
+              totalSteps > 1 ? (
                 <Steps
                   currentStep={step}
                   totalSteps={totalSteps}
                   status={status}
                 />
-              )}
-            </Row>
-
-            <GasFee gasLimit={500_000} />
-          </Column>
+              ) : (
+                <TextLoader />
+              )
+            ) : null}
+          </Row>
+          <GasFee gasLimit={200_000} />
         </Column>
-      </form>
-      {!fromAdvanced && (
-        <Row style={{ width: "100%", justifyContent: "flex-end" }}>
-          <AdvancedSelectBox>
+      </Column>
+      {!fromAdvanced && setOpenAdvanced ? (
+        <Row justify="end">
+          <AdvancedSelectBox items="center" gap="sm">
             <Typography
-              onClick={setOpenAdvanced}
-              variant="subtitle1"
               color="secondary"
+              variant="subtitle1"
+              onClick={setOpenAdvanced}
             >
-              EXPERT MODE{" "}
-              <Image src={chevronDown} alt="" height={10} width={5} />
+              EXPERT MODE
             </Typography>
+            <Image src={chevronDown} alt="" height={14} width={7} />
           </AdvancedSelectBox>
         </Row>
-      )}
+      ) : null}
     </div>
   );
 };

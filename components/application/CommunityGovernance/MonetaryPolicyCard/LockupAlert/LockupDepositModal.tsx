@@ -97,6 +97,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
   const duration = formatDuration(lockup.duration);
 
   const disabled = loading || wallet.ecoBalance.isZero();
+  const penalty = depositAmount.mul(lockup.interest * 1e7).div(1e9);
 
   return (
     <Dialog
@@ -115,14 +116,12 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
             interest.{" "}
             <Typography variant="body1" color="info">
               Note: removing your ECO from the contract early will result in a
-              penalty of {numberFormatter(lockup.interest * 100)}% of your
-              deposited amount.
+              penalty of {numberFormatter(tokensToNumber(penalty))} ECO.
             </Typography>
           </Typography>
-
           <ModalTextItem
             title="LOCKUP RATE"
-            text={`${numberFormatter(lockup.interest * 100)}%`}
+            text={`${numberFormatter(lockup.interest)}%`}
           />
           <ModalTextItem
             title="DURATION"

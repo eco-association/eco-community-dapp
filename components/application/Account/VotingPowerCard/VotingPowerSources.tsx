@@ -6,7 +6,6 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import moment from "moment";
 import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
 import { useVotingPowerSources } from "../../../hooks/useVotingPowerSources";
@@ -78,7 +77,7 @@ const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
             tokensToNumber(totalDelegated),
             false
           )} voting power`}
-          subtitle="from others wallets"
+          subtitle="from other wallets"
         />
       ) : null}
     </Container>

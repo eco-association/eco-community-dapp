@@ -1,6 +1,5 @@
 import React from "react";
 import { ethers } from "ethers";
-import { css } from "@emotion/react";
 import { Alert, Typography } from "@ecoinc/ecomponents";
 import { useCommunity, useWallet } from "../../../../providers";
 import { numberFormatter } from "../../../../utilities";

@@ -4,7 +4,6 @@ import {
   TRUSTED_NODE,
   TrustedNodeQueryResult,
 } from "../../queries/TRUSTED_NODE";
-import { Address } from "../../types";
 import { BigNumber } from "ethers";
 
 export interface TrustedNodesData {

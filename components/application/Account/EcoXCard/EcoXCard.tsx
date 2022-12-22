@@ -82,7 +82,7 @@ const EcoXCard = () => {
         </Row>
         <Box items="center" justify="space-between" style={{ gap: 56 }}>
           <Typography variant="body2" color="secondary">
-            You can also burn your ECOx to convert them to ECo at anytime. Note:
+            You can also burn your ECOx to convert them to ECO at anytime. Note:
             This action is irreversible.
           </Typography>
           <Button

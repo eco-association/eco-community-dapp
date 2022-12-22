@@ -93,7 +93,7 @@ const StakingModal: React.FC<StakingModalProps> = ({
           <Typography variant="body1">
             You can stake or unstake any amount at any time to change your
             voting power.{" "}
-            <b>ECOx must be staked in order to count toward voting power.</b>
+            <b>ECOx must be staked in order to count toward voting power. All changes take effect at the start of the next generation.</b>
           </Typography>
         </Column>
         <Container>

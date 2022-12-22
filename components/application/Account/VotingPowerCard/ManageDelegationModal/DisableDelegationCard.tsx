@@ -13,6 +13,8 @@ import { tokensToNumber } from "../../../../../utilities";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import LoaderAnimation from "../../../Loader";
 import { Steps } from "./Steps";
+import { useVotingPowerSources } from "../../../../hooks/useVotingPowerSources";
+import { BigNumber } from "ethers";
 
 interface DisableDelegationCardProps {
   state: ManageDelegationState;
@@ -53,16 +55,18 @@ const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState("");
   const loading = state.eco.loading || state.secox.loading;
+  const sources = useVotingPowerSources();
+
   useMemo(() => {
-    const totalBN = Zero;
-    state.eco.delegatesToMe?.map((e) => {
-      totalBN.add(e.amount);
+    let totalBN = Zero;
+    sources.ecoDelegatedToMe?.map((e) => {
+      totalBN = totalBN.add(e.amount);
     });
-    state.secox.delegatesToMe?.map((e) => {
-      totalBN.add(e.amount);
+    sources.sEcoXDelegatedToMe?.map((e) => {
+      totalBN = totalBN.add(e.amount);
     });
     setTotalDelegatedToMe(formatNumber(tokensToNumber(totalBN)));
-  }, [state]);
+  }, [sources]);
   const hasDelegatedToMe =
     state.eco.delegatesToMe.length > 0 || state.secox.delegatesToMe.length > 0;
   return (

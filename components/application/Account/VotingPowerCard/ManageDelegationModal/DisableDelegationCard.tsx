@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { ManageDelegationState } from "./provider/ManageDelegationProvider";
-import { Zero } from "@ethersproject/constants";
 import {
   Button,
   Column,
@@ -13,11 +12,12 @@ import { tokensToNumber } from "../../../../../utilities";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import LoaderAnimation from "../../../Loader";
 import { Steps } from "./Steps";
-import { useVotingPowerSources } from "../../../../hooks/useVotingPowerSources";
+import { BigNumber } from "ethers";
 
 interface DisableDelegationCardProps {
   state: ManageDelegationState;
   onRequestClose: () => void;
+  totalDelegated: BigNumber;
 }
 
 const ErrorBox = styled(Column)(() => ({
@@ -48,31 +48,20 @@ const InfoBox = styled(Column)(({ theme }) => ({
 const DisableDelegationCard: React.FC<DisableDelegationCardProps> = ({
   state,
   onRequestClose,
+  totalDelegated,
 }) => {
   const { manageBothTokens } = useManageDelegation();
-  const [totalDelegatedToMe, setTotalDelegatedToMe] = useState<string>();
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState("");
   const loading = state.eco.loading || state.secox.loading;
-  const sources = useVotingPowerSources();
 
-  useMemo(() => {
-    let totalBN = Zero;
-    sources.ecoDelegatedToMe?.map((e) => {
-      totalBN = totalBN.add(e.amount);
-    });
-    sources.sEcoXDelegatedToMe?.map((e) => {
-      totalBN = totalBN.add(e.amount);
-    });
-    setTotalDelegatedToMe(formatNumber(tokensToNumber(totalBN)));
-  }, [sources]);
   const hasDelegatedToMe =
     state.eco.delegatesToMe.length > 0 || state.secox.delegatesToMe.length > 0;
   return (
     <Column gap="xl">
       <InfoBox gap="lg">
         <Typography variant="body1">
-          {totalDelegatedToMe}{" "}
+          {formatNumber(tokensToNumber(totalDelegated), false)}{" "}
           <Typography inline color="active">
             • delegated from others
           </Typography>

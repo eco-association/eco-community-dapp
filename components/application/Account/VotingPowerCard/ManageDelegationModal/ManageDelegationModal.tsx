@@ -26,6 +26,7 @@ export enum Option {
 interface ManageDelegationModal {
   open: boolean;
   onRequestClose: () => void;
+  totalDelegated: BigNumber;
 }
 
 interface DropdownBoxProps {
@@ -67,6 +68,7 @@ const DelegateInputArea: React.FC<React.PropsWithChildren> = ({ children }) => {
 const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   open,
   onRequestClose,
+  totalDelegated,
 }) => {
   const { state } = useDelegationState();
   const [advanced, setAdvanced] = useState(
@@ -117,6 +119,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
                   <DisableDelegationCard
                     state={state}
                     onRequestClose={onRequestClose}
+                    totalDelegated={totalDelegated}
                   />
                 )}
                 {!delegationEnabled && (

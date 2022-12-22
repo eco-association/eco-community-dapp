@@ -5,7 +5,11 @@ import {
   AccountActivityType,
   Activity,
 } from "../../../../queries/ACCOUNT_ACTIVITY_QUERY";
-import { formatTime, tokensToNumber } from "../../../../utilities";
+import {
+  formatTime,
+  numberFormatter,
+  tokensToNumber,
+} from "../../../../utilities";
 import { useWallet } from "../../../../providers";
 
 const dateTime = css({
@@ -118,7 +122,7 @@ const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
             ECO
           </b>{" "}
           into a lockup, earning{" "}
-          {formatNumber(activity.lockupDeposit.interest * 100)}% interest.
+          {numberFormatter(activity.lockupDeposit.interest)}% interest.
         </Typography>
       </CardBase>
     );

@@ -36,18 +36,17 @@ const Sources: React.FC<SourcesProps> = ({ title, subtitle }) => {
 };
 
 interface VotingPowerSourcesProps {
-  votingPower: BigNumber;
+  totalDelegated: BigNumber;
 }
 
 const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
-  votingPower,
+  totalDelegated,
 }) => {
   const { address } = useAccount();
   const sources = useVotingPowerSources();
 
   //TODO: Calculate voting power from lockups and wallets delegating to current wallet
   const lockupTotal = Zero;
-  const totalDelegated = votingPower.sub(sources.eco).sub(sources.sEcoX);
 
   return (
     <Container gap="lg">

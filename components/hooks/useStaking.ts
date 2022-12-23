@@ -22,28 +22,10 @@ const successfulToastStyle: ToastOptions = {
   },
 };
 
-const formatterMax3Decimals = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 3,
-});
-
 const formatterMax6Decimals = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 6,
 });
-
-function countDecimals(number: number) {
-  const char_array = number.toString().split("");
-  const not_decimal = char_array.lastIndexOf(".");
-  return not_decimal < 0 ? 0 : char_array.length - not_decimal - 1;
-}
-
-export function formatStakedAmount(staked: BigNumber) {
-  const number = tokensToNumber(staked);
-  let formatted = formatterMax3Decimals.format(number);
-  if (countDecimals(number) > 3) formatted += "…";
-  return formatted;
-}
 
 export function formatStakeAmount(staked: BigNumber) {
   return formatterMax6Decimals.format(tokensToNumber(staked));

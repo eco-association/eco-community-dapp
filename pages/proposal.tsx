@@ -167,7 +167,7 @@ const Proposal: React.FC = () => {
                   target="_blank"
                   href={proposal.url}
                   variant="body1"
-                  color="success"
+                  color="active"
                 >
                   Link to Forum post
                 </Typography>

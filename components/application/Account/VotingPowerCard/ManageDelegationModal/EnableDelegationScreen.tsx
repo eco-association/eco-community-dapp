@@ -94,7 +94,7 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({
             <ul style={{ listStyleType: "disc", marginLeft: 24 }}>
               <li style={{ marginBottom: 12 }}>
                 <Typography variant="body1">
-                  Making a post to the Community in the{" "}
+                  Make a post to the Community in the{" "}
                   <a
                     href="https://forums.eco.org/c/a-place-to-to-talk-about-becoming-a-delegate-in-eco/16"
                     target="_blank"
@@ -108,7 +108,7 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({
                         cursor: "pointer",
                       }}
                     >
-                      Forum
+                      Forum.
                     </Typography>
                   </a>{" "}
                   <Typography color="secondary">(optional)</Typography>

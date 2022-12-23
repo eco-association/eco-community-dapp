@@ -105,18 +105,16 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
                   All changes take effect at the start of the next generation.
                 </Typography>
                 <Typography variant="body1" color="secondary">
-                  Or you can choose to become a delegate and receive voting
-                  power from others. (Note that you cannot choose to both
-                  delegate your voting power, and be a delegate yourself) Want
-                  to receive others votes and{" "}
+                  You can delegate your voting power to others, or{" "}
                   <Typography
                     variant="body1"
                     color="secondary"
                     onClick={() => setOpenDelegation(!openDelegation)}
                     css={{ textDecoration: "underline", cursor: "pointer" }}
                   >
-                    <b>become a delegate?</b>
+                    <b>become a delegate</b>
                   </Typography>
+                  . (Note that you cannot do both at the same time.)
                 </Typography>
               </Column>
             )}

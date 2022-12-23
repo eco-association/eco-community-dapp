@@ -128,13 +128,12 @@ const AdvancedOptionsVotingSources: React.FC = () => {
             fromAdvanced
             option={Option.EcoMyWallet}
             delegate={state.eco.delegate}
-            setOpenAdvanced={() => console.log("void")}
           />
         )}
       </DropdownBox>
       <DropdownBox
         title="staked ECOx from your wallet"
-        amount={sEcoXBalance.mul(10)}
+        amount={sEcoXBalance}
         delegate={state.secox.delegate}
         red={state.secox.validate === DelegateValidation.Confirm}
         open={
@@ -152,7 +151,6 @@ const AdvancedOptionsVotingSources: React.FC = () => {
             fromAdvanced
             option={Option.SEcoXMyWallet}
             delegate={state.secox.delegate}
-            setOpenAdvanced={() => console.log("void")}
           />
         )}
       </DropdownBox>

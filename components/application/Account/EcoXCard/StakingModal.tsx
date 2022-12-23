@@ -10,10 +10,7 @@ import {
 import { useAccount } from "wagmi";
 import { displayAddress } from "../../../../utilities";
 import { useGasFee } from "../../../hooks/useGasFee";
-import useStaking, {
-  formatStakeAmount,
-  formatStakedAmount,
-} from "../../../hooks/useStaking";
+import useStaking, { formatStakeAmount } from "../../../hooks/useStaking";
 import LoaderAnimation from "../../Loader";
 import { useBlockExit } from "../../../hooks/useBlockExit";
 import { WalletInterface } from "../../../../types";
@@ -93,7 +90,10 @@ const StakingModal: React.FC<StakingModalProps> = ({
           <Typography variant="body1">
             You can stake or unstake any amount at any time to change your
             voting power.{" "}
-            <b>ECOx must be staked in order to count toward voting power. All changes take effect at the start of the next generation.</b>
+            <b>
+              ECOx must be staked in order to count toward voting power. All
+              changes take effect at the start of the next generation.
+            </b>
           </Typography>
         </Column>
         <Container>

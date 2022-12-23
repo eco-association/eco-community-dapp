@@ -79,7 +79,9 @@ function formatSourceData(
 
   const ecoDelegatedToMe = ECODelegatedToMe.map((delegated) => ({
     address: delegated.id,
-    amount: BigNumber.from(delegated.ECO).div(inflationMultiplier).div(10),
+    amount: adjustVotingPower(
+      BigNumber.from(delegated.ECO).div(inflationMultiplier)
+    ),
   }));
 
   const sEcoXDelegatedToMe = sECOxDelegatedToMe.map((delegated) => ({

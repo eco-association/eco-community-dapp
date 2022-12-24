@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import { useGasFee } from "../../hooks/useGasFee";
 import { useAccount, useSigner } from "wagmi";
 import { PolicyProposals__factory } from "../../../types/contracts";
-import { truncateText } from "../../../utilities/truncateText";
+import { truncateText } from "../../../utilities";
 
 const Box = styled(Column)(({ theme }) => ({
   padding: "16px 24px",
@@ -26,7 +26,7 @@ const Content = styled(Column)({ padding: "0 24px" });
 
 const REFUND_GAS_LIMIT = 149_038;
 
-export const RefundNotification = () => {
+export const RefundNotification: React.FC = () => {
   const account = useAccount();
   const { proposals, reset, remove } = useProposalRefund();
 
@@ -41,7 +41,7 @@ export const RefundNotification = () => {
     .map(BigNumber.from)
     .reduce((refund, acc) => acc.add(refund), Zero);
 
-  if (!proposals.length || !account.address || total.isZero()) return;
+  if (!proposals.length || !account.address || total.isZero()) return null;
 
   const claim = async () => {
     setLoading(true);

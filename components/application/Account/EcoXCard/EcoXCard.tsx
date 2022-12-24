@@ -59,12 +59,14 @@ const EcoXCard = () => {
         },
       ]}
     >
-      <ConvertModal
-        ecoXBalance={wallet.ecoXBalance}
-        exchangeRate={ratio}
-        open={convertOpen}
-        onClose={() => setConvertOpen(false)}
-      />
+      {convertOpen ? (
+        <ConvertModal
+          open={convertOpen}
+          exchangeRate={ratio}
+          ecoXBalance={wallet.ecoXBalance}
+          onClose={() => setConvertOpen(false)}
+        />
+      ) : null}
       {stakeOpen ? (
         <StakingModal
           open={stakeOpen}

@@ -34,7 +34,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   const [status, setStatus] = useState("");
   const [totalSteps, setTotalSteps] = useState(0);
   // An invalid address does not have delegation enabled
-  const [invalidAddress, setInvalidAddress] = useState<string>();
+  const [invalidAddress, setInvalidAddress] = useState<string>("");
 
   const [address, setAddress] = useState(delegate || "");
 
@@ -87,14 +87,15 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
 
   const loading = state.eco.loadingDelegation || state.secox.loadingDelegation;
 
+  const _address = address.toLowerCase();
   const isButtonDisabled =
     loading ||
     (!alreadyDelegating &&
       (!address ||
-        !ethers.utils.isAddress(address) ||
-        address === invalidAddress ||
-        address === account.address.toLowerCase() ||
-        address === delegate?.toLowerCase()));
+        !ethers.utils.isAddress(_address) ||
+        _address === delegate?.toLowerCase() ||
+        _address === invalidAddress.toLowerCase() ||
+        _address.toLowerCase() === account.address.toLowerCase()));
 
   return (
     <div>

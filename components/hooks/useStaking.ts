@@ -44,11 +44,9 @@ const useStaking = () => {
   const increaseStake = async (amount: BigNumber, onComplete: () => void) => {
     setLoading(true);
     try {
-      const allowance = await ecoX.allowance(account.address, sEcoX.toString());
+      const allowance = await ecoX.allowance(account.address, sEcoX);
       if (allowance.lt(amount)) {
-        const approveTx = await ecoX.approve(sEcoX.toString(), amount, {
-          gasLimit: 100_000,
-        });
+        const approveTx = await ecoX.approve(sEcoX, amount);
         await approveTx.wait();
       }
       const tx = await staking.deposit(amount);

@@ -94,7 +94,7 @@ export const useManageDelegation = () => {
         txError(
           "Failed to delegate",
           new Error(
-            `${displayAddress(delegate)} doesn't have enabled delegation`
+            `${displayAddress(delegate)} doesn't have delegation enabled`
           )
         );
       }
@@ -270,7 +270,7 @@ export const useManageDelegation = () => {
         txError(
           "Failed to delegate",
           new Error(
-            `${displayAddress(address)} doesn't have enabled delegation`
+            `${displayAddress(address)} doesn't have delegation enabled`
           )
         );
       }

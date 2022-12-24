@@ -3,6 +3,9 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "@ecoinc/ecomponents-old/lib/styles.css";
 import "rc-tooltip/assets/bootstrap.css";
 import "react-loading-skeleton/dist/skeleton.css";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/neat.css";
+import "./index.css";
 
 import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -32,16 +35,13 @@ import { Notifications } from "../components/application/Notifications/Notificat
 
 import Favicon from "../public/favicon.png";
 
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/neat.css";
-import "./index.css";
 import { VotingPowerSourcesProvider } from "../providers/VotingPowerSourcesProvider";
 import { ManageDelegationProvider } from "../components/application/Account/VotingPowerCard/ManageDelegationModal/provider/ManageDelegationProvider";
 
 const PAGE_TITLE = process.env.NEXT_PUBLIC_DAPP_NAME;
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [chain[process.env.NEXT_PUBLIC_CHAIN], chain["mainnet"]],
+  [chain[process.env.NEXT_PUBLIC_CHAIN]],
   [
     infuraProvider({
       apiKey: process.env.NEXT_PUBLIC_INFURA_ID,

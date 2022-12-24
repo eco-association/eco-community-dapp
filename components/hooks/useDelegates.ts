@@ -5,6 +5,7 @@ import { useContractAddresses } from "../../providers";
 import { useAccount, useProvider } from "wagmi";
 import { useDelegationState } from "../application/Account/VotingPowerCard/ManageDelegationModal/provider/ManageDelegationProvider";
 import { AddressZero } from "@ethersproject/constants";
+import { useEffect } from "react";
 
 function getPayload(
   address: string,
@@ -56,7 +57,7 @@ export const useDelegates = () => {
   const { eco, sEcoX } = useContractAddresses();
 
   return useQuery(
-    "token-delegates",
+    "token-delegates-" + account.address,
     async () => {
       const multicall = new Multicall({
         ethersProvider: provider,

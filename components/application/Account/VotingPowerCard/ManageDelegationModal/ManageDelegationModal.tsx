@@ -65,7 +65,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   const loading =
     state.eco.loading ||
     state.secox.loading ||
-    state.secox.loading ||
+    state.eco.loadingDelegation ||
     state.secox.loadingDelegation;
 
   useEffect(() => {
@@ -138,13 +138,16 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
                   Delegate your voting power to someone?{" "}
                   <Typography color="secondary">(optional)</Typography>
                 </Typography>
-                <DelegateCard onRequestClose={onRequestClose} />
+                <DelegateCard
+                  delegate={state.eco.delegate || state.secox.delegate}
+                  onRequestClose={onRequestClose}
+                />
                 <Row justify="end">
                   <AdvancedSelectBox items="center" gap="sm">
                     <Typography
                       color="secondary"
                       variant="subtitle1"
-                      onClick={() => setAdvanced(true)}
+                      onClick={() => !loading && setAdvanced(true)}
                     >
                       ADVANCED MODE
                     </Typography>

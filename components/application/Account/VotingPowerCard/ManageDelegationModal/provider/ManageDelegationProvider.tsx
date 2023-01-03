@@ -1,12 +1,8 @@
-import React, { useContext, useEffect, useMemo, useReducer } from "react";
-import { useAccount, useProvider } from "wagmi";
+import React, { useContext, useEffect, useReducer } from "react";
 import { TokenDelegate } from "../../../../../../providers/VotingPowerSourcesProvider";
-import { ContractCallContext, Multicall } from "ethereum-multicall";
-import {
-  ECO__factory,
-  ECOxStaking__factory,
-} from "../../../../../../types/contracts";
-import { useContractAddresses, useWallet } from "../../../../../../providers";
+import { useDelegates } from "../../../../../hooks/useDelegates";
+import { useWallet } from "../../../../../../providers";
+import { useAccount } from "wagmi";
 
 export enum DelegateValidation {
   Confirm = "Confirm",
@@ -182,71 +178,15 @@ const delegateReducer: React.Reducer<ManageDelegationState, DelegateAction> = (
 export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const account = useAccount();
-  const provider = useProvider();
   const wallet = useWallet();
-  const { eco, sEcoX } = useContractAddresses();
+  const account = useAccount();
+  const { data, isFetched } = useDelegates();
 
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
 
-  const multicall = useMemo(
-    () => new Multicall({ ethersProvider: provider, tryAggregate: true }),
-    [provider]
-  );
-
-  const multicallPaylood: ContractCallContext[] = useMemo(
-    () => [
-      {
-        reference: "eco",
-        contractAddress: eco,
-        abi: [...ECO__factory.abi],
-        calls: [
-          {
-            reference: "ecoEnabled",
-            methodName: "delegationToAddressEnabled",
-            methodParameters: [account.address],
-          },
-          {
-            reference: "ECODelegator",
-            methodName: "getPrimaryDelegate",
-            methodParameters: [account.address],
-          },
-        ],
-      },
-      {
-        reference: "secox",
-        contractAddress: sEcoX,
-        abi: [...ECOxStaking__factory.abi],
-        calls: [
-          {
-            reference: "sEcoXEnabled",
-            methodName: "delegationToAddressEnabled",
-            methodParameters: [account.address],
-          },
-          {
-            reference: "sECOxDelegator",
-            methodName: "getPrimaryDelegate",
-            methodParameters: [account.address],
-          },
-        ],
-      },
-    ],
-    [account.address, eco, sEcoX]
-  );
-
   useEffect(() => {
-    if (!account.isConnected || state.secox.loading || state.eco.loading)
-      return;
-
-    (async () => {
-      const { results } = await multicall.call(multicallPaylood);
-
-      const [ecoEnabled, ECODelegator] = results.eco.callsReturnContext.flatMap(
-        (r) => r.returnValues
-      );
-      const [sEcoXEnabled, sECOxDelegator] =
-        results.secox.callsReturnContext.flatMap((r) => r.returnValues);
-
+    if (isFetched) {
+      const { ECODelegator, sECOxDelegator, sEcoXEnabled, ecoEnabled } = data;
       dispatch({
         type: DelegateActionType.SetState,
         state: {
@@ -272,16 +212,13 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
           },
         },
       });
-    })();
+    }
   }, [
+    data,
+    isFetched,
     account.address,
-    account.isConnected,
-    multicall,
-    multicallPaylood,
     wallet.ecoDelegatedToMe,
     wallet.sEcoXDelegatedToMe,
-    state.eco.loading,
-    state.secox.loading,
   ]);
 
   return (

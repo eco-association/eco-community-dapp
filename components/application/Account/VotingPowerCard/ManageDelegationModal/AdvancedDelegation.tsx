@@ -23,7 +23,11 @@ const AdvancedDelegation: React.FC<AdvancedDelegationProps> = ({ onClose }) => {
     community.currentGeneration.blockNumber
   );
 
-  const loading = state.eco.loading || state.secox.loading;
+  const loading =
+    state.eco.loading ||
+    state.secox.loading ||
+    state.eco.loadingDelegation ||
+    state.secox.loadingDelegation;
 
   return (
     <Column gap="xl">

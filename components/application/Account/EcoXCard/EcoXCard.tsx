@@ -59,13 +59,21 @@ const EcoXCard = () => {
         },
       ]}
     >
-      <ConvertModal
-        ecoXBalance={wallet.ecoXBalance}
-        exchangeRate={ratio}
-        open={convertOpen}
-        onClose={() => setConvertOpen(false)}
-      />
-      <StakingModal open={stakeOpen} setOpen={setStakeOpen} balances={wallet} />
+      {convertOpen ? (
+        <ConvertModal
+          open={convertOpen}
+          exchangeRate={ratio}
+          ecoXBalance={wallet.ecoXBalance}
+          onClose={() => setConvertOpen(false)}
+        />
+      ) : null}
+      {stakeOpen ? (
+        <StakingModal
+          open={stakeOpen}
+          setOpen={setStakeOpen}
+          balances={wallet}
+        />
+      ) : null}
       <Column gap="lg">
         <Row items="center" justify="space-between" gap="lg">
           <Typography variant="body2" color="secondary">

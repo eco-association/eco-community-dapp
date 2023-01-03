@@ -19,13 +19,7 @@ import {
 import { useWallet } from "../../../../../providers";
 import DelegateCard from "./DelegateCard";
 import { adjustVotingPower } from "../../../../../utilities/adjustVotingPower";
-
-export enum Option {
-  None,
-  EcoMyWallet,
-  SEcoXMyWallet,
-  Lockup,
-}
+import { ManageDelegationOption } from "./ManageDelegationModal";
 
 interface DropdownBoxProps {
   open?: boolean;
@@ -100,9 +94,10 @@ const AdvancedOptionsVotingSources: React.FC = () => {
   const { state } = useDelegationState();
   const { ecoBalance, sEcoXBalance } = useWallet();
 
-  const [option, setOption] = useState(Option.None);
+  const [option, setOption] = useState(ManageDelegationOption.None);
 
-  const handleDropdownClick = (option: Option) => setOption(option);
+  const handleDropdownClick = (option: ManageDelegationOption) =>
+    setOption(option);
 
   const loading = state.eco.loading || state.secox.loading;
 
@@ -114,20 +109,21 @@ const AdvancedOptionsVotingSources: React.FC = () => {
         delegate={state.eco.delegate}
         red={state.eco.validate === DelegateValidation.Confirm}
         open={
-          option === Option.EcoMyWallet &&
+          option === ManageDelegationOption.EcoMyWallet &&
           state.eco.validate !== DelegateValidation.Confirm
         }
         onToggle={() =>
           handleDropdownClick(
-            option === Option.EcoMyWallet ? Option.None : Option.EcoMyWallet
+            option === ManageDelegationOption.EcoMyWallet
+              ? ManageDelegationOption.None
+              : ManageDelegationOption.EcoMyWallet
           )
         }
       >
         {!state.eco.enabled && !loading && (
           <DelegateCard
-            fromAdvanced
-            option={Option.EcoMyWallet}
             delegate={state.eco.delegate}
+            option={ManageDelegationOption.EcoMyWallet}
           />
         )}
       </DropdownBox>
@@ -137,20 +133,21 @@ const AdvancedOptionsVotingSources: React.FC = () => {
         delegate={state.secox.delegate}
         red={state.secox.validate === DelegateValidation.Confirm}
         open={
-          option === Option.SEcoXMyWallet &&
+          option === ManageDelegationOption.SEcoXMyWallet &&
           state.secox.validate !== DelegateValidation.Confirm
         }
         onToggle={() =>
           handleDropdownClick(
-            option === Option.SEcoXMyWallet ? Option.None : Option.SEcoXMyWallet
+            option === ManageDelegationOption.SEcoXMyWallet
+              ? ManageDelegationOption.None
+              : ManageDelegationOption.SEcoXMyWallet
           )
         }
       >
         {!state.secox.enabled && !loading && (
           <DelegateCard
-            fromAdvanced
-            option={Option.SEcoXMyWallet}
             delegate={state.secox.delegate}
+            option={ManageDelegationOption.SEcoXMyWallet}
           />
         )}
       </DropdownBox>

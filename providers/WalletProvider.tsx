@@ -118,7 +118,7 @@ function getWalletBalances(
 
   const sEcoXDelegatedToMe = data.account.sECOxDelegatedToMe.map((data) => ({
     address: data.address,
-    amount: BigNumber.from(data.amount).div(currentInflationMultiplier),
+    amount: BigNumber.from(data.amount),
   }));
 
   return {

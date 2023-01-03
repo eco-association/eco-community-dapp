@@ -116,8 +116,22 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({
               </li>
               <li>
                 <Typography variant="body1">
-                  Mint an identity token to your wallet with your Discord or
-                  Twitter so people can find you more easily.
+                  Mint an{" "}
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href="https://nft.eco.id/"
+                  >
+                    <Typography
+                      variant="body1"
+                      color="active"
+                      style={{ textDecoration: "underline" }}
+                    >
+                      Eco ID
+                    </Typography>
+                  </a>{" "}
+                  to your wallet connected your Discord or Twitter so people can
+                  find you easily.
                 </Typography>
               </li>
             </ul>

@@ -40,8 +40,7 @@ const VotingPowerCard = () => {
         <VotingPowerSources totalDelegated={totalDelegated} />
         <Grid columns="1fr auto" gap="24px" alignItems="center">
           <Typography variant="body2" color="secondary">
-            Manage delegating your votes to others, or become a delegate
-            yourself.
+            Manage your delegates and delegation permissions.
           </Typography>
           <Button
             variant="outline"

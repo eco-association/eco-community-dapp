@@ -1,49 +1,24 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Column,
-  Input,
-  Row,
-  styled,
-  Typography,
-} from "@ecoinc/ecomponents";
+import { Button, Column, Input, Row } from "@ecoinc/ecomponents";
 import LoaderAnimation from "../../../Loader";
-import { Option } from "./ManageDelegationModal";
+import { ManageDelegationOption } from "./ManageDelegationModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { useDelegationState } from "./provider/ManageDelegationProvider";
 import { GasFee } from "../../../commons/GasFee";
-import chevronDown from "../../../../../public/images/chevron-down.svg";
-import Image from "next/image";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import { Steps } from "./Steps";
 import TextLoader from "../../../commons/TextLoader";
 
 interface DelegateCardProps {
-  onRequestClose?: () => void;
-  fromAdvanced?: boolean;
-  lockup?: string;
   delegate?: string;
-  option: Option;
-  setOpenAdvanced?: () => void;
+  option?: ManageDelegationOption;
+  onRequestClose?: () => void;
 }
 
-const AdvancedSelectBox = styled(Row)({
-  width: "max-content",
-  justifyContent: "flex-end",
-  backgroundColor: "#DEE6EB",
-  borderRadius: "4px 0 0 0",
-  marginRight: -16,
-  marginBottom: -12,
-  padding: "0 8px",
-  cursor: "pointer",
-});
-
 const DelegateCard: React.FC<DelegateCardProps> = ({
-  fromAdvanced,
   option,
   delegate,
-  setOpenAdvanced,
   onRequestClose,
 }) => {
   const account = useAccount();
@@ -59,36 +34,38 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   const [status, setStatus] = useState("");
   const [totalSteps, setTotalSteps] = useState(0);
   // An invalid address does not have delegation enabled
-  const [invalidAddress, setInvalidAddress] = useState<string>();
+  const [invalidAddress, setInvalidAddress] = useState<string>("");
 
   const [address, setAddress] = useState(delegate || "");
 
-  const alreadyDelegating = !!(fromAdvanced
-    ? option === Option.SEcoXMyWallet
+  const alreadyDelegating = !!(option
+    ? option === ManageDelegationOption.SEcoXMyWallet
       ? state.secox.delegate
       : state.eco.delegate
     : state.eco.delegate || state.secox.delegate);
 
   const submitHandler = async () => {
-    if (fromAdvanced) {
+    if (option) {
       setTotalSteps(1);
       if (alreadyDelegating) {
         setStatus(
           "Undelegating " +
-            (option === Option.SEcoXMyWallet ? "staked ecoX" : "eco")
+            (option === ManageDelegationOption.SEcoXMyWallet
+              ? "staked ecoX"
+              : "eco")
         );
         const onComplete = () => {
           setAddress("");
           onRequestClose && onRequestClose();
         };
         await undelegateToken(
-          option === Option.SEcoXMyWallet ? "secox" : "eco",
+          option === ManageDelegationOption.SEcoXMyWallet ? "secox" : "eco",
           onComplete
         );
         return;
       }
       await delegateToken(
-        option === Option.SEcoXMyWallet ? "secox" : "eco",
+        option === ManageDelegationOption.SEcoXMyWallet ? "secox" : "eco",
         address,
         setInvalidAddress
       );
@@ -110,14 +87,15 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
 
   const loading = state.eco.loadingDelegation || state.secox.loadingDelegation;
 
+  const _address = address.toLowerCase();
   const isButtonDisabled =
     loading ||
     (!alreadyDelegating &&
       (!address ||
-        !ethers.utils.isAddress(address) ||
-        address === invalidAddress ||
-        address === account.address.toLowerCase() ||
-        address === delegate?.toLowerCase()));
+        !ethers.utils.isAddress(_address) ||
+        _address === delegate?.toLowerCase() ||
+        _address === invalidAddress.toLowerCase() ||
+        _address.toLowerCase() === account.address.toLowerCase()));
 
   return (
     <div>
@@ -167,20 +145,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
           <GasFee gasLimit={200_000} />
         </Column>
       </Column>
-      {!fromAdvanced && setOpenAdvanced ? (
-        <Row justify="end">
-          <AdvancedSelectBox items="center" gap="sm">
-            <Typography
-              color="secondary"
-              variant="subtitle1"
-              onClick={setOpenAdvanced}
-            >
-              EXPERT MODE
-            </Typography>
-            <Image src={chevronDown} alt="" height={14} width={7} />
-          </AdvancedSelectBox>
-        </Row>
-      ) : null}
     </div>
   );
 };

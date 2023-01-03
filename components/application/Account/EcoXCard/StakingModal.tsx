@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   Button,
   Column,
@@ -9,13 +9,16 @@ import {
 } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import { displayAddress } from "../../../../utilities";
-import { useGasFee } from "../../../hooks/useGasFee";
 import useStaking, { formatStakeAmount } from "../../../hooks/useStaking";
 import LoaderAnimation from "../../Loader";
 import { useBlockExit } from "../../../hooks/useBlockExit";
 import { WalletInterface } from "../../../../types";
 import TextLoader from "../../commons/TextLoader";
 import InputTokenAmount from "../../commons/InputTokenAmount";
+import { useForm } from "react-hook-form";
+import { BigNumber } from "ethers";
+import { Zero } from "@ethersproject/constants";
+import { GasFee } from "../../commons/GasFee";
 
 interface StakingModalProps {
   open: boolean;
@@ -45,12 +48,19 @@ const StakingModal: React.FC<StakingModalProps> = ({
   balances,
 }) => {
   const account = useAccount();
-  const gasFee = useGasFee(500_000);
   const { increaseStake, decreaseStake, loading } = useStaking();
 
-  const [staked, setStaked] = useState(balances.sEcoXBalance);
+  const { watch, setValue, register, getFieldState } = useForm<{
+    stake: BigNumber;
+  }>({
+    defaultValues: { stake: Zero },
+    mode: "onChange",
+  });
 
-  const amountChange = useMemo(() => {
+  const staked = watch("stake");
+  const { isTouched } = getFieldState("stake");
+
+  const amountDiff = useMemo(() => {
     if (staked.gt(balances.sEcoXBalance))
       return staked.sub(balances.sEcoXBalance);
     return balances.sEcoXBalance.sub(staked);
@@ -61,17 +71,17 @@ const StakingModal: React.FC<StakingModalProps> = ({
   const stake = () => {
     const onComplete = () => setOpen(false);
     if (staked.gt(balances.sEcoXBalance)) {
-      increaseStake(amountChange, onComplete);
+      increaseStake(amountDiff, onComplete);
     } else {
-      decreaseStake(amountChange, onComplete);
+      decreaseStake(amountDiff, onComplete);
     }
   };
 
   const totalECOx = balances.ecoXBalance.add(balances.sEcoXBalance);
   const error = staked.gt(totalECOx);
-  const hasChanged = !amountChange.isZero();
-  const showStakeAlert = balances.sEcoXBalance.lt(staked);
-  const showUnstakeAlert = balances.sEcoXBalance.gt(staked);
+  const hasChanged = isTouched && !amountDiff.isZero();
+  const showStakeAlert = isTouched && balances.sEcoXBalance.lt(staked);
+  const showUnstakeAlert = isTouched && balances.sEcoXBalance.gt(staked);
 
   const formattedStakedAmount = formatStakeAmount(balances.sEcoXBalance);
 
@@ -98,10 +108,16 @@ const StakingModal: React.FC<StakingModalProps> = ({
         </Column>
         <Container>
           <InputTokenAmount
+            {...register("stake")}
             label="Staked"
             value={staked}
+            disabled={loading}
             maxValue={totalECOx}
-            onChange={setStaked}
+            onChange={(amount) =>
+              setValue("stake", amount, {
+                shouldTouch: true,
+              })
+            }
             color={error ? "error" : "secondary"}
             placeholder={`${formattedStakedAmount} currently staked`}
           />
@@ -118,7 +134,7 @@ const StakingModal: React.FC<StakingModalProps> = ({
               Note
             </Typography>
             <Typography variant="body2">
-              You are about to unstake {formatStakeAmount(amountChange)} ECOx to
+              You are about to unstake {formatStakeAmount(amountDiff)} ECOx to
               your wallet {displayAddress(account.address)}.
             </Typography>
           </Note>
@@ -127,7 +143,7 @@ const StakingModal: React.FC<StakingModalProps> = ({
               Note
             </Typography>
             <Typography variant="body2">
-              You are about to stake {formatStakeAmount(amountChange)} ECOx.
+              You are about to stake {formatStakeAmount(amountDiff)} ECOx.
             </Typography>
           </Note>
           <Column gap="md" style={{ marginTop: 16 }} items="start">
@@ -142,12 +158,7 @@ const StakingModal: React.FC<StakingModalProps> = ({
               </Button>
               {loading && <TextLoader />}
             </Row>
-            <Typography variant="body3">
-              Estimated Gas Fee:{" "}
-              <Typography variant="body3" color="secondary">
-                {gasFee} ETH
-              </Typography>
-            </Typography>
+            <GasFee gasLimit={230_000} />
           </Column>
         </Container>
       </Column>

@@ -50,11 +50,11 @@ export const ManageToken: React.FC<ManageTokenProps> = ({
             <LoaderAnimation />
           ) : (
             <ToggleSlider
-              barBackgroundColorActive="#47b699"
-              barBackgroundColor="#0000000C"
               handleSize={20}
-              handleStyles={{ boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.25)" }}
+              barBackgroundColor="#0000000C"
+              barBackgroundColorActive="#47b699"
               active={value === DelegateOption.Receive}
+              handleStyles={{ boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.25)" }}
               onToggle={() => {
                 manageOneToken(tokenId, value === DelegateOption.Delegate);
               }}

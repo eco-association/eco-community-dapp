@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BigNumber } from "ethers";
-import { Column, Dialog, styled, Typography } from "@ecoinc/ecomponents";
+import { Column, Dialog, Row, styled, Typography } from "@ecoinc/ecomponents";
 
 import DelegateCard from "./DelegateCard";
 import { useDelegationState } from "./provider/ManageDelegationProvider";
@@ -9,12 +9,14 @@ import EnableDelegationScreen from "./EnableDelegationScreen";
 import DisableDelegationCard from "./DisableDelegationCard";
 import AdvancedDelegation from "./AdvancedDelegation";
 import { isAdvancedDelegation } from "../../../../../utilities/votingPower";
+import Image from "next/image";
+import chevronDown from "../../../../../public/images/chevron-down.svg";
 
-export enum Option {
-  None,
-  EcoMyWallet,
-  SEcoXMyWallet,
-  Lockup,
+export enum ManageDelegationOption {
+  None = "None",
+  Lockup = "Lockup",
+  EcoMyWallet = "ECO",
+  SEcoXMyWallet = "sECOx",
 }
 
 interface ManageDelegationModal {
@@ -32,6 +34,17 @@ interface DropdownBoxProps {
   onToggle(): void;
 }
 
+const AdvancedSelectBox = styled(Row)({
+  width: "max-content",
+  justifyContent: "flex-end",
+  backgroundColor: "#DEE6EB",
+  borderRadius: "4px 0 0 0",
+  marginRight: -16,
+  marginBottom: -12,
+  padding: "0 8px",
+  cursor: "pointer",
+});
+
 const DropdownBoxStyle = styled(Column)<Pick<DropdownBoxProps, "red">>(
   ({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
@@ -48,18 +61,20 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   const [advanced, setAdvanced] = useState(isAdvancedDelegation(state));
   const [openDelegation, setOpenDelegation] = useState(false);
 
-  const loading = state.eco.loading || state.secox.loading;
   const delegationEnabled = state.eco.enabled || state.secox.enabled;
+  const loading =
+    state.eco.loading ||
+    state.secox.loading ||
+    state.eco.loadingDelegation ||
+    state.secox.loadingDelegation;
 
   useEffect(() => {
-    if (isAdvancedDelegation(state)) {
-      setAdvanced(true);
-    }
+    if (isAdvancedDelegation(state)) setAdvanced(true);
   }, [state]);
 
   const handleClose = () => {
     onRequestClose();
-    setAdvanced(false);
+    if (!isAdvancedDelegation(state)) setAdvanced(false);
   };
 
   return (
@@ -82,23 +97,20 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
     >
       {advanced ? (
         <AdvancedDelegation onClose={() => setAdvanced(false)} />
-      ) : openDelegation && !delegationEnabled ? (
+      ) : !delegationEnabled && openDelegation ? (
         <EnableDelegationScreen
           back={() => setOpenDelegation(false)}
           onRequestClose={() => onRequestClose()}
         />
       ) : (
-        <Column gap="xl">
-          <Column
-            gap="xl"
-            style={{ padding: !delegationEnabled ? "0 16px" : 0 }}
-          >
-            {delegationEnabled ? (
-              <DisableDelegationCard
-                state={state}
-                onRequestClose={onRequestClose}
-              />
-            ) : (
+        <Column gap="xl" style={{ padding: !delegationEnabled ? "0 16px" : 0 }}>
+          {delegationEnabled ? (
+            <DisableDelegationCard
+              state={state}
+              onRequestClose={onRequestClose}
+            />
+          ) : (
+            <React.Fragment>
               <Column gap="lg">
                 <Typography variant="h2">Manage Voting Delegation</Typography>
                 <Typography variant="body1" color="primary">
@@ -117,8 +129,6 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
                   . (Note that you cannot do both at the same time.)
                 </Typography>
               </Column>
-            )}
-            {!delegationEnabled ? (
               <DropdownBoxStyle gap="lg">
                 <Typography
                   variant="body1"
@@ -129,14 +139,24 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
                   <Typography color="secondary">(optional)</Typography>
                 </Typography>
                 <DelegateCard
-                  option={Option.EcoMyWallet}
-                  delegate={state.eco.delegate}
+                  delegate={state.eco.delegate || state.secox.delegate}
                   onRequestClose={onRequestClose}
-                  setOpenAdvanced={() => setAdvanced(true)}
                 />
+                <Row justify="end">
+                  <AdvancedSelectBox items="center" gap="sm">
+                    <Typography
+                      color="secondary"
+                      variant="subtitle1"
+                      onClick={() => !loading && setAdvanced(true)}
+                    >
+                      ADVANCED MODE
+                    </Typography>
+                    <Image src={chevronDown} alt="" height={14} width={7} />
+                  </AdvancedSelectBox>
+                </Row>
               </DropdownBoxStyle>
-            ) : null}
-          </Column>
+            </React.Fragment>
+          )}
         </Column>
       )}
     </Dialog>

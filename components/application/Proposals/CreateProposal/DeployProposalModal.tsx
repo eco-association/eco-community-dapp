@@ -48,14 +48,6 @@ function getDescription(action: ProposalAction) {
   if (action === ProposalAction.Submit)
     return "Submitting here will approve and transfer ECO to pay the submission fee and then register your proposal to the governance system.";
   return "Eco governance proposals are deployed as smart contracts. As a result, you will need to approve the ECO submission fee through your connected wallet as well as the required Ethereum network gas fee.";
-  // return (
-  //   <Typography>
-  //     "Submitting your proposal does three things:\n"
-  //     + "1) deploys your proposal as a smart contract, which requires ETH gas.\n"
-  //     + "2) enables the governance contract to collect the submission fee from you.\n"
-  //     + "3) collects the fee in ECO and registers the proposal under your address."
-  //   </Typography>
-  // )
 }
 
 function getButtonText(action: ProposalAction) {

@@ -45,13 +45,7 @@ const Title: React.FC<{ title?: string }> = ({ title }) => {
 
   return (
     <Typography variant="h1" color="white">
-      <Textfit
-        mode="multi"
-        min={15}
-        max={34}
-        forceSingleModeWidth={false}
-        style={{ maxHeight: 110, overflow: "hidden" }}
-      >
+      <Textfit mode="multi" min={15} max={32} style={{ height: 157 }}>
         {title}
       </Textfit>
     </Typography>

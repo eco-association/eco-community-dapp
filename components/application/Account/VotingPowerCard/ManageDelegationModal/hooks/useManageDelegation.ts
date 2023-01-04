@@ -59,11 +59,7 @@ export const useManageDelegation = () => {
   const sEcoX = useECOxStaking();
   const { dispatch, state } = useDelegationState();
 
-  const delegateToken = async (
-    token: DelegableToken,
-    delegate: string,
-    onInvalid: (address: string) => void
-  ) => {
+  const delegateToken = async (token: DelegableToken, delegate: string) => {
     dispatch({
       type: DelegateActionType.SetLoadingDelegation,
       token,
@@ -78,26 +74,16 @@ export const useManageDelegation = () => {
     ];
     const contract = token === "eco" ? eco : sEcoX;
     try {
-      const enabled = await contract.delegationToAddressEnabled(delegate);
-      if (enabled) {
-        const tx = await contract.delegate(delegate);
-        await tx.wait();
+      const tx = await contract.delegate(delegate);
+      await tx.wait();
 
-        actions.push({
-          type: DelegateActionType.SetDelegate,
-          token,
-          delegate,
-        });
-        nativeToast(getToastText(delegate), toastOpts);
-      } else {
-        onInvalid(delegate);
-        txError(
-          "Failed to delegate",
-          new Error(
-            `${displayAddress(delegate)} doesn't have delegation enabled`
-          )
-        );
-      }
+      actions.push({
+        type: DelegateActionType.SetDelegate,
+        token,
+        delegate,
+      });
+
+      nativeToast(getToastText(delegate), toastOpts);
     } catch (err) {
       txError("Failed to delegate", err);
     }
@@ -207,7 +193,6 @@ export const useManageDelegation = () => {
 
   const delegateBothTokens = async (
     address: string,
-    setInvalidAddress: (string) => void,
     setStep: (number) => void,
     setStatus: React.Dispatch<React.SetStateAction<string>>,
     onRequestClose?: React.Dispatch<React.SetStateAction<boolean>>
@@ -240,40 +225,30 @@ export const useManageDelegation = () => {
       },
     ];
     try {
-      const ecoEnabled = await eco.delegationToAddressEnabled(address);
-      const ecoXEnabled = await sEcoX.delegationToAddressEnabled(address);
-      if (ecoEnabled && ecoXEnabled) {
-        setStep(1);
-        setStatus("Delegating ECO");
-        const tx1 = await eco.delegate(address);
-        await tx1.wait();
-        actions.push({
-          type: DelegateActionType.SetDelegate,
-          token: "eco",
-          delegate: address,
-        });
+      // delegating ECO token...
+      setStep(1);
+      setStatus("Delegating ECO");
+      const tx1 = await eco.delegate(address);
+      await tx1.wait();
+      actions.push({
+        type: DelegateActionType.SetDelegate,
+        token: "eco",
+        delegate: address,
+      });
 
-        setStep(2);
-        setStatus("Delegating staked ECOx");
-        const tx2 = await sEcoX.delegate(address);
-        await tx2.wait();
-        actions.push({
-          type: DelegateActionType.SetDelegate,
-          token: "secox",
-          delegate: address,
-        });
+      // delegating ECOx Staking token...
+      setStep(2);
+      setStatus("Delegating staked ECOx");
+      const tx2 = await sEcoX.delegate(address);
+      await tx2.wait();
+      actions.push({
+        type: DelegateActionType.SetDelegate,
+        token: "secox",
+        delegate: address,
+      });
 
-        onRequestClose && onRequestClose(false);
-        nativeToast(getToastText(address), toastOpts);
-      } else {
-        setInvalidAddress(address);
-        txError(
-          "Failed to delegate",
-          new Error(
-            `${displayAddress(address)} doesn't have delegation enabled`
-          )
-        );
-      }
+      onRequestClose && onRequestClose(false);
+      nativeToast(getToastText(address), toastOpts);
     } catch (err) {
       txError("Failed to delegate", err);
     }

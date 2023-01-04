@@ -33,6 +33,8 @@ import { useECO } from "../../../../hooks/contract/useECO";
 import { WalletActionType } from "../../../../../providers/WalletProvider";
 import { ModalTextItem } from "../../../Account/EcoCard/ModalTextItem";
 import InputTokenAmount from "../../../commons/InputTokenAmount";
+import { toast as nativeToast } from "react-toastify";
+import { toastOpts } from "../../../../../utilities/toastUtils";
 
 interface LockupModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockup;
@@ -86,6 +88,10 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
         inflationMultiplier: wallet.inflationMultiplier,
       });
 
+      nativeToast(
+        "Successfully deposit to lockup",
+        toastOpts("#5AE4BF", "#F7FEFC")
+      );
       setDepositAmount(Zero);
       onRequestClose();
     } catch (error) {

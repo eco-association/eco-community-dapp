@@ -21,6 +21,7 @@ import { useVotingPower } from "../components/hooks/useVotingPower";
 import { Textfit } from "react-textfit";
 import { WalletBlock } from "../components/application/commons/WalletBlock";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { truncateText } from "../utilities";
 
 const Content = styled(Column)({
   maxWidth: 780,
@@ -46,7 +47,7 @@ const Title: React.FC<{ title?: string }> = ({ title }) => {
   return (
     <Typography variant="h1" color="white">
       <Textfit mode="multi" min={15} max={32} style={{ height: 157 }}>
-        {title}
+        {truncateText(title, 720)}
       </Textfit>
     </Typography>
   );
@@ -119,9 +120,9 @@ const Proposal: React.FC = () => {
         >
           <Content gap="lg">
             <BackButton />
-            <Grid columns="1fr auto" gap="64px" alignItems="end">
+            <Grid columns="1fr auto" gap="64px">
               <Title title={proposal?.name} />
-              <Column gap="sm">
+              <Column gap="sm" style={{ alignSelf: "center" }}>
                 <Typography color="success" variant="body1">
                   Created by
                 </Typography>

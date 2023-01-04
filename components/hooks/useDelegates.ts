@@ -5,7 +5,6 @@ import { useContractAddresses } from "../../providers";
 import { useAccount, useProvider } from "wagmi";
 import { useDelegationState } from "../application/Account/VotingPowerCard/ManageDelegationModal/provider/ManageDelegationProvider";
 import { AddressZero } from "@ethersproject/constants";
-import { useEffect } from "react";
 
 function getPayload(
   address: string,

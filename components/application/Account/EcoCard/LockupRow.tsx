@@ -21,12 +21,17 @@ interface LockupRowProps {
 enum LockupStatus {
   Active,
   Complete,
+  Withdrawn,
   Claimed,
 }
 
 function getLockupStatus(lockup: FundsLockupWithDeposit): LockupStatus {
   const claimed = Boolean(lockup.withdrawnAt);
-  if (claimed) return LockupStatus.Claimed;
+  if (claimed) {
+    if (lockup.withdrawnAt.getTime() < lockup.endsAt.getTime())
+      return LockupStatus.Withdrawn;
+    return LockupStatus.Claimed;
+  }
   if (isLockupClaimable(lockup)) return LockupStatus.Complete;
   return LockupStatus.Active;
 }
@@ -34,6 +39,8 @@ function getLockupStatus(lockup: FundsLockupWithDeposit): LockupStatus {
 function getProperties(status: LockupStatus): { text: string; color: Color } {
   if (status === LockupStatus.Claimed)
     return { color: "secondary", text: "CLAIMED" };
+  if (status === LockupStatus.Withdrawn)
+    return { color: "secondary", text: "WITHDRAWN" };
   if (status === LockupStatus.Complete)
     return { color: "active", text: "COMPLETE" };
   return { color: "primary", text: "VESTING" };
@@ -45,19 +52,19 @@ function formatDate(date: Date): string {
 
 export const LockupRow: React.FC<LockupRowProps> = ({ lockup, onClick }) => {
   const dates = getLockupDates(lockup);
-
   const status = getLockupStatus(lockup);
-  const ended = status === LockupStatus.Claimed;
-
   const { color, text } = getProperties(status);
 
+  const ended =
+    status === LockupStatus.Claimed || status === LockupStatus.Withdrawn;
   const duration =
     status !== LockupStatus.Active
       ? `ENDED ON ${formatDate(dates.end)}`
       : `${formatDate(dates.start)} - ${formatDate(dates.end)}`;
 
   const amount = lockup.reward.mul(1e9).div((lockup.interest * 1e7).toFixed(0));
-
+  const reward =
+    status === LockupStatus.Withdrawn ? lockup.reward.mul(-1) : lockup.reward;
   return (
     <LockupTableRow
       clickable={!ended}
@@ -74,7 +81,7 @@ export const LockupRow: React.FC<LockupRowProps> = ({ lockup, onClick }) => {
       </td>
       <td>
         <Typography variant="body2" color={color}>
-          {formatNumber(tokensToNumber(lockup.reward))}
+          {formatNumber(tokensToNumber(reward))}
         </Typography>
       </td>
       <td>

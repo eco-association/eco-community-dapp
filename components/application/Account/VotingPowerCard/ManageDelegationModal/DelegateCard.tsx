@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Column, Input, Row } from "@ecoinc/ecomponents";
 import LoaderAnimation from "../../../Loader";
 import { ManageDelegationOption } from "./ManageDelegationModal";
@@ -9,6 +9,9 @@ import { GasFee } from "../../../commons/GasFee";
 import { useManageDelegation } from "./hooks/useManageDelegation";
 import { Steps } from "./Steps";
 import TextLoader from "../../../commons/TextLoader";
+import { useECO } from "../../../../hooks/contract/useECO";
+import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
+import { displayAddress, txError } from "../../../../../utilities";
 
 interface DelegateCardProps {
   delegate?: string;
@@ -21,8 +24,12 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   delegate,
   onRequestClose,
 }) => {
+  const eco = useECO({ useProvider: true });
+  const ecoXStaking = useECOxStaking({ useProvider: true });
+
   const account = useAccount();
   const { state } = useDelegationState();
+
   const {
     delegateToken,
     delegateBothTokens,
@@ -32,17 +39,21 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
 
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState("");
-  const [totalSteps, setTotalSteps] = useState(0);
-  // An invalid address does not have delegation enabled
-  const [invalidAddress, setInvalidAddress] = useState<string>("");
-
   const [address, setAddress] = useState(delegate || "");
+  const [totalSteps, setTotalSteps] = useState(0);
 
   const alreadyDelegating = !!(option
     ? option === ManageDelegationOption.SEcoXMyWallet
       ? state.secox.delegate
       : state.eco.delegate
     : state.eco.delegate || state.secox.delegate);
+
+  // An invalid address does not have delegation enabled
+  const [delegateInfo, setDelegateInfo] = useState({
+    loading: false,
+    address: address,
+    enabled: alreadyDelegating,
+  });
 
   const submitHandler = async () => {
     if (option) {
@@ -54,20 +65,18 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
               ? "staked ecoX"
               : "eco")
         );
-        const onComplete = () => {
-          setAddress("");
-          onRequestClose && onRequestClose();
-        };
         await undelegateToken(
           option === ManageDelegationOption.SEcoXMyWallet ? "secox" : "eco",
-          onComplete
+          () => {
+            setAddress("");
+            onRequestClose && onRequestClose();
+          }
         );
         return;
       }
       await delegateToken(
         option === ManageDelegationOption.SEcoXMyWallet ? "secox" : "eco",
-        address,
-        setInvalidAddress
+        address
       );
     } else {
       setTotalSteps(2);
@@ -75,13 +84,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
         await undelegateBothTokens(setStep, setStatus, onRequestClose);
         return;
       }
-      await delegateBothTokens(
-        address,
-        setInvalidAddress,
-        setStep,
-        setStatus,
-        onRequestClose
-      );
+      await delegateBothTokens(address, setStep, setStatus, onRequestClose);
     }
   };
 
@@ -94,8 +97,72 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
       (!address ||
         !ethers.utils.isAddress(_address) ||
         _address === delegate?.toLowerCase() ||
-        _address === invalidAddress.toLowerCase() ||
         _address.toLowerCase() === account.address.toLowerCase()));
+
+  useEffect(() => {
+    if (
+      !isButtonDisabled &&
+      delegateInfo.address.toLowerCase() !== _address.toLowerCase()
+    ) {
+      const checkDelegate = async (delegate: string) => {
+        setDelegateInfo({
+          loading: true,
+          enabled: false,
+          address: delegate,
+        });
+        try {
+          let enabled;
+          if (option) {
+            const contract =
+              option === ManageDelegationOption.SEcoXMyWallet
+                ? ecoXStaking
+                : eco;
+            enabled = await contract.delegationToAddressEnabled(delegate);
+          } else {
+            const ecoEnabled = await eco.delegationToAddressEnabled(delegate);
+            const sEcoXEnabled = await ecoXStaking.delegationToAddressEnabled(
+              delegate
+            );
+            enabled = ecoEnabled && sEcoXEnabled;
+          }
+          setDelegateInfo((state) => {
+            if (state.address !== delegate) return state;
+            if (!enabled) {
+              txError(
+                "Failed to delegate",
+                new Error(
+                  `${displayAddress(delegate)} doesn't have delegation enabled`
+                )
+              );
+            }
+            return {
+              loading: false,
+              enabled: enabled,
+              address: delegate,
+            };
+          });
+        } catch (err) {
+          txError(
+            "Failed to check delegate",
+            new Error("We could not determine if the delegate is eligible")
+          );
+          setDelegateInfo({
+            loading: false,
+            enabled: false,
+            address: delegate,
+          });
+        }
+      };
+      checkDelegate(_address);
+    }
+  }, [
+    _address,
+    delegateInfo.address,
+    eco,
+    ecoXStaking,
+    isButtonDisabled,
+    option,
+  ]);
 
   return (
     <div>
@@ -114,8 +181,12 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
             <Button
               variant="fill"
               onClick={submitHandler}
-              disabled={isButtonDisabled}
               color={alreadyDelegating ? "secondary" : "success"}
+              disabled={
+                isButtonDisabled ||
+                delegateInfo.loading ||
+                !delegateInfo.enabled
+              }
               style={
                 alreadyDelegating
                   ? { background: "#BDCBD3", minWidth: "initial" }
@@ -124,6 +195,8 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
             >
               {loading ? (
                 <LoaderAnimation />
+              ) : delegateInfo.loading ? (
+                "Checking..."
               ) : alreadyDelegating ? (
                 "Undelegate"
               ) : (

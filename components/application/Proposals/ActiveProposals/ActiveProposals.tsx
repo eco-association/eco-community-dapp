@@ -82,7 +82,7 @@ export const ActiveProposals: React.FC<ActiveProposalsProps> = ({
                 query: { id: votingProposal?.id },
               }}
             >
-              <Typography link variant="body1" color="success" css={underline}>
+              <Typography link variant="body1" color="active" css={underline}>
                 vote on the current proposal
               </Typography>
             </Link>

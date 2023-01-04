@@ -120,9 +120,9 @@ const Proposal: React.FC = () => {
         >
           <Content gap="lg">
             <BackButton />
-            <Grid columns="1fr auto" gap="64px" alignItems="end">
+            <Grid columns="1fr auto" gap="64px">
               <Title title={proposal?.name} />
-              <Column gap="sm">
+              <Column gap="sm" style={{ alignSelf: "center" }}>
                 <Typography color="success" variant="body1">
                   Created by
                 </Typography>

@@ -33,6 +33,8 @@ import { useLockup } from "../../../hooks/contract/useLockup";
 import { useTimeFlag } from "../../../hooks/useTimeFlag";
 import { useAccount } from "wagmi";
 import { WalletActionType } from "../../../../providers/WalletProvider";
+import { toast as nativeToast } from "react-toastify";
+import { toastOpts } from "../../../../utilities/toastUtils";
 
 interface LockupClaimModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockupWithDeposit;
@@ -238,6 +240,12 @@ export const LockupClaimModal: React.FC<LockupClaimModalProps> = ({
         inflationMultiplier: wallet.inflationMultiplier,
       });
 
+      nativeToast(
+        hasEnded
+          ? "Lockup claim successfully"
+          : "Lockup withdrawn successfully",
+        toastOpts("#5AE4BF", "#F7FEFC")
+      );
       onRequestClose();
     } catch (error) {
       txError("Failed to claim", error);

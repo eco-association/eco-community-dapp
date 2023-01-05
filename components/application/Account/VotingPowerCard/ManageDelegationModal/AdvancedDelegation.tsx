@@ -8,7 +8,10 @@ import { useCommunity } from "../../../../../providers";
 import { tokensToNumber } from "../../../../../utilities";
 import Image from "next/image";
 import ChevronLeft from "../../../../../public/images/chevron-left.svg";
-import { isAdvancedDelegation } from "../../../../../utilities/votingPower";
+import {
+  isAdvancedDelegation,
+  isLoadingDelegation,
+} from "../../../../../utilities/votingPower";
 
 interface AdvancedDelegationProps {
   onClose(): void;
@@ -23,11 +26,7 @@ const AdvancedDelegation: React.FC<AdvancedDelegationProps> = ({ onClose }) => {
     community.currentGeneration.blockNumber
   );
 
-  const loading =
-    state.eco.loading ||
-    state.secox.loading ||
-    state.eco.loadingDelegation ||
-    state.secox.loadingDelegation;
+  const loading = isLoadingDelegation(state);
 
   return (
     <Column gap="xl">

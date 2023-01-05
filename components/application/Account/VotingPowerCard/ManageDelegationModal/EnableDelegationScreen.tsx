@@ -15,6 +15,7 @@ import LoaderAnimation from "../../../Loader";
 import ChevronLeft from "../../../../../public/images/chevron-left.svg";
 import { Steps } from "./Steps";
 import { displayAddress } from "../../../../../utilities";
+import { isLoadingDelegation } from "../../../../../utilities/votingPower";
 
 interface EnableDelegationBoxProps {
   back(): void;
@@ -49,12 +50,8 @@ const EnableDelegationBox: React.FC<EnableDelegationBoxProps> = ({
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState("");
 
+  const loading = isLoadingDelegation(state);
   const alreadyDelegating = state.eco.delegate || state.secox.delegate;
-  const loading =
-    state.eco.loading ||
-    state.secox.loading ||
-    state.eco.loadingDelegation ||
-    state.secox.loadingDelegation;
 
   return (
     <Column gap="xl">

@@ -3,7 +3,6 @@ import { ContractCallContext, Multicall } from "ethereum-multicall";
 import { ECO__factory, ECOxStaking__factory } from "../../types/contracts";
 import { useContractAddresses } from "../../providers";
 import { useAccount, useProvider } from "wagmi";
-import { useDelegationState } from "../application/Account/VotingPowerCard/ManageDelegationModal/provider/ManageDelegationProvider";
 import { AddressZero } from "@ethersproject/constants";
 
 function getPayload(
@@ -52,7 +51,6 @@ function getPayload(
 export const useDelegates = () => {
   const account = useAccount();
   const provider = useProvider();
-  const { state } = useDelegationState();
   const { eco, sEcoX } = useContractAddresses();
 
   return useQuery(
@@ -75,14 +73,10 @@ export const useDelegates = () => {
       return { ecoEnabled, ECODelegator, sEcoXEnabled, sECOxDelegator };
     },
     {
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
       enabled:
-        account.isConnected &&
-        !state.secox.loading &&
-        !state.eco.loading &&
-        !state.secox.loadingDelegation &&
-        !state.eco.loadingDelegation &&
-        eco !== AddressZero &&
-        sEcoX !== AddressZero,
+        account.isConnected && eco !== AddressZero && sEcoX !== AddressZero,
     }
   );
 };

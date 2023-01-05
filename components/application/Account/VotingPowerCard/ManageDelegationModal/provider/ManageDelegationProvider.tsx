@@ -54,6 +54,7 @@ export enum DelegateActionType {
   SetLoadingDelegation,
   SetEnabled,
   SetDelegate,
+  SetDelegatesToMe,
   SetTokenData,
   Validate,
   ResetValidations,
@@ -65,12 +66,17 @@ export type DelegateAction =
     }
   | {
       type: DelegateActionType.SetState;
-      state: ManageDelegationState;
+      state: Record<DelegableToken, Partial<TokenDelegation>>;
     }
   | {
       type: DelegateActionType.SetTokenData;
       token: DelegableToken;
       state: TokenDelegation;
+    }
+  | {
+      type: DelegateActionType.SetDelegatesToMe;
+      token: DelegableToken;
+      delegates: TokenDelegate[];
     }
   | {
       type: DelegateActionType.SetDelegate;
@@ -106,7 +112,11 @@ const delegateReducer: React.Reducer<ManageDelegationState, DelegateAction> = (
   let newState: ManageDelegationState;
   switch (action.type) {
     case DelegateActionType.SetState:
-      return action.state;
+      return {
+        ...action.state,
+        eco: action.state.eco && { ...state.eco, ...action.state.eco },
+        secox: action.state.secox && { ...state.secox, ...action.state.secox },
+      };
     case DelegateActionType.SetTokenData:
       return { ...state, [action.token]: action.state };
     case DelegateActionType.SetDelegate:
@@ -116,6 +126,14 @@ const delegateReducer: React.Reducer<ManageDelegationState, DelegateAction> = (
           ...state[action.token],
           loading: false,
           delegate: action.delegate,
+        },
+      };
+    case DelegateActionType.SetDelegatesToMe:
+      return {
+        ...state,
+        [action.token]: {
+          ...state[action.token],
+          delegatesToMe: action.delegates,
         },
       };
     case DelegateActionType.SetEnabled:
@@ -180,7 +198,8 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
   const wallet = useWallet();
   const account = useAccount();
-  const { data, isFetched } = useDelegates();
+  const { data, isFetched, isLoading, dataUpdatedAt, isFetching } =
+    useDelegates();
 
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
 
@@ -191,35 +210,41 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
         type: DelegateActionType.SetState,
         state: {
           eco: {
-            loading: false,
-            loadingDelegation: false,
             enabled: ecoEnabled,
             delegate:
               ECODelegator?.toLowerCase() === account.address.toLowerCase()
                 ? undefined
                 : ECODelegator,
-            delegatesToMe: wallet.ecoDelegatedToMe,
           },
           secox: {
-            loading: false,
-            loadingDelegation: false,
             enabled: sEcoXEnabled,
             delegate:
               sECOxDelegator?.toLowerCase() === account.address.toLowerCase()
                 ? undefined
                 : sECOxDelegator,
-            delegatesToMe: wallet.sEcoXDelegatedToMe,
           },
         },
       });
     }
-  }, [
-    data,
-    isFetched,
-    account.address,
-    wallet.ecoDelegatedToMe,
-    wallet.sEcoXDelegatedToMe,
-  ]);
+  }, [account.address, data, isFetched]);
+
+  useEffect(() => {
+    dispatch({
+      type: DelegateActionType.Batch,
+      actions: [
+        {
+          type: DelegateActionType.SetDelegatesToMe,
+          token: "eco",
+          delegates: wallet.ecoDelegatedToMe,
+        },
+        {
+          type: DelegateActionType.SetDelegatesToMe,
+          token: "secox",
+          delegates: wallet.sEcoXDelegatedToMe,
+        },
+      ],
+    });
+  }, [wallet.ecoDelegatedToMe, wallet.sEcoXDelegatedToMe]);
 
   return (
     <ManageDelegationContext.Provider value={{ state, dispatch }}>

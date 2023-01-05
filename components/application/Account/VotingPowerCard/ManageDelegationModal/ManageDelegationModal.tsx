@@ -8,7 +8,10 @@ import { useDelegationState } from "./provider/ManageDelegationProvider";
 import EnableDelegationScreen from "./EnableDelegationScreen";
 import DisableDelegationCard from "./DisableDelegationCard";
 import AdvancedDelegation from "./AdvancedDelegation";
-import { isAdvancedDelegation } from "../../../../../utilities/votingPower";
+import {
+  isAdvancedDelegation,
+  isLoadingDelegation,
+} from "../../../../../utilities/votingPower";
 import Image from "next/image";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
 
@@ -61,12 +64,8 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   const [advanced, setAdvanced] = useState(isAdvancedDelegation(state));
   const [openDelegation, setOpenDelegation] = useState(false);
 
+  const loading = isLoadingDelegation(state);
   const delegationEnabled = state.eco.enabled || state.secox.enabled;
-  const loading =
-    state.eco.loading ||
-    state.secox.loading ||
-    state.eco.loadingDelegation ||
-    state.secox.loadingDelegation;
 
   useEffect(() => {
     if (isAdvancedDelegation(state)) setAdvanced(true);

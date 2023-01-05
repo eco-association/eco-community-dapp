@@ -1,3 +1,4 @@
+import React from "react";
 import { Column, Typography } from "@ecoinc/ecomponents";
 
 interface StepsProps {

@@ -1,4 +1,4 @@
-/** Override CodeMirror styles 
+/** Override CodeMirror styles
  * List of options can be found here: https://codemirror.net/doc/manual.html#styling
  */
 
@@ -11,4 +11,8 @@
 /* IDE height */
 .CodeMirror-scroll {
     max-height: 900px;
+}
+
+.ReactCollapse--collapse {
+    transition: height 250ms;
 }

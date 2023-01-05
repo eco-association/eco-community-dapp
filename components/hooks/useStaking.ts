@@ -31,6 +31,11 @@ export function formatStakeAmount(staked: BigNumber) {
   return formatterMax6Decimals.format(tokensToNumber(staked));
 }
 
+export enum StakingStatus {
+  APPROVING,
+  STAKING,
+}
+
 const useStaking = () => {
   const wallet = useWallet();
   const account = useAccount();
@@ -41,14 +46,23 @@ const useStaking = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const increaseStake = async (amount: BigNumber, onComplete: () => void) => {
+  const increaseStake = async (
+    amount: BigNumber,
+    onComplete: () => void,
+    onState: (status: StakingStatus, steps: number) => void
+  ) => {
     setLoading(true);
+    let steps = 2;
     try {
       const allowance = await ecoX.allowance(account.address, sEcoX);
       if (allowance.lt(amount)) {
+        onState(StakingStatus.APPROVING, steps);
         const approveTx = await ecoX.approve(sEcoX, amount);
         await approveTx.wait();
+      } else {
+        steps = 1;
       }
+      onState(StakingStatus.STAKING, steps);
       const tx = await staking.deposit(amount);
       await tx.wait();
 

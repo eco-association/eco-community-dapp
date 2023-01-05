@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Button,
   Column,
@@ -9,7 +9,10 @@ import {
 } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import { displayAddress } from "../../../../utilities";
-import useStaking, { formatStakeAmount } from "../../../hooks/useStaking";
+import useStaking, {
+  formatStakeAmount,
+  StakingStatus,
+} from "../../../hooks/useStaking";
 import LoaderAnimation from "../../Loader";
 import { useBlockExit } from "../../../hooks/useBlockExit";
 import { WalletInterface } from "../../../../types";
@@ -19,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { BigNumber } from "ethers";
 import { Zero } from "@ethersproject/constants";
 import { GasFee } from "../../commons/GasFee";
+import { Steps } from "../VotingPowerCard/ManageDelegationModal/Steps";
 
 interface StakingModalProps {
   open: boolean;
@@ -50,6 +54,11 @@ const StakingModal: React.FC<StakingModalProps> = ({
   const account = useAccount();
   const { increaseStake, decreaseStake, loading } = useStaking();
 
+  const [txStatus, setTxStatus] = useState<{
+    steps: number;
+    status: StakingStatus;
+  }>(null);
+
   const { watch, setValue, register, getFieldState } = useForm<{
     stake: BigNumber;
   }>({
@@ -69,12 +78,15 @@ const StakingModal: React.FC<StakingModalProps> = ({
   useBlockExit(loading);
 
   const stake = () => {
-    const onComplete = () => setOpen(false);
+    const onComplete = () => {
+      setOpen(false);
+      setTxStatus(null);
+    };
     if (staked.gt(balances.sEcoXBalance)) {
-      increaseStake(amountDiff, onComplete);
-    } else {
-      decreaseStake(amountDiff, onComplete);
+      const onUpdateState = (status, steps) => setTxStatus({ steps, status });
+      return increaseStake(amountDiff, onComplete, onUpdateState);
     }
+    return decreaseStake(amountDiff, onComplete);
   };
 
   const totalECOx = balances.ecoXBalance.add(balances.sEcoXBalance);
@@ -156,7 +168,23 @@ const StakingModal: React.FC<StakingModalProps> = ({
               >
                 {loading ? <LoaderAnimation /> : "Update"}
               </Button>
-              {loading && <TextLoader />}
+              {loading && (!showStakeAlert || txStatus) ? (
+                showStakeAlert && txStatus.steps > 1 ? (
+                  <Steps
+                    totalSteps={txStatus.steps}
+                    currentStep={
+                      txStatus.status === StakingStatus.APPROVING ? 1 : 2
+                    }
+                    status={
+                      txStatus.status === StakingStatus.APPROVING
+                        ? "Approving Tokens..."
+                        : "Staking tokens..."
+                    }
+                  />
+                ) : (
+                  <TextLoader />
+                )
+              ) : null}
             </Row>
             <GasFee gasLimit={230_000} />
           </Column>

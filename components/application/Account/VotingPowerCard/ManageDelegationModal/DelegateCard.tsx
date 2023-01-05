@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Column, Input, Row } from "@ecoinc/ecomponents";
+import {
+  Button,
+  Column,
+  Input,
+  Row,
+  styled,
+  Typography,
+} from "@ecoinc/ecomponents";
 import LoaderAnimation from "../../../Loader";
 import { ManageDelegationOption } from "./ManageDelegationModal";
 import { ethers } from "ethers";
@@ -11,13 +18,18 @@ import { Steps } from "./Steps";
 import TextLoader from "../../../commons/TextLoader";
 import { useECO } from "../../../../hooks/contract/useECO";
 import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
-import { displayAddress, txError } from "../../../../../utilities";
+import { txError } from "../../../../../utilities";
+import { Collapse } from "react-collapse";
 
 interface DelegateCardProps {
   delegate?: string;
   option?: ManageDelegationOption;
   onRequestClose?: () => void;
 }
+
+const StyledInput = styled(Input)(({ theme, error }) => ({
+  ...(error ? { color: theme.palette.error.main } : {}),
+}));
 
 const DelegateCard: React.FC<DelegateCardProps> = ({
   option,
@@ -127,14 +139,6 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
           }
           setDelegateInfo((state) => {
             if (state.address !== delegate) return state;
-            if (!enabled) {
-              txError(
-                "Failed to delegate",
-                new Error(
-                  `${displayAddress(delegate)} doesn't have delegation enabled`
-                )
-              );
-            }
             return {
               loading: false,
               enabled: enabled,
@@ -164,18 +168,32 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
     option,
   ]);
 
+  const hasEnabledDelegation =
+    !isButtonDisabled &&
+    _address === delegateInfo.address.toLowerCase() &&
+    !delegateInfo.loading &&
+    !delegateInfo.enabled;
+
   return (
     <div>
       <Column gap="lg">
-        <Input
-          label=""
-          value={address}
-          disabled={loading || alreadyDelegating}
-          name="ethAddress"
-          color="secondary"
-          placeholder="Eth Address"
-          onChange={(e) => setAddress(e.currentTarget.value)}
-        />
+        <Column gap="sm">
+          <StyledInput
+            label=""
+            value={address}
+            name="ethAddress"
+            placeholder="Eth Address"
+            error={hasEnabledDelegation}
+            disabled={loading || alreadyDelegating}
+            color={hasEnabledDelegation ? "error" : "secondary"}
+            onChange={(e) => setAddress(e.currentTarget.value)}
+          />
+          <Collapse isOpened={hasEnabledDelegation}>
+            <Typography variant="body2" color="error">
+              This wallet is not currently a delegate.
+            </Typography>
+          </Collapse>
+        </Column>
         <Column gap="md">
           <Row gap="lg" items="center">
             <Button

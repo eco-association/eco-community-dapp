@@ -198,8 +198,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
   const wallet = useWallet();
   const account = useAccount();
-  const { data, isFetched, isLoading, dataUpdatedAt, isFetching } =
-    useDelegates();
+  const { data, isFetched } = useDelegates();
 
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import { useAccount } from "wagmi";
 import {
@@ -27,6 +27,9 @@ export interface TokenDelegate {
 export interface VotingPowerSources {
   eco: BigNumber;
   sEcoX: BigNumber;
+  others: BigNumber;
+  isEcoDelegated: boolean;
+  isEcoXDelegated: boolean;
   ecoDelegatedToMe: TokenDelegate[];
   sEcoXDelegatedToMe: TokenDelegate[];
   fundsLockupDelegated: Lockup[];
@@ -35,6 +38,9 @@ export interface VotingPowerSources {
 const DEFAULT_VALUE: VotingPowerSources = {
   eco: Zero,
   sEcoX: Zero,
+  others: Zero,
+  isEcoDelegated: false,
+  isEcoXDelegated: false,
   ecoDelegatedToMe: [],
   sEcoXDelegatedToMe: [],
   fundsLockupDelegated: [],
@@ -102,9 +108,19 @@ function formatSourceData(
     })
   );
 
+  const isEcoDelegated = eco.gt(ecoVotingPower);
+  const isEcoXDelegated = sEcoX.gt(sEcoXVotingPower);
+
+  const totalVP = ecoVotingPower.add(sEcoXVotingPower);
+  let others = totalVP.sub(eco).sub(sEcoX);
+  others = others.isNegative() ? Zero : others;
+
   return {
-    eco: ecoVotingPower.gt(eco) ? eco : ecoVotingPower,
-    sEcoX: sEcoXVotingPower.gt(sEcoX) ? sEcoX : sEcoXVotingPower,
+    eco,
+    sEcoX,
+    others,
+    isEcoDelegated,
+    isEcoXDelegated,
     ecoDelegatedToMe,
     sEcoXDelegatedToMe,
     fundsLockupDelegated,
@@ -118,8 +134,6 @@ export const VotingPowerSourcesProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
   const { address } = useAccount();
   const { currentGeneration } = useCommunity();
-
-  const [votingSources, setVotingSources] = useState(DEFAULT_VALUE);
 
   const {
     data: sources,
@@ -140,8 +154,9 @@ export const VotingPowerSourcesProvider: React.FC<React.PropsWithChildren> = ({
     return () => stopPolling();
   }, [startPolling, stopPolling]);
 
-  useEffect(() => {
-    if (sources) setVotingSources(formatSourceData(sources));
+  const votingSources = useMemo(() => {
+    if (!sources) return DEFAULT_VALUE;
+    return formatSourceData(sources);
   }, [sources]);
 
   return (

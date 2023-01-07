@@ -10,7 +10,6 @@ import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
 import { useVotingPowerSources } from "../../../../providers/VotingPowerSourcesProvider";
 import { Zero } from "@ethersproject/constants";
-import { BigNumber } from "ethers";
 
 const Container = styled(Column)({ width: "100%" });
 
@@ -34,13 +33,7 @@ const Sources: React.FC<SourcesProps> = ({ title, subtitle }) => {
   );
 };
 
-interface VotingPowerSourcesProps {
-  totalDelegated: BigNumber;
-}
-
-const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
-  totalDelegated,
-}) => {
+const VotingPowerSources: React.FC = () => {
   const { address } = useAccount();
   const sources = useVotingPowerSources();
 
@@ -71,13 +64,29 @@ const VotingPowerSources: React.FC<VotingPowerSourcesProps> = ({
         />
       ) : null}
 
-      {totalDelegated.gt("0") ? (
+      {!sources.others.isZero() ? (
         <Sources
           title={`${formatNumber(
-            tokensToNumber(totalDelegated),
+            tokensToNumber(sources.others),
             false
           )} voting power`}
           subtitle="from other wallets"
+        />
+      ) : null}
+
+      {sources.isEcoDelegated ? (
+        <Sources
+          title={`-${formatNumber(tokensToNumber(sources.eco), false)} ECO`}
+          subtitle="delegated to a wallet"
+        />
+      ) : null}
+      {sources.isEcoXDelegated ? (
+        <Sources
+          title={`-${formatNumber(
+            tokensToNumber(sources.sEcoX),
+            false
+          )} staked ECOx`}
+          subtitle="delegated to a wallet"
         />
       ) : null}
     </Container>

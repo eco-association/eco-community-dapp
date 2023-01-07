@@ -40,7 +40,7 @@ export const VOTING_POWER_SOURCES = gql`
         first: 1
         orderBy: blockNumber
         orderDirection: desc
-        where: { blockNumber_lt: $blocknumber }
+        where: { blockNumber_lte: $blocknumber }
       ) {
         value
       }
@@ -48,7 +48,7 @@ export const VOTING_POWER_SOURCES = gql`
         first: 1
         orderBy: blockNumber
         orderDirection: desc
-        where: { blockNumber_lt: $blocknumber }
+        where: { blockNumber_lte: $blocknumber }
       ) {
         value
       }
@@ -56,7 +56,7 @@ export const VOTING_POWER_SOURCES = gql`
         first: 1
         orderBy: blockNumber
         orderDirection: desc
-        where: { token: "eco", blockNumber_lt: $blocknumber }
+        where: { token: "eco", blockNumber_lte: $blocknumber }
       ) {
         value
       }
@@ -64,7 +64,7 @@ export const VOTING_POWER_SOURCES = gql`
         first: 1
         orderBy: blockNumber
         orderDirection: desc
-        where: { token: "sEcox", blockNumber_lt: $blocknumber }
+        where: { token: "sEcox", blockNumber_lte: $blocknumber }
       ) {
         value
       }
@@ -89,7 +89,7 @@ export const VOTING_POWER_SOURCES = gql`
       first: 1
       orderBy: blockNumber
       orderDirection: desc
-      where: { blockNumber_lt: $blocknumber }
+      where: { blockNumber_lte: $blocknumber }
     ) {
       value
     }

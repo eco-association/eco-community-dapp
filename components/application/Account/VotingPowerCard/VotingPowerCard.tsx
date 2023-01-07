@@ -14,17 +14,13 @@ import { useVotingPower } from "../../../hooks/useVotingPower";
 import { useAccount } from "wagmi";
 import { AccountCard } from "../AccountCard";
 import { VotingState } from "./VotingState";
-import { useVotingPowerSources } from "../../../../providers/VotingPowerSourcesProvider";
 
 const VotingPowerCard = () => {
   const account = useAccount();
-  const sources = useVotingPowerSources();
   const { currentGeneration } = useCommunity();
   const { votingPower } = useVotingPower(currentGeneration.blockNumber);
 
   const [modalOpen, setModalOpen] = useState(false);
-
-  const totalDelegated = votingPower.sub(sources.eco).sub(sources.sEcoX);
 
   return (
     <AccountCard
@@ -37,7 +33,7 @@ const VotingPowerCard = () => {
         onRequestClose={() => setModalOpen(false)}
       />
       <Column gap="xl">
-        <VotingPowerSources totalDelegated={totalDelegated} />
+        <VotingPowerSources />
         <Grid columns="1fr auto" gap="24px" alignItems="center">
           <Typography variant="body2" color="secondary">
             Manage your delegates and delegation permissions.

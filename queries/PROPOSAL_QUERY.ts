@@ -99,6 +99,7 @@ export const PROPOSAL_QUERY = gql`
             ProposalUnsupported
             ProposalVoteFor
             ProposalVoteAgainst
+            ProposalExecuted
           ]
         }
       ) {

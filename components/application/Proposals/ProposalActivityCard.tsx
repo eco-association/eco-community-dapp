@@ -217,10 +217,35 @@ const VoteResultItem: React.FC<{
 
   return (
     <ActivityItem
-      last
+      last={!passed}
       icon={passed ? "checkmark" : "error"}
       title={title}
       description={description}
+    />
+  );
+};
+
+const ProposalExecutedItem: React.FC<{
+  proposal: CommunityProposal;
+}> = ({ proposal }) => {
+  const activity = getActivity(proposal, ActivityType.ProposalExecuted);
+
+  if (!proposal.policyVote) return null;
+
+  const { result, majorityReachedAt, voteEnds } = proposal.policyVote;
+
+  const passed = result === SubgraphVoteResult.Accepted || !!majorityReachedAt;
+  const endedAtDate = majorityReachedAt || voteEnds;
+
+  const votingEnded = Date.now() > endedAtDate.getTime();
+  if (!votingEnded || !passed) return null;
+
+  return (
+    <ActivityItem
+      last
+      title="Proposal Executed"
+      icon={activity ? "checkmark" : "waiting"}
+      description={activity && formatDate(activity.timestamp)}
     />
   );
 };
@@ -288,6 +313,7 @@ export const ProposalActivityCard: React.FC<ProposalActivityCardProps> = ({
         ) : null}
         <VoteItem disable={failed} proposal={proposal} />
         <VoteResultItem proposal={proposal} onFail={() => setFailed(true)} />
+        <ProposalExecutedItem proposal={proposal} />
       </Column>
     );
   }

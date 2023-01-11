@@ -140,9 +140,8 @@ export const ActivityNotification: React.FC<ActivityNotificationProps> = ({
   if (activity.type === ActivityNotificationType.PROPOSAL_EXECUTED) {
     return (
       <CardBase time={activity.timestamp}>
-        Proposal{" "}
         <ProposalName id={proposalId} name={activity.communityProposal.name} />{" "}
-        was executed.
+        proposal was successfully enacted.
       </CardBase>
     );
   }

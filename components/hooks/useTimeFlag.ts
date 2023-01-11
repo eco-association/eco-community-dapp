@@ -10,7 +10,7 @@ export const useTimeFlag = (time?: Date) => {
   useEffect(() => {
     if (time && !reached) {
       const remaining = time.getTime() - Date.now();
-      const timeout = setTimeout(() => setReached(false), remaining);
+      const timeout = setTimeout(() => setReached(true), remaining);
       return () => clearTimeout(timeout);
     }
   }, [reached, time]);

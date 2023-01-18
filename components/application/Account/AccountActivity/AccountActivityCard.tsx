@@ -1,32 +1,15 @@
-import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
+import { Card, Column, Typography } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import { AccountActivityType } from "../../../../queries/ACCOUNT_ACTIVITY_QUERY";
 import { useAccountActivity } from "../../../hooks/useAccountActivity";
-import AccountActivityItem from "./AccountActivityItem";
+import ActivityItem from "./ActivityItem";
 import ActivityTotalsBar from "./ActivityTotalsBar";
+import { Scrollable } from "../../commons/Scrollable";
 
 const setMaxHeight = css({
   overflow: "hidden",
   paddingBottom: 24,
 });
-
-const Sticky = styled.div`
-  overflow: scroll;
-  max-height: 500px;
-
-  ::-webkit-scrollbar {
-    background: white;
-    width: 9px;
-    height: 0px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #dce9f0;
-    border-radius: 43px;
-  }
-
-  scrollbar-color: #dce9f0 white;
-`;
 
 const AccountActivityCard = () => {
   const activities = useAccountActivity();
@@ -59,13 +42,13 @@ const AccountActivityCard = () => {
           proposalsSupported={proposalsSupported}
         />
         {activities.length > 0 ? (
-          <Sticky>
+          <Scrollable>
             <Column gap="lg">
               {activities.map((activity) => (
-                <AccountActivityItem key={activity.id} activity={activity} />
+                <ActivityItem key={activity.id} activity={activity} />
               ))}
             </Column>
-          </Sticky>
+          </Scrollable>
         ) : (
           <Typography variant="body1" color="secondary">
             You do not have any account activity yet

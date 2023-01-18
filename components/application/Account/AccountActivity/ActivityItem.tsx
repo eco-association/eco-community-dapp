@@ -41,11 +41,6 @@ interface ProposalActivityProps {
   proposalId?: string;
 }
 
-interface DelegateActivityProps {
-  action: string;
-  token: string;
-}
-
 const CardBase: React.FC<React.PropsWithChildren<CardBaseProps>> = ({
   time,
   children,
@@ -82,20 +77,9 @@ const ProposalActivity: React.FC<ProposalActivityProps> = ({
   proposalId,
 }) => {
   return (
-    <Typography variant="body1">
+    <React.Fragment>
       You {action} {bridge} <ProposalName id={proposalId} name={proposalName} />
-    </Typography>
-  );
-};
-
-const DelegateActivity: React.FC<DelegateActivityProps> = ({
-  action,
-  token,
-}) => {
-  return (
-    <Typography variant="body1">
-      You {action} {token}
-    </Typography>
+    </React.Fragment>
   );
 };
 
@@ -106,48 +90,34 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
   const { inflationMultiplier } = useWallet();
   if (activity.type === AccountActivityType.SECOX_UNDELEGATE) {
     return (
-      <CardBase time={activity.timestamp}>
-        <DelegateActivity action="undelegated" token="sECOx" />
-      </CardBase>
+      <CardBase time={activity.timestamp}>You undelegated staked ECOx</CardBase>
     );
   }
   if (activity.type === AccountActivityType.SECOX_DELEGATE) {
     return (
-      <CardBase time={activity.timestamp}>
-        <DelegateActivity action="delegated" token="sECOx" />
-      </CardBase>
+      <CardBase time={activity.timestamp}>You delegated staked ECOx</CardBase>
     );
   }
   if (activity.type === AccountActivityType.ECO_UNDELEGATE) {
-    return (
-      <CardBase time={activity.timestamp}>
-        <DelegateActivity action="undelegated" token="ECO" />
-      </CardBase>
-    );
+    return <CardBase time={activity.timestamp}>You undelegated ECO</CardBase>;
   }
   if (activity.type === AccountActivityType.ECO_DELEGATE) {
-    return (
-      <CardBase time={activity.timestamp}>
-        <DelegateActivity action="delegated" token="ECO" />
-      </CardBase>
-    );
+    return <CardBase time={activity.timestamp}>You delegated ECO</CardBase>;
   }
   if (activity.type === AccountActivityType.LOCKUP_DEPOSIT) {
     return (
       <CardBase time={activity.timestamp}>
-        <Typography variant="body1">
-          You deposited{" "}
-          <b>
-            {formatNumber(
-              tokensToNumber(
-                activity.lockupDeposit.amount.div(inflationMultiplier)
-              )
-            )}{" "}
-            ECO
-          </b>{" "}
-          into a lockup, earning{" "}
-          {numberFormatter(activity.lockupDeposit.interest)}% interest.
-        </Typography>
+        You deposited{" "}
+        <b>
+          {formatNumber(
+            tokensToNumber(
+              activity.lockupDeposit.amount.div(inflationMultiplier)
+            )
+          )}{" "}
+          ECO
+        </b>{" "}
+        into a lockup, earning{" "}
+        {numberFormatter(activity.lockupDeposit.interest)}% interest.
       </CardBase>
     );
   }
@@ -225,49 +195,34 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
   if (activity.type === ActivityNotificationType.RANDOM_INFLATION) {
     return (
       <CardBase time={activity.timestamp}>
-        <Typography variant="body1">New monetary policy enacted.</Typography>
+        New monetary policy enacted.
       </CardBase>
     );
   }
   if (activity.type === ActivityNotificationType.PROPOSAL_VOTING) {
     return (
       <CardBase time={activity.timestamp}>
-        <Typography variant="body1">
-          Proposal{" "}
-          <ProposalName
-            id={proposalId}
-            name={activity.communityProposal.name}
-          />{" "}
-          advanced to voting stage.
-        </Typography>
+        Proposal{" "}
+        <ProposalName id={proposalId} name={activity.communityProposal.name} />{" "}
+        advanced to voting stage.
       </CardBase>
     );
   }
   if (activity.type === ActivityNotificationType.PROPOSAL_SUBMITTED) {
     return (
       <CardBase time={activity.timestamp}>
-        <Typography variant="body1">
-          Proposal{" "}
-          <ProposalName
-            id={proposalId}
-            name={activity.communityProposal.name}
-          />{" "}
-          submitted.
-        </Typography>
+        Proposal{" "}
+        <ProposalName id={proposalId} name={activity.communityProposal.name} />{" "}
+        submitted.
       </CardBase>
     );
   }
   if (activity.type === ActivityNotificationType.PROPOSAL_QUORUM) {
     return (
       <CardBase time={activity.timestamp}>
-        <Typography variant="body1">
-          Proposal{" "}
-          <ProposalName
-            id={proposalId}
-            name={activity.communityProposal.name}
-          />{" "}
-          reached the voting threshold.
-        </Typography>
+        Proposal{" "}
+        <ProposalName id={proposalId} name={activity.communityProposal.name} />{" "}
+        reached the voting threshold.
       </CardBase>
     );
   }
@@ -276,28 +231,24 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
     if (result === SubgraphVoteResult.Accepted) {
       return (
         <CardBase time={activity.timestamp}>
-          <Typography variant="body1">
-            Proposal{" "}
-            <ProposalName
-              id={proposalId}
-              name={activity.communityProposal.name}
-            />{" "}
-            passed.
-          </Typography>
+          Proposal{" "}
+          <ProposalName
+            id={proposalId}
+            name={activity.communityProposal.name}
+          />{" "}
+          passed.
         </CardBase>
       );
     }
     if (result === SubgraphVoteResult.Failed) {
       return (
         <CardBase time={activity.timestamp}>
-          <Typography variant="body1">
-            Proposal{" "}
-            <ProposalName
-              id={proposalId}
-              name={activity.communityProposal.name}
-            />{" "}
-            failed.
-          </Typography>
+          Proposal{" "}
+          <ProposalName
+            id={proposalId}
+            name={activity.communityProposal.name}
+          />{" "}
+          failed.
         </CardBase>
       );
     }

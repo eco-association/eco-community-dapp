@@ -62,7 +62,8 @@ export const RefundNotification: React.FC = () => {
   return (
     <React.Fragment>
       <TopBar onClick={() => setOpen(true)}>
-        You have proposal refunds to claim.
+        You have proposal refunds{" "}
+        <b style={{ textDecoration: "underline" }}>to claim</b>.
       </TopBar>
       <Dialog
         isOpen={open}

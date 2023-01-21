@@ -89,7 +89,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
       });
 
       nativeToast(
-        "Successfully deposit to lockup",
+        "Successfully deposited to the Lockup",
         toastOpts("#5AE4BF", "#F7FEFC")
       );
       setDepositAmount(Zero);

@@ -4,6 +4,7 @@ import {
   LockupFragmentResult,
 } from "./fragments/LockupFragment";
 import { FundsLockupWithDeposit } from "../types/FundsLockup";
+import { BigNumber } from "ethers";
 
 export enum AccountActivityType {
   PROPOSAL_REFUNDED = "ProposalRefunded",
@@ -23,6 +24,7 @@ export enum AccountActivityType {
 export type Activity = {
   id: string;
   type: AccountActivityType;
+  amount: BigNumber;
   timestamp: Date;
   communityProposal?: {
     id: string;
@@ -44,6 +46,7 @@ export type Activity = {
 export type AccountActivity = {
   id: string;
   type: AccountActivityType;
+  amount: string;
   timestamp: string;
   communityProposal: {
     id: string;
@@ -99,6 +102,7 @@ export const ACCOUNT_ACTIVITY_QUERY = gql`
     ) {
       id
       type
+      amount
       timestamp
       communityProposal {
         id

@@ -14,6 +14,7 @@ function formatData(result: AccountActivityQueryResults): Activity[] {
   return result.activityRecords?.map(
     (activity): Activity => ({
       ...activity,
+      amount: BigNumber.from(activity.amount),
       timestamp: convertDate(activity.timestamp),
       lockupDeposit: activity.lockupDeposit && {
         ...formatLockup(

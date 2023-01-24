@@ -1,33 +1,16 @@
-import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
+import { Card, Column, Typography } from "@ecoinc/ecomponents";
 import { SupportPhaseAlert } from "./SupportPhaseAlert";
-import { ActivityNotification } from "./ActivityNotification";
 import { useCommunity } from "../../../../providers";
 import { isSubmittingInProgress } from "../../../../providers/CommunityProvider";
 import { css } from "@emotion/react";
 import { useActivities } from "../../../hooks/useActivities";
+import ActivityItem from "../../Account/AccountActivity/ActivityItem";
+import { Scrollable } from "../../commons/Scrollable";
 
 const setMaxHeight = css({
   maxHeight: 600,
   overflow: "hidden",
 });
-
-const Sticky = styled.div`
-  overflow: scroll;
-  max-height: 500px;
-
-  ::-webkit-scrollbar {
-    background: white;
-    width: 9px;
-    height: 0px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #dce9f0;
-    border-radius: 43px;
-  }
-
-  scrollbar-color: #dce9f0 white;
-`;
 
 export const ActivityCard = () => {
   const community = useCommunity();
@@ -40,15 +23,17 @@ export const ActivityCard = () => {
         {isSubmittingInProgress(community.stage.name) ? (
           <SupportPhaseAlert />
         ) : null}
-        <Sticky>
-          {activities.map((activity, index) => (
-            <ActivityNotification
-              key={index}
-              activity={activity}
-              proposalId={activity.communityProposal?.id}
-            />
-          ))}
-        </Sticky>
+        <Scrollable>
+          <Column gap="lg">
+            {activities.map((activity, index) => (
+              <ActivityItem
+                key={index}
+                activity={activity}
+                proposalId={activity.communityProposal?.id}
+              />
+            ))}
+          </Column>
+        </Scrollable>
       </Column>
     </Card>
   );

@@ -166,6 +166,7 @@ type WalletAction =
       amount: BigNumber;
       reward: BigNumber;
       inflationMultiplier: BigNumber;
+      previousDeposit: FundsLockupWithDeposit;
     }
   | {
       type: WalletActionType.LockupWithdrawal;
@@ -207,6 +208,11 @@ const delegateReducer: React.Reducer<WalletInterface, WalletAction> = (
         ecoBalance: state.ecoBalance.add(action.ecoAmount),
       };
     case WalletActionType.LockupDeposit:
+      const previousDeposit = state.lockups.find(
+        (lockup) => lockup.address === action.lockup.address
+      );
+      if (action.previousDeposit !== previousDeposit) return state;
+
       let lockups;
       const depositLockups = state.lockups.filter(
         (lockup) => lockup.address === action.lockup.address

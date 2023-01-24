@@ -45,7 +45,7 @@ const AccountActivityCard = () => {
           <Scrollable>
             <Column gap="lg">
               {activities.map((activity) => (
-                <ActivityItem key={activity.id} activity={activity} />
+                <ActivityItem account key={activity.id} activity={activity} />
               ))}
             </Column>
           </Scrollable>

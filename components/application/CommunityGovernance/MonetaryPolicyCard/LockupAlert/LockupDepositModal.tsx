@@ -23,7 +23,6 @@ import {
   txError,
 } from "../../../../../utilities";
 import LoaderAnimation from "../../../Loader";
-import TextLoader from "../../../commons/TextLoader";
 import { useWallet } from "../../../../../providers";
 import EcoLogoMedGray from "../../../../../public/images/eco-logo/eco-logo-gray-med.svg";
 import Image from "next/image";
@@ -35,6 +34,7 @@ import { ModalTextItem } from "../../../Account/EcoCard/ModalTextItem";
 import InputTokenAmount from "../../../commons/InputTokenAmount";
 import { toast as nativeToast } from "react-toastify";
 import { toastOpts } from "../../../../../utilities/toastUtils";
+import { Steps } from "../../../Account/VotingPowerCard/ManageDelegationModal/Steps";
 
 interface LockupModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockup;
@@ -61,6 +61,11 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [depositAmount, setDepositAmount] = useState(Zero);
+  const [stepState, setStep] = useState<{
+    step: number;
+    status: string;
+    totalSteps: number;
+  }>(null);
 
   useBlockExit(loading);
 
@@ -69,9 +74,22 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
     try {
       const allowance = await eco.allowance(account.address, lockup.address);
       if (allowance.lt(depositAmount)) {
+        setStep({ step: 1, totalSteps: 2, status: "Approving tokens..." });
         const approveTx = await eco.approve(lockup.address, depositAmount);
         await approveTx.wait();
+        setStep((state) => ({
+          ...state,
+          step: 2,
+          status: "Depositing tokens...",
+        }));
+      } else {
+        setStep({ step: 1, totalSteps: 1, status: "Depositing tokens..." });
       }
+
+      const previousDeposit = wallet.lockups.find(
+        (_lockup) => lockup.address === _lockup.address
+      );
+
       const tx = await lockupContract.deposit(depositAmount);
       await tx.wait();
 
@@ -86,6 +104,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
         amount: depositAmount,
         address: account.address,
         inflationMultiplier: wallet.inflationMultiplier,
+        previousDeposit,
       });
 
       nativeToast(
@@ -97,6 +116,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
     } catch (error) {
       txError("Failed to deposit", error);
     }
+    setStep(null);
     setLoading(false);
   };
 
@@ -179,7 +199,13 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
               >
                 {loading ? <LoaderAnimation /> : "Deposit"}
               </Button>
-              {loading && <TextLoader />}
+              {loading && stepState && (
+                <Steps
+                  status={stepState.status}
+                  currentStep={stepState.step}
+                  totalSteps={stepState.totalSteps}
+                />
+              )}
             </Row>
             <GasFee gasLimit={500_000} />
           </Column>

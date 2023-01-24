@@ -2,7 +2,6 @@ import React from "react";
 import { css } from "@emotion/react";
 import { Column, formatNumber, Typography } from "@ecoinc/ecomponents";
 import Link from "next/link";
-import { useWallet } from "../../../../providers";
 import {
   formatTime,
   numberFormatter,
@@ -26,6 +25,7 @@ const dateTime = css({
 });
 
 interface AccountActivityItemProps {
+  account?: boolean;
   activity: AccountActivity | GeneralActivity;
   proposalId?: string;
 }
@@ -83,11 +83,9 @@ const ProposalActivity: React.FC<ProposalActivityProps> = ({
   );
 };
 
-const ActivityItem: React.FC<AccountActivityItemProps> = ({
+const AccountActivityItem: React.FC<AccountActivityItemProps> = ({
   activity,
-  proposalId,
 }) => {
-  const { inflationMultiplier } = useWallet();
   if (activity.type === AccountActivityType.SECOX_UNDELEGATE) {
     return (
       <CardBase time={activity.timestamp}>You undelegated staked ECOx</CardBase>
@@ -107,15 +105,7 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
   if (activity.type === AccountActivityType.LOCKUP_DEPOSIT) {
     return (
       <CardBase time={activity.timestamp}>
-        You deposited{" "}
-        <b>
-          {formatNumber(
-            tokensToNumber(
-              activity.lockupDeposit.amount.div(inflationMultiplier)
-            )
-          )}{" "}
-          ECO
-        </b>{" "}
+        You deposited <b>{formatNumber(tokensToNumber(activity.amount))} ECO</b>{" "}
         into a lockup, earning{" "}
         {numberFormatter(activity.lockupDeposit.interest)}% interest.
       </CardBase>
@@ -191,7 +181,12 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
       </CardBase>
     );
   }
+};
 
+const GeneralActivityItem: React.FC<AccountActivityItemProps> = ({
+  activity,
+  proposalId,
+}) => {
   if (activity.type === ActivityNotificationType.RANDOM_INFLATION) {
     return (
       <CardBase time={activity.timestamp}>
@@ -253,7 +248,6 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
       );
     }
   }
-
   if (activity.type === ActivityNotificationType.PROPOSAL_EXECUTED) {
     return (
       <CardBase time={activity.timestamp}>
@@ -262,7 +256,6 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
       </CardBase>
     );
   }
-
   if (activity.type === ActivityNotificationType.GENERATION_INCREMENTED) {
     return (
       <CardBase time={activity.timestamp}>
@@ -270,6 +263,14 @@ const ActivityItem: React.FC<AccountActivityItemProps> = ({
       </CardBase>
     );
   }
+};
+
+const ActivityItem: React.FC<AccountActivityItemProps> = ({
+  account,
+  ...props
+}) => {
+  if (account) return <AccountActivityItem {...props} />;
+  return <GeneralActivityItem {...props} />;
 };
 
 export default ActivityItem;

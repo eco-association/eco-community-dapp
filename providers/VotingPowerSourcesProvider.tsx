@@ -28,6 +28,8 @@ export interface VotingPowerSources {
   eco: BigNumber;
   sEcoX: BigNumber;
   others: BigNumber;
+  ecoVotingPower: BigNumber;
+  sEcoXVotingPower: BigNumber;
   isEcoDelegated: boolean;
   isEcoXDelegated: boolean;
   ecoDelegatedToMe: TokenDelegate[];
@@ -39,6 +41,8 @@ const DEFAULT_VALUE: VotingPowerSources = {
   eco: Zero,
   sEcoX: Zero,
   others: Zero,
+  ecoVotingPower: Zero,
+  sEcoXVotingPower: Zero,
   isEcoDelegated: false,
   isEcoXDelegated: false,
   ecoDelegatedToMe: [],
@@ -121,6 +125,8 @@ function formatSourceData(
     others,
     isEcoDelegated,
     isEcoXDelegated,
+    ecoVotingPower,
+    sEcoXVotingPower,
     ecoDelegatedToMe,
     sEcoXDelegatedToMe,
     fundsLockupDelegated,

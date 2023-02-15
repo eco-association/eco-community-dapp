@@ -158,7 +158,9 @@ function fromBalances(balancesMap: Record<string, BigNumber>) {
   const arrayOfMap = [];
   const balanceSums = [];
   let totalSum = ethers.constants.Zero;
-  const addresses = Object.keys(balancesMap).sort();
+  const addresses = Object.keys(balancesMap).sort((a, b) => {
+    return a.toLowerCase().localeCompare(b.toLowerCase(), "en");
+  });
 
   for (const a of addresses) {
     balanceSums.push(totalSum);

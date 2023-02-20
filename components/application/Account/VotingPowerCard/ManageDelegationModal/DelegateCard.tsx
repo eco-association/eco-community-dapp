@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Column,
-  Input,
-  Row,
-  styled,
-  Typography,
-} from "@ecoinc/ecomponents";
+import { Button, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
 import LoaderAnimation from "../../../Loader";
 import { ManageDelegationOption } from "./ManageDelegationModal";
 import { ethers } from "ethers";
@@ -18,17 +11,25 @@ import { Steps } from "./Steps";
 import TextLoader from "../../../commons/TextLoader";
 import { useECO } from "../../../../hooks/contract/useECO";
 import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
-import { txError } from "../../../../../utilities";
+import { displayAddress, txError } from "../../../../../utilities";
 import { Collapse } from "react-collapse";
+import InputAddress from "../../../commons/InputAddress";
 
 interface DelegateCardProps {
-  delegate?: string;
+  delegate: string;
   option?: ManageDelegationOption;
   onRequestClose?: () => void;
 }
 
-const StyledInput = styled(Input)(({ theme, error }) => ({
+const StyledInput = styled(InputAddress)(({ theme, error }) => ({
   ...(error ? { color: theme.palette.error.main } : {}),
+}));
+
+const Note = styled(Column)(({ theme }) => ({
+  padding: 8,
+  backgroundColor: theme.palette.info.bg,
+  transitionDuration: "0.2s",
+  transitionProperty: "marginTop height opacity",
 }));
 
 const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -54,11 +55,13 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   const [address, setAddress] = useState(delegate || "");
   const [totalSteps, setTotalSteps] = useState(0);
 
-  const alreadyDelegating = !!(option
-    ? option === ManageDelegationOption.SEcoXMyWallet
-      ? state.secox.delegate
-      : state.eco.delegate
-    : state.eco.delegate || state.secox.delegate);
+  const alreadyDelegating = !!delegate;
+
+  const hasDelegateeChanged =
+    alreadyDelegating &&
+    (address || "").toLowerCase().trim() !== delegate.toLowerCase();
+
+  const isUndelegating = alreadyDelegating && !hasDelegateeChanged;
 
   // An invalid address does not have delegation enabled
   const [delegateInfo, setDelegateInfo] = useState({
@@ -70,7 +73,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   const submitHandler = async () => {
     if (option) {
       setTotalSteps(1);
-      if (alreadyDelegating) {
+      if (isUndelegating) {
         setStatus(
           "Undelegating " +
             (option === ManageDelegationOption.SEcoXMyWallet
@@ -92,7 +95,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
       );
     } else {
       setTotalSteps(2);
-      if (alreadyDelegating) {
+      if (isUndelegating) {
         await undelegateBothTokens(setStep, setStatus, onRequestClose);
         return;
       }
@@ -105,7 +108,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
   const _address = address.toLowerCase();
   const isButtonDisabled =
     loading ||
-    (!alreadyDelegating &&
+    (!isUndelegating &&
       (!address ||
         !ethers.utils.isAddress(_address) ||
         _address === delegate?.toLowerCase() ||
@@ -168,7 +171,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
     option,
   ]);
 
-  const hasEnabledDelegation =
+  const hasEnabledDelegationError =
     !isButtonDisabled &&
     _address === delegateInfo.address.toLowerCase() &&
     !delegateInfo.loading &&
@@ -183,30 +186,53 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
             value={address}
             name="ethAddress"
             placeholder="Eth Address"
-            error={hasEnabledDelegation}
-            disabled={loading || alreadyDelegating}
-            color={hasEnabledDelegation ? "error" : "secondary"}
-            onChange={(e) => setAddress(e.currentTarget.value)}
+            disabled={loading}
+            onChange={setAddress}
+            error={hasEnabledDelegationError}
+            color={hasEnabledDelegationError ? "error" : "secondary"}
           />
-          <Collapse isOpened={hasEnabledDelegation}>
+          <Collapse isOpened={hasEnabledDelegationError}>
             <Typography variant="body2" color="error">
               This wallet is not currently a delegate.
             </Typography>
           </Collapse>
+          {hasDelegateeChanged &&
+          !isButtonDisabled &&
+          !delegateInfo.loading &&
+          !hasEnabledDelegationError ? (
+            <Collapse
+              isOpened={
+                hasDelegateeChanged &&
+                !isButtonDisabled &&
+                !delegateInfo.loading &&
+                !hasEnabledDelegationError
+              }
+            >
+              <Note gap="sm">
+                <Typography variant="body3" color="info">
+                  Note
+                </Typography>
+                <Typography variant="body2">
+                  You are about to change your previous delegatee{" "}
+                  <b>{displayAddress(delegate)}</b>.
+                </Typography>
+              </Note>
+            </Collapse>
+          ) : null}
         </Column>
         <Column gap="md">
           <Row gap="lg" items="center">
             <Button
               variant="fill"
               onClick={submitHandler}
-              color={alreadyDelegating ? "secondary" : "success"}
+              color={isUndelegating ? "secondary" : "success"}
               disabled={
                 isButtonDisabled ||
                 delegateInfo.loading ||
                 !delegateInfo.enabled
               }
               style={
-                alreadyDelegating
+                isUndelegating
                   ? { background: "#BDCBD3", minWidth: "initial" }
                   : { minWidth: "initial" }
               }
@@ -215,7 +241,7 @@ const DelegateCard: React.FC<DelegateCardProps> = ({
                 <LoaderAnimation />
               ) : delegateInfo.loading ? (
                 "Checking..."
-              ) : alreadyDelegating ? (
+              ) : isUndelegating ? (
                 "Undelegate"
               ) : (
                 "Confirm"

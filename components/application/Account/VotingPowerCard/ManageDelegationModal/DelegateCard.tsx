@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Button, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
-import LoaderAnimation from "../../../Loader";
-import { ManageDelegationOption } from "./ManageDelegationModal";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
-import { useDelegationState } from "./provider/ManageDelegationProvider";
+import { Collapse } from "react-collapse";
+import { Button, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
+
+import TextLoader from "../../../commons/TextLoader";
+import InputAddress from "../../../commons/InputAddress";
+import LoaderAnimation from "../../../Loader";
+
+import { Steps } from "./Steps";
 import { GasFee } from "../../../commons/GasFee";
 import { useManageDelegation } from "./hooks/useManageDelegation";
-import { Steps } from "./Steps";
-import TextLoader from "../../../commons/TextLoader";
+import { ManageDelegationOption } from "./ManageDelegationModal";
+import { displayAddress, txError } from "../../../../../utilities";
+
 import { useECO } from "../../../../hooks/contract/useECO";
 import { useECOxStaking } from "../../../../hooks/contract/useECOxStaking";
-import { displayAddress, txError } from "../../../../../utilities";
-import { Collapse } from "react-collapse";
-import InputAddress from "../../../commons/InputAddress";
+import { useDelegationState } from "./provider/ManageDelegationProvider";
 
 interface DelegateCardProps {
   delegate: string;

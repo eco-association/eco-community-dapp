@@ -76,14 +76,17 @@ const VotingPowerSources: React.FC = () => {
 
       {sources.isEcoDelegated ? (
         <Sources
-          title={`-${formatNumber(tokensToNumber(sources.eco), false)} ECO`}
+          title={`-${formatNumber(
+            tokensToNumber(sources.eco.sub(sources.ecoVotingPower)),
+            false
+          )} ECO`}
           subtitle="delegated to a wallet"
         />
       ) : null}
       {sources.isEcoXDelegated ? (
         <Sources
           title={`-${formatNumber(
-            tokensToNumber(sources.sEcoX),
+            tokensToNumber(sources.sEcoX.sub(sources.sEcoXVotingPower)),
             false
           )} staked ECOx`}
           subtitle="delegated to a wallet"

@@ -12,6 +12,9 @@ type SubgraphAccount = {
 
 export type EcoSnapshotQueryResult = {
   accounts: SubgraphAccount[];
+  contractAddresses: {
+    policy: string;
+  };
 };
 
 export type EcoSnapshotQueryVariables = {
@@ -31,6 +34,9 @@ export const ECO_SNAPSHOT = gql`
         value
         blockNumber
       }
+    }
+    contractAddresses(id: "0") {
+      policy
     }
   }
 `;

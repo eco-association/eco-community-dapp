@@ -4,6 +4,7 @@ import { BigNumber, utils } from "ethers";
 import { convertDate } from "./convertDate";
 import { FundsLockupWithDeposit } from "../types/FundsLockup";
 import moment from "moment";
+import { SECONDS_PER_DAY } from "./formatDuration";
 
 function isLockupDeposit(
   lockup: FundsLockup | FundsLockupWithDeposit
@@ -67,3 +68,7 @@ export function isLockupClaimable(lockup: FundsLockupWithDeposit) {
 
 export const lockupFormatDate = (date: Date) =>
   moment(date).format("MMM DD, YYYY");
+
+export function getLockupAPY(lockup: FundsLockup): number {
+  return (SECONDS_PER_DAY * 365 * lockup.interest) / lockup.duration;
+}

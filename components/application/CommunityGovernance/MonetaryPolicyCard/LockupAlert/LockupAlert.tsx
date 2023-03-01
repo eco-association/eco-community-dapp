@@ -38,7 +38,7 @@ export const LockupAlert = () => {
             variant="body2"
             color={lockup.interest === 0 ? "secondary" : "active"}
           >
-            <b>• {format(lockup.interest)}%</b>
+            <b>• {format(lockup.interest)}% APR</b>
           </Typography>{" "}
         </Typography>
       }

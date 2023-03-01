@@ -203,7 +203,7 @@ export const ManageDelegationProvider: React.FC<React.PropsWithChildren> = ({
   const [state, dispatch] = useReducer(delegateReducer, defaultValue);
 
   useEffect(() => {
-    if (isFetched) {
+    if (isFetched && data) {
       const { ECODelegator, sECOxDelegator, sEcoXEnabled, ecoEnabled } = data;
       dispatch({
         type: DelegateActionType.SetState,

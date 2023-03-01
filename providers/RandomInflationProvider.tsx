@@ -8,7 +8,7 @@ import React, {
 import { ApolloClient, useApolloClient, useQuery } from "@apollo/client";
 import { RANDOM_INFLATION, RandomInflationQueryResult } from "../queries";
 import { RandomInflationRecipient, RandomInflationWithClaims } from "../types";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { SubgraphRandomInflation } from "../queries/RANDOM_INFLATION";
 import { RandomInflationClaim } from "../types/RandomInflation";
 import {
@@ -81,6 +81,14 @@ function parseAccountsSnapshot(
     });
 }
 
+const BLACKLIST_ADDRESSES = [
+  ethers.constants.AddressZero,
+  "0x98830c37aa6abdae028bea5c587852c569092d71", // Eco Association
+  "0xa201d3c815ac9d4d8830fb3de2b490b5b0069aca", // Eco Inc.
+  "0x99f98ea4a883db4692fa317070f4ad2dc94b05ce", // Eco Association
+  "0x09bc52b9eb7387ede639fc10ce5fa01cbcbf2b17", // Mainnet ECO~USDC Pool
+];
+
 async function getRecipients(
   client: ApolloClient<object>,
   randomInflation: RandomInflationWithClaims
@@ -96,14 +104,24 @@ async function getRecipients(
     });
 
     const accounts = parseAccountsSnapshot(queryResult.data);
+
+    const blackListedAccounts = [
+      ...BLACKLIST_ADDRESSES,
+      queryResult.data.contractAddresses.policy,
+    ];
+
+    const filteredAccounts = accounts.filter(
+      (account) => !blackListedAccounts.includes(account.address)
+    );
+
     const { recipients, tree } = getRandomInflationRecipients(
       randomInflation,
-      accounts
+      filteredAccounts
     );
 
     if (randomInflation.acceptedRootHash !== tree.hash) {
       console.warn(
-        "[Random Inflation Issue]: Tree from balances don't match accepted root hash",
+        "[Random Inflation Issue]: Tree from balances don't match accepted root hash for RI id",
         randomInflation.address
       );
       return [];

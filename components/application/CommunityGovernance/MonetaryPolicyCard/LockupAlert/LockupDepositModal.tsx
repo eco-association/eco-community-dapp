@@ -16,7 +16,7 @@ import { GasFee } from "../../../commons/GasFee";
 import { useBlockExit } from "../../../../hooks/useBlockExit";
 import {
   formatDuration,
-  getLockupAPY,
+  getLockupAPR,
   getLockupDates,
   lockupFormatDate,
   numberFormatter,
@@ -155,7 +155,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
           <ModalTextItem
             title="LOCKUP RATE"
             text={`${numberFormatter(lockup.interest)}%`}
-            subtitle={`(${numberFormatter(getLockupAPY(lockup))}% APY)`}
+            subtitle={`(${numberFormatter(getLockupAPR(lockup))}% APR)`}
           />
           <ModalTextItem
             title="DURATION"

@@ -55,13 +55,14 @@ interface ContentProps {
   onClaim(): void;
 }
 
-const ClaimEarly: React.FC<ContentProps> = ({ lockup, onClaim, loading }) => {
+const ClaimEarly: React.FC<ContentProps> = ({ loading, lockup, onClaim }) => {
   const wallet = useWallet();
 
   const [checked, setChecked] = useState(false);
 
-  const penalty = lockup.reward;
   const dates = getLockupDates(lockup);
+
+  const penalty = lockup.reward;
   const amount = lockup.amount.div(wallet.inflationMultiplier);
 
   return (

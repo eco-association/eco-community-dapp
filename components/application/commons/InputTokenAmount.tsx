@@ -4,7 +4,7 @@ import {
   ButtonGroup,
   Color,
   Input,
-  TypographyProps,
+  InputProps,
 } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import { BigNumber, ethers } from "ethers";
@@ -13,8 +13,8 @@ import { tokensToNumber } from "../../../utilities";
 
 interface InputTokenAmountProps
   extends Omit<
-    TypographyProps,
-    "value" | "color" | "type" | "min" | "onChange" | "as"
+    InputProps,
+    "value" | "color" | "type" | "min" | "onChange" | "as" | "ref"
   > {
   color?: Color;
   value?: BigNumber;

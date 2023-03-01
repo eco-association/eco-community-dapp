@@ -15,7 +15,7 @@ import {
   displayAddress,
   formatCountdown,
   formatDuration,
-  getLockupAPY,
+  getLockupAPR,
   getLockupClaimAmount,
   getLockupDates,
   lockupFormatDate,
@@ -78,7 +78,7 @@ const ClaimEarly: React.FC<ContentProps> = ({ loading, lockup, onClaim }) => {
         <Typography variant="body1">
           You have <b>{formatNumber(tokensToNumber(amount))} ECO</b> in this
           lockup, earning <b>{numberFormatter(lockup.interest)}%</b> (
-          {numberFormatter(getLockupAPY(lockup))}% APY).
+          {numberFormatter(getLockupAPR(lockup))}% APR).
         </Typography>
 
         <ModalTextItem

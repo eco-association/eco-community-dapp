@@ -2,6 +2,7 @@ import React from "react";
 import { Alert, Typography } from "@ecoinc/ecomponents";
 import { LockupAlertContent } from "./LockupAlertContent";
 import { useCommunity } from "../../../../../providers";
+import { getLockupAPR } from "../../../../../utilities";
 
 const { format } = new Intl.NumberFormat("en-EN", {
   maximumFractionDigits: 2,
@@ -38,7 +39,7 @@ export const LockupAlert = () => {
             variant="body2"
             color={lockup.interest === 0 ? "secondary" : "active"}
           >
-            <b>• {format(lockup.interest)}% APR</b>
+            <b>• {format(getLockupAPR(lockup))}% APR</b>
           </Typography>{" "}
         </Typography>
       }

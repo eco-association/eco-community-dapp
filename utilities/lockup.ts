@@ -69,6 +69,6 @@ export function isLockupClaimable(lockup: FundsLockupWithDeposit) {
 export const lockupFormatDate = (date: Date) =>
   moment(date).format("MMM DD, YYYY");
 
-export function getLockupAPY(lockup: FundsLockup): number {
+export function getLockupAPR(lockup: FundsLockup): number {
   return (SECONDS_PER_DAY * 365 * lockup.interest) / lockup.duration;
 }

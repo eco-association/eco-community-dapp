@@ -12,8 +12,28 @@ const lineHeight = css({ lineHeight: 1 });
 
 export const InfoBlocks = () => {
   const { ecoTotalSupply, ecoXTotalSupply } = useWallet();
+
+  const infoStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        display: "flex",
+        flexDirection: "column",
+      };
+    } else {
+      return;
+    }
+  };
+  const blockStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        fontSize: "13px",
+      };
+    } else {
+      return;
+    }
+  };
   return (
-    <Row gap="xl">
+    <Row gap="xl" style={infoStyle()}>
       <Block
         title="ECO SUPPLY"
         content={
@@ -32,6 +52,7 @@ export const InfoBlocks = () => {
               css={lineHeight}
               decimalOptions={{ lightWeight: true }}
               amount={parseInt(tokensToNumber(ecoTotalSupply).toString())}
+              style={blockStyle()}
             />
           </Row>
         }
@@ -54,6 +75,7 @@ export const InfoBlocks = () => {
               css={lineHeight}
               decimalOptions={{ lightWeight: true }}
               amount={ecoXTotalSupply}
+              style={blockStyle()}
             />
           </Row>
         }
@@ -72,6 +94,7 @@ export const InfoBlocks = () => {
                 ecoXTotalSupply.add(ecoTotalSupply.div(10))
               ).toString()
             )}
+            style={blockStyle()}
           />
         }
       />

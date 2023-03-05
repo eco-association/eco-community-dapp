@@ -10,14 +10,82 @@ import { useCommunity } from "../providers";
 
 const Home: React.FC = () => {
   const { stage, nextGenerationStartsAt } = useCommunity();
+
+  const gridStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        width: "100%",
+        justifyContent: "space-between",
+        gridTemplateColumns: "auto",
+      };
+    } else {
+      return;
+    }
+  };
+  const colStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        marginTop: "0",
+      };
+    } else {
+      return { maxWidth: 980, margin: "-48px auto 0 auto" };
+    }
+  };
+  const bodyStyle = function () {
+    if (window.innerWidth < 500) {
+      return { bodyStyle: { padding: 0 } };
+    } else {
+      return;
+    }
+  };
+
+  const landingStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        display: "flex",
+        flexDirection: "row",
+        padding: "0 24px 20px 24px",
+      };
+    } else {
+      return;
+    }
+  };
+
+  const headerStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        textAlign: "left",
+        gap: "24px",
+        alignItems: "start",
+      };
+    } else {
+      return;
+    }
+  };
+
+  const headerText = function () {
+    if (window.innerWidth < 500) {
+      return {
+        fontSize: "24px",
+      };
+    } else {
+      return;
+    }
+  };
+
   return (
     <Header
       current="home"
       breakpoint={16}
       content={
-        <Column items="center" gap="xl">
-          <Column items="center" gap="md" css={{ marginTop: 16 }}>
-            <Typography variant="h1" color="white">
+        <Column items="center" gap="xl" style={landingStyle()}>
+          <Column
+            items="center"
+            gap="md"
+            css={{ marginTop: 16 }}
+            style={headerStyle()}
+          >
+            <Typography variant="h1" color="white" style={headerText()}>
               Eco Community Governance
             </Typography>
             <HeaderInfo
@@ -30,20 +98,14 @@ const Home: React.FC = () => {
           <InfoBlocks />
         </Column>
       }
+      styles={bodyStyle()}
     >
-      <Column
-        items="center"
-        gap="xl"
-        style={{ maxWidth: 980, margin: "-48px auto 0 auto" }}
-      >
+      <Column items="center" gap="xl" style={colStyle()}>
         <VotingCard />
         <Grid
           columns="calc(50% - 12px) calc(50% - 12px)"
           gap="24px"
-          style={{
-            width: "100%",
-            justifyContent: "space-between",
-          }}
+          style={gridStyle()}
         >
           <MonetaryPolicyCard />
           <ActivityCard />

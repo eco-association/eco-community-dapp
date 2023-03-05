@@ -80,6 +80,18 @@ const CreateProposal: React.FC = () => {
 
   const buttonDisabled = !isSubmitPhase || !hasEnoughEco;
 
+  const gridStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        width: "100%",
+        justifyContent: "space-between",
+        gridTemplateColumns: "auto",
+      };
+    } else {
+      return;
+    }
+  };
+
   return (
     <Content gap="xl">
       <DeployProposalModal
@@ -87,7 +99,12 @@ const CreateProposal: React.FC = () => {
         code={code}
         onRequestClose={() => setAction(ProposalAction.None)}
       />
-      <Grid columns="388px auto" gap="44px" alignItems="start">
+      <Grid
+        columns="388px auto"
+        gap="44px"
+        alignItems="start"
+        style={gridStyle()}
+      >
         <Column gap="lg" style={{ position: "sticky", top: 64 }}>
           <Card css={card}>
             <Column gap="xl">

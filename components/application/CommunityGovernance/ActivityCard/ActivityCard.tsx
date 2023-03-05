@@ -31,9 +31,18 @@ const Sticky = styled.div`
 export const ActivityCard = () => {
   const community = useCommunity();
   const activities = useActivities();
+  const cardStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        borderRadius: "0",
+      };
+    } else {
+      return { height: "max-content" };
+    }
+  };
 
   return (
-    <Card css={setMaxHeight}>
+    <Card css={setMaxHeight} style={cardStyle()}>
       <Column gap="lg">
         <Typography variant="h3">Activity Feed</Typography>
         {isSubmittingInProgress(community.stage.name) ? (

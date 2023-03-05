@@ -1,8 +1,13 @@
-import React, { CSSProperties, useMemo, useRef } from "react";
-import { Column, Row, styled } from "@ecoinc/ecomponents";
+import React, { CSSProperties, useMemo, useRef, useState } from "react";
+import { Button, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
 import Image from "next/image";
 import EcoLogoImg from "../../../public/images/eco-gov-logo.svg";
+import Menu from "../../../public/images/menu.svg";
 import DotsBg from "../../../public/images/dots.svg";
+import Close from "../../../public/images/close.svg";
+import Ecologo from "../../../public/images/logo.svg";
+import Copy from "../../../public/images/Copy.svg";
+import Share from "../../../public/images/Share.svg";
 import { useScrollExceeds } from "../../hooks/useScrollExceeds";
 import { HeaderItem } from "./HeaderItem";
 import { WalletItem } from "./WalletItem";
@@ -110,6 +115,7 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
   const topRef = useRef<HTMLDivElement>();
   const showBg = useScrollExceeds(breakpoint);
   const headerFixed = useScrollExceeds(topRef.current?.offsetTop || 0);
+  const [showNav, setShowNav] = useState(false);
 
   const fixed = !content && headerFixed;
 
@@ -140,11 +146,103 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
     </Column>
   );
 
-  const header = (
-    <HeaderContainer css={styles.headerStyle} showBg={showBg} fixed={fixed}>
-      {logo}
-      <Space />
-      <Row gap="xxl" items="center">
+  const menu = (
+    <Column justify="center" onClick={() => setShowNav(true)}>
+      <Image css={Logo} alt="Eco Logo" width={80} height={30} src={Menu} />
+    </Column>
+  );
+
+  const headerStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        padding: "16px 0px 16px 16px",
+        display: "flex",
+        alignItems: "center",
+      };
+    } else {
+      return;
+    }
+  };
+
+  const NavContainer = styled.div({
+    width: "100%",
+    background: "rgba(0, 0, 0, 0.9)",
+    padding: "32px 24px",
+    position: "fixed",
+    top: "0",
+    left: "0",
+    zIndex: "20",
+  });
+
+  const NavHeader = styled.div({
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  });
+
+  const Divider = styled.div({
+    width: "100%",
+    borderTop: "1px solid #fff",
+    marginTop: "24px",
+  });
+
+  const TextContainer = styled.div({
+    display: "flex",
+    alighItems: "center",
+  });
+
+  const navStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        padding: "28px 20px",
+      };
+    } else {
+      return;
+    }
+  };
+
+  const navLink = function () {
+    if (window.innerWidth < 500) {
+      return {
+        fontSize: "24px",
+      };
+    } else {
+      return;
+    }
+  };
+
+  const walletStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        background: "#1E1E1E",
+        padding: "32px",
+        marginTop: "56px",
+      };
+    } else {
+      return;
+    }
+  };
+
+  const textStyle = function () {
+    if (window.innerWidth < 500) {
+      return {
+        marginRight: "10px",
+      };
+    } else {
+      return;
+    }
+  };
+
+  const mobileNav = (
+    <NavContainer>
+      <NavHeader>
+        <Link href="/">
+          <Image src={Ecologo} alt="logo" />
+        </Link>
+        <Image src={Close} alt="close" onClick={() => setShowNav(false)} />
+      </NavHeader>
+      <Column gap="xxl" style={navStyle()}>
         {links.map((item) => {
           if (!account.isConnected && item.name === "account") return null;
           if (item.external) {
@@ -154,6 +252,7 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
                 active={item.name === current}
                 href={item.href}
                 target="_blank"
+                style={navLink()}
               >
                 {item.label}
               </HeaderItem>
@@ -161,14 +260,77 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
           }
           return (
             <Link key={item.name} href={item.href}>
-              <HeaderItem active={item.name === current}>
+              <HeaderItem active={item.name === current} style={navLink()}>
                 {item.label}
               </HeaderItem>
             </Link>
           );
         })}
-        <WalletItem />
-      </Row>
+      </Column>
+      <Divider />
+      <Column gap="xl" style={walletStyle()}>
+        <TextContainer>
+          <Typography color="white" style={textStyle()}>
+            0x830s38•••6cl28cf1
+          </Typography>
+          <Image src={Copy} alt="copy" />
+        </TextContainer>
+        <TextContainer>
+          <Typography color="white" style={textStyle()}>
+            View on Explorer
+          </Typography>
+          <Image src={Share} alt="share" style={textStyle()} />{" "}
+        </TextContainer>
+        <TextContainer>
+          <Typography color="white" style={textStyle()}>
+            ETH
+          </Typography>
+          <Typography>Network</Typography>
+        </TextContainer>
+        <Button>Disconnect</Button>
+      </Column>
+    </NavContainer>
+  );
+
+  const header = (
+    <HeaderContainer
+      css={styles.headerStyle}
+      showBg={showBg}
+      fixed={fixed}
+      style={headerStyle()}
+    >
+      {logo}
+      <Space />
+      {window.innerWidth < 500 ? (
+        menu
+      ) : (
+        <Row gap="xxl" items="center">
+          {links.map((item) => {
+            if (!account.isConnected && item.name === "account") return null;
+            if (item.external) {
+              return (
+                <HeaderItem
+                  key={item.name}
+                  active={item.name === current}
+                  href={item.href}
+                  target="_blank"
+                >
+                  {item.label}
+                </HeaderItem>
+              );
+            }
+            return (
+              <Link key={item.name} href={item.href}>
+                <HeaderItem active={item.name === current}>
+                  {item.label}
+                </HeaderItem>
+              </Link>
+            );
+          })}
+          <WalletItem />
+        </Row>
+      )}
+      {showNav && mobileNav}
     </HeaderContainer>
   );
 

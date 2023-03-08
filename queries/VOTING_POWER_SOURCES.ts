@@ -91,7 +91,11 @@ export const VOTING_POWER_SOURCES = gql`
         }
       }
       historicalDelegatees: tokenDelegatees(
-        where: { blockStarted_lte: $blocknumber, blockEnded_gt: $blocknumber }
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded_gt: $blocknumber
+        }
       ) {
         ...TokenDelegateFragment
         delegator {
@@ -100,7 +104,7 @@ export const VOTING_POWER_SOURCES = gql`
       }
       currentDelegatees: tokenDelegatees(
         where: {
-          token: "eco"
+          amount_gt: 0
           blockStarted_lte: $blocknumber
           blockEnded: null
         }
@@ -111,7 +115,11 @@ export const VOTING_POWER_SOURCES = gql`
         }
       }
       historicalDelegations: tokenDelegators(
-        where: { blockStarted_lte: $blocknumber, blockEnded_gt: $blocknumber }
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded_gt: $blocknumber
+        }
       ) {
         ...TokenDelegateFragment
         delegatee {
@@ -119,7 +127,11 @@ export const VOTING_POWER_SOURCES = gql`
         }
       }
       currentDelegations: tokenDelegators(
-        where: { blockStarted_lte: $blocknumber, blockEnded: null }
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded: null
+        }
       ) {
         ...TokenDelegateFragment
         delegatee {

@@ -1,20 +1,27 @@
 import { gql } from "@apollo/client";
 
+export interface TokenDelegateFragment {
+  token: { id: "eco" | "sEcox" };
+  amount: string;
+  blockStarted: string;
+  blockEnded: string;
+}
+
+export interface TokenDelegateeFragment extends TokenDelegateFragment {
+  delegator: { id: string };
+}
+
+export interface TokenDelegatorFragment extends TokenDelegateFragment {
+  delegatee: { id: string };
+}
+
 export type VotingPowerSourceQueryResult = {
   account: {
     historicalECOBalances: { value: string }[];
     historicalsECOxBalances: { value: string }[];
     ecoVotingPower: { value: string }[];
     sEcoXVotingPower: { value: string }[];
-    sECOxDelegatedToMe: {
-      id: string;
-      sECOx: string;
-    }[];
-    ECODelegatedToMe: {
-      id: string;
-      ECO: string;
-    }[];
-    fundsLockupDepositsDelegatedToMe: {
+    lockupsDelegatedToMe: {
       amount: string;
       lockup: {
         id: string;
@@ -22,6 +29,11 @@ export type VotingPowerSourceQueryResult = {
         depositWindowEndsAt: string;
       };
     }[];
+
+    currentDelegatees: TokenDelegateeFragment[];
+    historicalDelegatees: TokenDelegateeFragment[];
+    currentDelegations: TokenDelegatorFragment[];
+    historicalDelegations: TokenDelegatorFragment[];
   };
   inflationMultipliers: {
     value: string;
@@ -68,20 +80,62 @@ export const VOTING_POWER_SOURCES = gql`
       ) {
         value
       }
-      sECOxDelegatedToMe {
-        id
-        sECOx
-      }
-      ECODelegatedToMe {
-        id
-        ECO
-      }
-      fundsLockupDepositsDelegatedToMe {
+      lockupsDelegatedToMe: fundsLockupDepositsDelegatedToMe(
+        where: { withdrawnAt: null }
+      ) {
         amount
         lockup {
           id
           duration
           depositWindowEndsAt
+        }
+      }
+      historicalDelegatees: tokenDelegatees(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded_gt: $blocknumber
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegator {
+          id
+        }
+      }
+      currentDelegatees: tokenDelegatees(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded: null
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegator {
+          id
+        }
+      }
+      historicalDelegations: tokenDelegators(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded_gt: $blocknumber
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegatee {
+          id
+        }
+      }
+      currentDelegations: tokenDelegators(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded: null
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegatee {
+          id
         }
       }
     }
@@ -93,5 +147,14 @@ export const VOTING_POWER_SOURCES = gql`
     ) {
       value
     }
+  }
+
+  fragment TokenDelegateFragment on TokenDelegate {
+    token {
+      id
+    }
+    amount
+    blockStarted
+    blockEnded
   }
 `;

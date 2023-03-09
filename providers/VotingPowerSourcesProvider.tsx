@@ -1,23 +1,16 @@
 import React, { useEffect, useMemo } from "react";
-import { useQuery } from "@apollo/client";
+import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
+import { useQuery } from "@apollo/client";
+import { WeiPerEther, Zero } from "@ethersproject/constants";
+import { useCommunity } from "./index";
+import { convertDate, adjustVotingPower } from "../utilities";
 import {
+  TokenDelegateFragment,
   VOTING_POWER_SOURCES,
   VotingPowerSourceQueryResult,
   VotingPowerSourceQueryVariables,
 } from "../queries/VOTING_POWER_SOURCES";
-import { BigNumber } from "ethers";
-import { convertDate } from "../utilities/convertDate";
-import { WeiPerEther, Zero } from "@ethersproject/constants";
-import { adjustVotingPower } from "../utilities/adjustVotingPower";
-import { useCommunity } from "./index";
-
-interface Lockup {
-  id: string;
-  endsAt: Date;
-  amount: BigNumber;
-  delegate?: string;
-}
 
 export interface TokenDelegate {
   address: string;
@@ -27,27 +20,28 @@ export interface TokenDelegate {
 export interface VotingPowerSources {
   eco: BigNumber;
   sEcoX: BigNumber;
-  others: BigNumber;
+
   ecoVotingPower: BigNumber;
   sEcoXVotingPower: BigNumber;
-  isEcoDelegated: boolean;
-  isEcoXDelegated: boolean;
+
+  lockupsDelegatedToMe: TokenDelegate[];
   ecoDelegatedToMe: TokenDelegate[];
-  sEcoXDelegatedToMe: TokenDelegate[];
-  fundsLockupDelegated: Lockup[];
+  stakedEcoXDelegatedToMe: TokenDelegate[];
+  ecoDelegated: TokenDelegate[];
+  stakedEcoXDelegated: TokenDelegate[];
 }
 
 const DEFAULT_VALUE: VotingPowerSources = {
   eco: Zero,
   sEcoX: Zero,
-  others: Zero,
   ecoVotingPower: Zero,
   sEcoXVotingPower: Zero,
-  isEcoDelegated: false,
-  isEcoXDelegated: false,
+
+  lockupsDelegatedToMe: [],
   ecoDelegatedToMe: [],
-  sEcoXDelegatedToMe: [],
-  fundsLockupDelegated: [],
+  stakedEcoXDelegatedToMe: [],
+  ecoDelegated: [],
+  stakedEcoXDelegated: [],
 };
 
 function formatSourceData(
@@ -56,80 +50,114 @@ function formatSourceData(
   if (!data?.account) return DEFAULT_VALUE;
 
   const {
-    historicalECOBalances,
-    historicalsECOxBalances,
-    sEcoXVotingPower: sEcoXVotingPowerRaw,
-    ecoVotingPower: ecoVotingPowerRaw,
-    fundsLockupDepositsDelegatedToMe,
-    ECODelegatedToMe,
-    sECOxDelegatedToMe,
+    ecoVotingPower: [ecoVotingPowerRaw],
+    sEcoXVotingPower: [sEcoXVotingPowerRaw],
+    historicalECOBalances: [historicalECOBalances],
+    historicalsECOxBalances: [historicalsECOxBalances],
+    lockupsDelegatedToMe: lockups,
+
+    currentDelegatees,
+    historicalDelegatees,
+    currentDelegations,
+    historicalDelegations,
   } = data.account;
 
   const inflationMultiplier = data.inflationMultipliers.length
     ? BigNumber.from(data.inflationMultipliers[0].value)
     : WeiPerEther;
 
-  const sEcoXVotingPower = sEcoXVotingPowerRaw.length
-    ? BigNumber.from(sEcoXVotingPowerRaw[0].value)
-    : Zero;
+  const sEcoX = BigNumber.from(historicalsECOxBalances?.value || 0);
+  const sEcoXVotingPower = BigNumber.from(sEcoXVotingPowerRaw?.value || Zero);
 
-  const ecoVotingPower = ecoVotingPowerRaw.length
-    ? adjustVotingPower(BigNumber.from(ecoVotingPowerRaw[0].value))
-    : Zero;
+  const eco = adjustVotingPower(
+    BigNumber.from(historicalECOBalances?.value || 0).div(inflationMultiplier)
+  );
+  const ecoVotingPower = adjustVotingPower(
+    BigNumber.from(ecoVotingPowerRaw?.value || 0)
+  );
 
-  const eco = historicalECOBalances.length
-    ? adjustVotingPower(
-        BigNumber.from(historicalECOBalances[0].value).div(inflationMultiplier)
-      )
-    : Zero;
+  const receivedDelegations = [...currentDelegatees, ...historicalDelegatees];
+  const delegations = [...currentDelegations, ...historicalDelegations];
 
-  const sEcoX = historicalsECOxBalances.length
-    ? BigNumber.from(historicalsECOxBalances[0].value)
-    : Zero;
+  // Token filters
+  const filterEco = (item: TokenDelegateFragment) => item.token.id === "eco";
+  const filterSEcoX = (item: TokenDelegateFragment) =>
+    item.token.id === "sEcox";
 
-  const ecoDelegatedToMe = ECODelegatedToMe.map((delegated) => ({
-    address: delegated.id,
-    amount: adjustVotingPower(
-      BigNumber.from(delegated.ECO).div(inflationMultiplier)
-    ),
-  }));
+  const ecoReceivedDelegations = receivedDelegations.filter(filterEco);
+  const stakedEcoXReceivedDelegations = receivedDelegations.filter(filterSEcoX);
 
-  const sEcoXDelegatedToMe = sECOxDelegatedToMe.map((delegated) => ({
-    address: delegated.id,
-    amount: BigNumber.from(delegated.sECOx),
-  }));
+  const ecoDelegations = delegations.filter(filterEco);
+  const stakedEcoXDelegations = delegations.filter(filterSEcoX);
 
-  const fundsLockupDelegated = fundsLockupDepositsDelegatedToMe.map(
-    (delegate) => ({
-      id: delegate.lockup.id,
-      amount: adjustVotingPower(
-        BigNumber.from(delegate.amount).div(inflationMultiplier)
-      ),
-      endsAt: convertDate(
-        parseInt(delegate.lockup.depositWindowEndsAt) +
-          parseInt(delegate.lockup.duration)
-      ),
+  const lockupIds = lockups.map(({ lockup }) => lockup.id);
+
+  const walletAndLockupsReceivedDelegations = ecoReceivedDelegations.map(
+    (delegation) => {
+      let endsAt;
+      const address = delegation.delegator.id;
+      const isLockup = lockupIds.includes(address);
+      const amount = adjustVotingPower(
+        BigNumber.from(delegation.amount).div(inflationMultiplier)
+      );
+
+      if (isLockup) {
+        const lockup = lockups.find(
+          ({ lockup }) => lockup.id === address
+        )?.lockup;
+        if (lockup) {
+          endsAt = convertDate(
+            parseInt(lockup.depositWindowEndsAt) + parseInt(lockup.duration)
+          );
+        }
+      }
+
+      return {
+        isLockup,
+        address,
+        endsAt,
+        amount,
+      };
+    }
+  );
+
+  const ecoDelegatedToMe = walletAndLockupsReceivedDelegations.filter(
+    (delegation) => !delegation.isLockup
+  );
+  const lockupsDelegatedToMe = walletAndLockupsReceivedDelegations.filter(
+    (delegation) => delegation.isLockup
+  );
+
+  const stakedEcoXDelegatedToMe = stakedEcoXReceivedDelegations.map(
+    (delegation) => ({
+      address: delegation.delegator.id,
+      amount: BigNumber.from(delegation.amount),
     })
   );
 
-  const isEcoDelegated = eco.gt(ecoVotingPower);
-  const isEcoXDelegated = sEcoX.gt(sEcoXVotingPower);
+  const ecoDelegated = ecoDelegations.map((delegation) => ({
+    address: delegation.delegatee.id,
+    amount: adjustVotingPower(
+      BigNumber.from(delegation.amount).div(inflationMultiplier)
+    ),
+  }));
 
-  const totalVP = ecoVotingPower.add(sEcoXVotingPower);
-  let others = totalVP.sub(eco).sub(sEcoX);
-  others = others.isNegative() ? Zero : others;
+  const stakedEcoXDelegated = stakedEcoXDelegations.map((delegation) => ({
+    address: delegation.delegatee.id,
+    amount: BigNumber.from(delegation.amount),
+  }));
 
   return {
     eco,
     sEcoX,
-    others,
-    isEcoDelegated,
-    isEcoXDelegated,
     ecoVotingPower,
     sEcoXVotingPower,
+
+    lockupsDelegatedToMe,
     ecoDelegatedToMe,
-    sEcoXDelegatedToMe,
-    fundsLockupDelegated,
+    stakedEcoXDelegatedToMe,
+    ecoDelegated,
+    stakedEcoXDelegated,
   };
 }
 

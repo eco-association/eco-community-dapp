@@ -9,7 +9,6 @@ import {
 import { useAccount } from "wagmi";
 import { displayAddress, tokensToNumber } from "../../../../utilities";
 import { useVotingPowerSources } from "../../../../providers/VotingPowerSourcesProvider";
-import { Zero } from "@ethersproject/constants";
 
 const Container = styled(Column)({ width: "100%" });
 
@@ -37,9 +36,6 @@ const VotingPowerSources: React.FC = () => {
   const { address } = useAccount();
   const sources = useVotingPowerSources();
 
-  //TODO: Calculate voting power from lockups and wallets delegating to current wallet
-  const lockupTotal = Zero;
-
   return (
     <Container gap="lg">
       <Typography variant="body3" color="secondary">
@@ -57,41 +53,55 @@ const VotingPowerSources: React.FC = () => {
         subtitle={`from your wallet ${displayAddress(address)}`}
       />
 
-      {!lockupTotal.isZero() ? (
+      {sources.lockupsDelegatedToMe.map((lockup) => (
         <Sources
-          title={`${formatNumber(tokensToNumber(lockupTotal), false)} ECO`}
-          subtitle="from lockups"
+          key={lockup.address}
+          title={`${formatNumber(tokensToNumber(lockup.amount), false)} ECO`}
+          subtitle={`from lockup ${displayAddress(lockup.address)}`}
         />
-      ) : null}
+      ))}
 
-      {!sources.others.isZero() ? (
+      {sources.ecoDelegatedToMe.map((delegation) => (
         <Sources
+          key={delegation.address}
           title={`${formatNumber(
-            tokensToNumber(sources.others),
-            false
-          )} voting power`}
-          subtitle="from other wallets"
-        />
-      ) : null}
-
-      {sources.isEcoDelegated ? (
-        <Sources
-          title={`-${formatNumber(
-            tokensToNumber(sources.eco.sub(sources.ecoVotingPower)),
+            tokensToNumber(delegation.amount),
             false
           )} ECO`}
-          subtitle="delegated to a wallet"
+          subtitle={`delegated from ${displayAddress(delegation.address)}`}
         />
-      ) : null}
-      {sources.isEcoXDelegated ? (
+      ))}
+      {sources.stakedEcoXDelegatedToMe.map((delegation) => (
         <Sources
-          title={`-${formatNumber(
-            tokensToNumber(sources.sEcoX.sub(sources.sEcoXVotingPower)),
+          key={delegation.address}
+          title={`${formatNumber(
+            tokensToNumber(delegation.amount),
             false
           )} staked ECOx`}
-          subtitle="delegated to a wallet"
+          subtitle={`delegated from ${displayAddress(delegation.address)}`}
         />
-      ) : null}
+      ))}
+
+      {sources.ecoDelegated.map((delegation) => (
+        <Sources
+          key={delegation.address}
+          title={`-${formatNumber(
+            tokensToNumber(delegation.amount),
+            false
+          )} ECO`}
+          subtitle={`delegated to ${displayAddress(delegation.address)}`}
+        />
+      ))}
+      {sources.stakedEcoXDelegated.map((delegation) => (
+        <Sources
+          key={delegation.address}
+          title={`-${formatNumber(
+            tokensToNumber(delegation.amount),
+            false
+          )} staked ECOx`}
+          subtitle={`delegated to ${displayAddress(delegation.address)}`}
+        />
+      ))}
     </Container>
   );
 };

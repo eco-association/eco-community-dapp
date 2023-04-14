@@ -22,31 +22,18 @@ const successfulToastStyle: ToastOptions = {
   },
 };
 
-const formatterMax3Decimals = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 3,
-});
-
 const formatterMax6Decimals = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 6,
 });
 
-function countDecimals(number: number) {
-  const char_array = number.toString().split("");
-  const not_decimal = char_array.lastIndexOf(".");
-  return not_decimal < 0 ? 0 : char_array.length - not_decimal - 1;
-}
-
-export function formatStakedAmount(staked: BigNumber) {
-  const number = tokensToNumber(staked);
-  let formatted = formatterMax3Decimals.format(number);
-  if (countDecimals(number) > 3) formatted += "…";
-  return formatted;
-}
-
 export function formatStakeAmount(staked: BigNumber) {
   return formatterMax6Decimals.format(tokensToNumber(staked));
+}
+
+export enum StakingStatus {
+  APPROVING,
+  STAKING,
 }
 
 const useStaking = () => {
@@ -59,16 +46,23 @@ const useStaking = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const increaseStake = async (amount: BigNumber, onComplete: () => void) => {
+  const increaseStake = async (
+    amount: BigNumber,
+    onComplete: () => void,
+    onState: (status: StakingStatus, steps: number) => void
+  ) => {
     setLoading(true);
+    let steps = 2;
     try {
-      const allowance = await ecoX.allowance(account.address, sEcoX.toString());
+      const allowance = await ecoX.allowance(account.address, sEcoX);
       if (allowance.lt(amount)) {
-        const approveTx = await ecoX.approve(sEcoX.toString(), amount, {
-          gasLimit: 100_000,
-        });
+        onState(StakingStatus.APPROVING, steps);
+        const approveTx = await ecoX.approve(sEcoX, amount);
         await approveTx.wait();
+      } else {
+        steps = 1;
       }
+      onState(StakingStatus.STAKING, steps);
       const tx = await staking.deposit(amount);
       await tx.wait();
 

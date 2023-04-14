@@ -1,9 +1,13 @@
 import { gql } from "@apollo/client";
+import {
+  RandomInflationFragment,
+  RandomInflationFragmentResult,
+} from "./fragments/RandomInflationFragment";
 
 type SubgraphInflationRootHashProposal = {
   address: string;
-  acceptedRootHash: string | null;
   accepted: boolean;
+  acceptedRootHash: string | null;
 };
 
 type SubgraphRandomInflationClaim = {
@@ -11,53 +15,31 @@ type SubgraphRandomInflationClaim = {
   account: { address: string };
 };
 
-type SubgraphRandomInflation = {
-  address: string;
-  numRecipients: string;
-  reward: string;
-  claimPeriodStarts: string;
-  CLAIM_PERIOD: string;
-  seedCommit: string | null;
-  seedReveal: string | null;
+export type SubgraphRandomInflation = RandomInflationFragmentResult & {
   claims: SubgraphRandomInflationClaim[];
-  blockNumber: string;
   inflationRootHashProposal: SubgraphInflationRootHashProposal;
 };
 
-type SubgraphGeneration = {
-  number: string;
-  randomInflation: SubgraphRandomInflation | null;
-};
-
 export type RandomInflationQueryResult = {
-  generations: SubgraphGeneration[];
+  randomInflations: SubgraphRandomInflation[];
 };
 
 export const RANDOM_INFLATION = gql`
-  query RandomInflation {
-    generations(orderBy: number, orderDirection: desc, skip: 1, first: 1) {
-      number
-      randomInflation {
-        address: id
-        numRecipients
-        reward
-        claimPeriodStarts
-        CLAIM_PERIOD
-        seedCommit
-        seedReveal
-        claims {
-          sequenceNumber
-          account {
-            address: id
-          }
-        }
-        blockNumber
-        inflationRootHashProposal {
+  query RANDOM_INFLATION {
+    randomInflations(first: 10) {
+      ...RandomInflationFragment
+      claims {
+        sequenceNumber
+        account {
           address: id
-          acceptedRootHash
-          accepted
         }
+      }
+      inflationRootHashProposal {
+        address: id
+        acceptedRootHash
+        accepted
       }
     }
   }
+  ${RandomInflationFragment}
 `;

@@ -1,12 +1,13 @@
 import { Block } from "./Block";
-import { Row, TokenAmount } from "@ecoinc/ecomponents";
+import { formatNumber, Row, Typography } from "@ecoinc/ecomponents";
 import Image from "next/image";
-import EcoLogoWhiteNew from "../../../public/images/eco-logo-white-new.png";
-import EcoXLogo from "../../../public/images/ecox-logo.png";
+import EcoLogoWhiteOutline from "../../../public/images/eco-logo/eco-logo-white-outline.svg";
+import EcoXLogo from "../../../public/images/ecox-logo/ecox-logo.svg";
 import React from "react";
 import { css } from "@emotion/react";
 import { useWallet } from "../../../providers";
 import { tokensToNumber } from "../../../utilities";
+import { adjustVotingPower } from "../../../utilities/adjustVotingPower";
 
 const lineHeight = css({ lineHeight: 1 });
 
@@ -20,19 +21,14 @@ export const InfoBlocks = () => {
           <Row gap="sm" items="center">
             <Image
               alt="Eco Logo"
-              src={EcoLogoWhiteNew}
+              src={EcoLogoWhiteOutline}
               layout="fixed"
               width={18}
               height={18}
             />
-            <TokenAmount
-              color="white"
-              intVariant="h3"
-              decVariant="h3"
-              css={lineHeight}
-              decimalOptions={{ lightWeight: true }}
-              amount={parseInt(tokensToNumber(ecoTotalSupply).toString())}
-            />
+            <Typography color="white" variant="h3" css={lineHeight}>
+              {formatNumber(tokensToNumber(ecoTotalSupply), false)}
+            </Typography>
           </Row>
         }
       />
@@ -44,35 +40,26 @@ export const InfoBlocks = () => {
               alt="Ecox Logo"
               src={EcoXLogo}
               layout="fixed"
-              width={20}
-              height={20}
+              width={18}
+              height={18}
             />
-            <TokenAmount
-              color="white"
-              intVariant="h3"
-              decVariant="h3"
-              css={lineHeight}
-              decimalOptions={{ lightWeight: true }}
-              amount={ecoXTotalSupply}
-            />
+            <Typography color="white" variant="h3" css={lineHeight}>
+              {formatNumber(tokensToNumber(ecoXTotalSupply), false)}
+            </Typography>
           </Row>
         }
       />
       <Block
         title="TOTAL VOTING POWER"
         content={
-          <TokenAmount
-            color="white"
-            intVariant="h3"
-            decVariant="h3"
-            css={lineHeight}
-            decimalOptions={{ lightWeight: true }}
-            amount={parseInt(
+          <Typography color="white" variant="h3" css={lineHeight}>
+            {formatNumber(
               tokensToNumber(
-                ecoXTotalSupply.add(ecoTotalSupply.div(10))
-              ).toString()
+                ecoXTotalSupply.add(adjustVotingPower(ecoTotalSupply))
+              ),
+              false
             )}
-          />
+          </Typography>
         }
       />
     </Row>

@@ -4,7 +4,11 @@ import {
   CommunityProposalFragmentResult,
 } from "./fragments/CommunityProposalFragment";
 import { BigNumber } from "ethers";
-import { SubgraphVoteResult } from "./CURRENT_GENERATION";
+import {
+  PolicyVotesFragment,
+  PolicyVotesFragmentResult,
+} from "./fragments/PolicyVotesFragment";
+import { BasicPolicyVote } from "../types/CommunityInterface";
 
 export enum ActivityType {
   ProposalSubmitted = "ProposalSubmitted",
@@ -12,6 +16,8 @@ export enum ActivityType {
   ProposalUnsupported = "ProposalUnsupported",
   ProposalQuorum = "ProposalQuorum",
   ProposalVoting = "ProposalVoting",
+  ProposalVoteFor = "ProposalVoteFor",
+  ProposalVoteAgainst = "ProposalVoteAgainst",
   ProposalResult = "ProposalResult",
   ProposalExecuted = "ProposalExecuted",
   RandomInflation = "RandomInflation",
@@ -42,12 +48,7 @@ export interface CommunityProposal {
     };
   };
   activities: Activity[];
-  policyVote?: {
-    id: string;
-    result: SubgraphVoteResult;
-    voteEnds: string;
-    majorityReachedAt: string;
-  };
+  policyVote?: BasicPolicyVote;
 }
 
 export type ProposalQueryResult = {
@@ -60,12 +61,7 @@ export type ProposalQueryResult = {
         proposalEnds: string;
       };
     };
-    policyVotes: {
-      id: string;
-      result: SubgraphVoteResult;
-      voteEnds: string;
-      majorityReachedAt: string;
-    }[];
+    policyVotes: PolicyVotesFragmentResult[];
     activities: {
       type: ActivityType;
       timestamp: string;
@@ -92,12 +88,20 @@ export const PROPOSAL_QUERY = gql`
         }
       }
       policyVotes {
-        id
-        result
-        voteEnds
-        majorityReachedAt
+        ...PolicyVotesFragment
       }
-      activities(orderBy: timestamp, orderDirection: desc) {
+      activities(
+        orderBy: timestamp
+        orderDirection: desc
+        where: {
+          type_not_in: [
+            ProposalSupported
+            ProposalUnsupported
+            ProposalVoteFor
+            ProposalVoteAgainst
+          ]
+        }
+      ) {
         type
         timestamp
       }
@@ -106,5 +110,6 @@ export const PROPOSAL_QUERY = gql`
       }
     }
   }
+  ${PolicyVotesFragment}
   ${CommunityProposalFragment}
 `;

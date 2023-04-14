@@ -8,7 +8,7 @@ import {
   PastProposalsQueryVariables,
 } from "../../queries/PAST_PROPOSALS_QUERY";
 import { ActivityType } from "../../queries/PROPOSAL_QUERY";
-import { CommunityInterface, ProposalType } from "../../types";
+import { ProposalType } from "../../types";
 import { BigNumber } from "ethers";
 import { useCommunity } from "../../providers";
 import { SubgraphVoteResult } from "../../queries/CURRENT_GENERATION";
@@ -19,6 +19,7 @@ import {
 } from "../../providers/CommunityProvider";
 import { adjustVotingPower } from "../../utilities/adjustVotingPower";
 import { convertDate } from "../../utilities/convertDate";
+import { formatPolicyVotes } from "../../queries/fragments/PolicyVotesFragment";
 
 export type PastProposal = ProposalType & {
   voted?: Vote;
@@ -27,10 +28,7 @@ export type PastProposal = ProposalType & {
   reachedVotingPhase: boolean;
 };
 
-function parsePastProposalQuery(
-  community: CommunityInterface,
-  proposals: PastProposalsQuery[]
-) {
+function parsePastProposalQuery(proposals: PastProposalsQuery[]) {
   return proposals.map((proposal: PastProposalsQuery): PastProposal => {
     const timestamp = proposal.activities.find(
       (a) => a.type === ActivityType.ProposalSubmitted
@@ -39,7 +37,9 @@ function parsePastProposalQuery(
     const voted = proposal.policyVotes?.flatMap((proposal) => proposal.votes)[0]
       ?.yesAmount;
 
-    const result = getProposalResult(community, proposal);
+    const result = getProposalResult(
+      formatPolicyVotes(proposal.policyVotes[0])
+    );
 
     const supportedAt = proposal.support.length
       ? convertDate(proposal.support[0].createdAt)
@@ -112,7 +112,6 @@ export const usePastProposals = () => {
       variables: { ...baseVariables, skip },
     });
     const nextProposals = parsePastProposalQuery(
-      community,
       queryResult.data.communityProposals
     );
     setProposals((p) => [...p, ...nextProposals]);
@@ -122,10 +121,7 @@ export const usePastProposals = () => {
 
   useEffect(() => {
     if (!proposals.length && queryData && queryData.communityProposals) {
-      const proposals = parsePastProposalQuery(
-        community,
-        queryData.communityProposals
-      );
+      const proposals = parsePastProposalQuery(queryData.communityProposals);
       setProposals(proposals);
       setSkip(proposals.length);
       setHasMore(proposals.length === baseVariables.count);

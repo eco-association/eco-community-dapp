@@ -1,9 +1,8 @@
 import { gql } from "@apollo/client";
-
-type SubgraphApproval = {
-  value: string;
-  spender: string;
-};
+import {
+  LockupFragment,
+  LockupFragmentResult,
+} from "./fragments/LockupFragment";
 
 type SubgraphDelegateAccount = {
   address: string;
@@ -20,7 +19,17 @@ type SubgraphAccount = {
   sECOxDelegator: { address: string } | null;
   ECODelegatedToMe: SubgraphDelegateAccount[];
   sECOxDelegatedToMe: SubgraphDelegateAccount[];
-  approvedECO: SubgraphApproval[];
+
+  fundsLockupDeposits: {
+    id: string;
+    amount: string;
+    reward: string;
+    delegate: {
+      id: string;
+    };
+    withdrawnAt: string | null;
+    lockup: LockupFragmentResult & { generation: { number: string } };
+  }[];
 };
 
 export type WalletQueryResult = {
@@ -28,7 +37,7 @@ export type WalletQueryResult = {
 };
 
 export const WALLET = gql`
-  query wallet($account: ID!) {
+  query WALLET($account: ID!) {
     account(id: $account) {
       address: id
       ECO
@@ -49,10 +58,22 @@ export const WALLET = gql`
         address: id
         amount: sECOx
       }
-      approvedECO {
-        value
-        spender
+      fundsLockupDeposits {
+        id
+        amount
+        reward
+        delegate {
+          id
+        }
+        withdrawnAt
+        lockup {
+          ...LockupFragment
+          generation {
+            number
+          }
+        }
       }
     }
   }
+  ${LockupFragment}
 `;

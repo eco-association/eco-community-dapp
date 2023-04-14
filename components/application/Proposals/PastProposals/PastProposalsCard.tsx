@@ -138,9 +138,12 @@ const PastProposalsCard: React.FC<PastProposalsCardProps> = ({ proposal }) => {
               whiteSpace: "pre-wrap",
             }}
           >
-            {newLines.length > 3
-              ? newLines.splice(0, 3).join("\n")
-              : proposal.description}
+            {truncateText(
+              newLines.length > 3
+                ? newLines.splice(0, 3).join("\n")
+                : proposal.description,
+              340
+            )}
           </Typography>
         </Column>
         <TextBox items="center" justify="space-between" gap="md">
@@ -163,7 +166,7 @@ const PastProposalsCard: React.FC<PastProposalsCardProps> = ({ proposal }) => {
         <Row items="center" justify="space-between">
           <Link
             href={{
-              pathname: "/proposal/[id]",
+              pathname: "/proposal",
               query: { id: proposal?.id },
             }}
           >

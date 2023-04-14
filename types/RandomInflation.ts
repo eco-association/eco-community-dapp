@@ -1,16 +1,25 @@
 import { BigNumber } from "ethers";
-import { Address, RandomInflationClaim } from ".";
+import { RandomInflationRecipient } from "./RandomInflationRecipient";
 
-export type RandomInflation = {
-  address: Address;
-  numRecipients: BigNumber;
+export interface RandomInflation {
+  address: string;
   reward: BigNumber;
-  claimPeriodStarts: BigNumber;
-  claimPeriodDuration: BigNumber;
-  claims: RandomInflationClaim[];
-  seedCommit: BigNumber;
+  numRecipients: number;
+  claimPeriodStarts: Date;
+  claimPeriodDuration: number;
   seedReveal: string; // bytes
-  blockNumber: BigNumber;
+  blockNumber: number;
+}
+
+export interface RandomInflationWithClaims extends RandomInflation {
+  isClaimPeriod: boolean;
   acceptedRootHash: string | null;
   inflationRootHashAccepted: boolean;
+  claims: RandomInflationClaim[];
+  recipients: RandomInflationRecipient[];
+}
+
+export type RandomInflationClaim = {
+  sequenceNumber: number;
+  claimedFor: string;
 };

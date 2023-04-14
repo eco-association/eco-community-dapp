@@ -3,6 +3,18 @@ import {
   CommunityProposalFragment,
   CommunityProposalFragmentResult,
 } from "./fragments/CommunityProposalFragment";
+import {
+  LockupFragment,
+  LockupFragmentResult,
+} from "./fragments/LockupFragment";
+import {
+  PolicyVotesFragment,
+  PolicyVotesFragmentResult,
+} from "./fragments/PolicyVotesFragment";
+import {
+  RandomInflationFragment,
+  RandomInflationFragmentResult,
+} from "./fragments/RandomInflationFragment";
 
 export type SubgraphPolicyProposal = {
   id: string;
@@ -21,17 +33,11 @@ export type SubgraphProposal = CommunityProposalFragmentResult & {
   support: { createdAt: string }[];
 };
 
-export type SubgraphPolicyVote = {
-  id: string;
-  totalVotingPower: string;
-  majorityReachedAt: string;
-  ENACTION_DELAY: string;
-  voteEnds: string;
+export type SubgraphPolicyVote = PolicyVotesFragmentResult & {
   blockNumber: string;
+  ENACTION_DELAY: string;
+  totalVotingPower: string;
   proposal: SubgraphProposal;
-  yesVoteAmount: string;
-  totalVoteAmount: string;
-  result: SubgraphVoteResult | null;
   votes: {
     totalAmount: string;
     yesAmount: string;
@@ -43,14 +49,23 @@ export type Generation = {
   id: string;
   number: string;
   blockNumber: string;
+  nextGenerationStart: string | null;
   policyProposal: SubgraphPolicyProposal;
   policyVote: SubgraphPolicyVote | null;
   communityProposals: SubgraphProposal[];
-  nextGenerationStart: string | null;
+  createdAt: string;
+};
+
+export type PastGeneration = {
+  id: string;
+  number: string;
+  lockup?: LockupFragmentResult;
+  randomInflation?: RandomInflationFragmentResult;
 };
 
 export type CurrentGenerationQueryResult = {
   generations: Generation[];
+  pastGeneration: PastGeneration[];
 };
 
 export type CurrentGenerationQueryVariables = {
@@ -64,6 +79,7 @@ export const CURRENT_GENERATION = gql`
       number
       blockNumber
       nextGenerationStart
+      createdAt
       policyProposal {
         id
         totalVotingPower
@@ -71,15 +87,10 @@ export const CURRENT_GENERATION = gql`
         blockNumber
       }
       policyVote {
-        id
-        result
-        voteEnds
+        ...PolicyVotesFragment
         blockNumber
-        yesVoteAmount
-        totalVoteAmount
-        totalVotingPower
-        majorityReachedAt
         ENACTION_DELAY
+        totalVotingPower
         proposal {
           ...CommunityProposalFragment
           support(where: { supporter: $supporter }) {
@@ -99,6 +110,24 @@ export const CURRENT_GENERATION = gql`
         }
       }
     }
+    pastGeneration: generations(
+      orderBy: number
+      orderDirection: desc
+      first: 1
+      skip: 1
+    ) {
+      id
+      number
+      lockup {
+        ...LockupFragment
+      }
+      randomInflation {
+        ...RandomInflationFragment
+      }
+    }
   }
+  ${PolicyVotesFragment}
+  ${LockupFragment}
+  ${RandomInflationFragment}
   ${CommunityProposalFragment}
 `;

@@ -1,25 +1,28 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Alert, Typography } from "@ecoinc/ecomponents";
-import { css } from "@emotion/react";
-import useLockups from "../../../../hooks/useLockups";
 import { LockupAlertContent } from "./LockupAlertContent";
+import { useCommunity } from "../../../../../providers";
+import { getLockupAPR } from "../../../../../utilities";
 
-const fontWeight = css({ fontWeight: "bold", color: "#128264" });
-
-const formatter = new Intl.NumberFormat("en-US", {
-  minimumSignificantDigits: 1,
-  maximumSignificantDigits: 3,
+const { format } = new Intl.NumberFormat("en-EN", {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 1,
 });
 
 export const LockupAlert = () => {
-  const { active, current, lockups } = useLockups();
-  const totalAPY = useMemo(() => {
-    return lockups.reduce((acc, lockup) => lockup.interest + acc, 0);
-  }, [lockups]);
+  const { lockup } = useCommunity();
 
-  if (!active.length)
+  if (!lockup)
     return (
-      <Alert css={{ border: 0 }} color="secondary" title="Lockups • Inactive">
+      <Alert
+        css={{ border: 0 }}
+        color="secondary"
+        title={
+          <Typography variant="body2" color="secondary">
+            <b>Base Interest Rate • Inactive</b>
+          </Typography>
+        }
+      >
         <Typography variant="body2" color="secondary">
           Deposit your ECO into a lockup to earn interest.
         </Typography>
@@ -30,12 +33,18 @@ export const LockupAlert = () => {
     <Alert
       color="transparent"
       title={
-        <Typography variant="body1" css={fontWeight}>
-          Base Interest Rate * {formatter.format(totalAPY)}%
+        <Typography variant="body2" color="primary">
+          <b>Base Interest Rate</b>{" "}
+          <Typography
+            variant="body2"
+            color={lockup.interest === 0 ? "secondary" : "active"}
+          >
+            <b>• {format(getLockupAPR(lockup))}% APR</b>
+          </Typography>{" "}
         </Typography>
       }
     >
-      <LockupAlertContent current={current} lockups={active} />
+      <LockupAlertContent lockup={lockup} />
     </Alert>
   );
 };

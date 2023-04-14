@@ -8,8 +8,11 @@ const IBMPlexMonoFontCss = css`
 
 const BackgroundColor = css`
   body {
-    background-color: #f6f9fb !important;
+    background-color: #f6f9fb00 !important;
     min-height: 100vh;
+  }
+  html {
+    background-color: #f6f9fb !important;
   }
 `;
 
@@ -27,8 +30,14 @@ const ecoTheme: CustomEcoTheme = {
       bgDark: "#F6F9FB",
       contrastText: "#5F869F",
     },
+    error: {
+      contrastText: "#510408",
+    },
     background: {
       light: "#EFF8FE",
+    },
+    active: {
+      main: "#128264",
     },
   },
   typography: {

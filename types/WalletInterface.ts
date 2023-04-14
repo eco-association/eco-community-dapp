@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { Approval } from "./";
+import { FundsLockupWithDeposit } from "./FundsLockup";
 
 export interface WalletInterface {
   ecoBalance: BigNumber;
@@ -10,7 +10,12 @@ export interface WalletInterface {
   ecoXTotalSupply: BigNumber;
   sEcoXTotalSupply: BigNumber;
   wEcoTotalSupply: BigNumber;
+  inflationMultiplier: BigNumber;
   ECODelegator: string | null;
   sECOxDelegator: string | null;
-  ecoApprovals: Approval[];
+
+  ecoDelegatedToMe: { address: string; amount: BigNumber }[];
+  sEcoXDelegatedToMe: { address: string; amount: BigNumber }[];
+
+  lockups: FundsLockupWithDeposit[];
 }

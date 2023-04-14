@@ -1,30 +1,39 @@
 import { gql } from "@apollo/client";
 
+export interface TokenDelegateFragment {
+  token: { id: "eco" | "sEcox" };
+  amount: string;
+  blockStarted: string;
+  blockEnded: string;
+}
+
+export interface TokenDelegateeFragment extends TokenDelegateFragment {
+  delegator: { id: string };
+}
+
+export interface TokenDelegatorFragment extends TokenDelegateFragment {
+  delegatee: { id: string };
+}
+
 export type VotingPowerSourceQueryResult = {
   account: {
-    sECOx: string;
-    ECO: string;
-    sECOxDelegatedToMe: {
-      id: string;
-      sECOx: string;
-    }[];
-    ECODelegatedToMe: {
-      id: string;
-      ECO: string;
-    }[];
-    fundsLockupDepositsDelegatedToMe: {
-      id: string;
+    historicalECOBalances: { value: string }[];
+    historicalsECOxBalances: { value: string }[];
+    ecoVotingPower: { value: string }[];
+    sEcoXVotingPower: { value: string }[];
+    lockupsDelegatedToMe: {
       amount: string;
-      lockupEndsAt: string;
-    }[];
-    fundsLockupDeposits: {
-      id: string;
-      amount: string;
-      lockupEndsAt: string;
-      delegate: {
+      lockup: {
         id: string;
+        duration: string;
+        depositWindowEndsAt: string;
       };
     }[];
+
+    currentDelegatees: TokenDelegateeFragment[];
+    historicalDelegatees: TokenDelegateeFragment[];
+    currentDelegations: TokenDelegatorFragment[];
+    historicalDelegations: TokenDelegatorFragment[];
   };
   inflationMultipliers: {
     value: string;
@@ -33,37 +42,119 @@ export type VotingPowerSourceQueryResult = {
 
 export type VotingPowerSourceQueryVariables = {
   address: string;
+  blocknumber: string | number;
 };
 
 export const VOTING_POWER_SOURCES = gql`
-  query VotingPowerSources($address: String!) {
+  query VOTING_POWER_SOURCES($address: String!, $blocknumber: BigInt!) {
     account(id: $address) {
-      ECO
-      sECOx
-      sECOxDelegatedToMe {
-        id
-        sECOx
+      historicalECOBalances(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { blockNumber_lte: $blocknumber }
+      ) {
+        value
       }
-      ECODelegatedToMe {
-        id
-        ECO
+      historicalsECOxBalances(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { blockNumber_lte: $blocknumber }
+      ) {
+        value
       }
-      fundsLockupDepositsDelegatedToMe {
-        id
+      ecoVotingPower: historicalVotingPowers(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { token: "eco", blockNumber_lte: $blocknumber }
+      ) {
+        value
+      }
+      sEcoXVotingPower: historicalVotingPowers(
+        first: 1
+        orderBy: blockNumber
+        orderDirection: desc
+        where: { token: "sEcox", blockNumber_lte: $blocknumber }
+      ) {
+        value
+      }
+      lockupsDelegatedToMe: fundsLockupDepositsDelegatedToMe(
+        where: { withdrawnAt: null }
+      ) {
         amount
-        lockupEndsAt
+        lockup {
+          id
+          duration
+          depositWindowEndsAt
+        }
       }
-      fundsLockupDeposits {
-        id
-        amount
-        lockupEndsAt
-        delegate {
+      historicalDelegatees: tokenDelegatees(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded_gt: $blocknumber
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegator {
+          id
+        }
+      }
+      currentDelegatees: tokenDelegatees(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded: null
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegator {
+          id
+        }
+      }
+      historicalDelegations: tokenDelegators(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded_gt: $blocknumber
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegatee {
+          id
+        }
+      }
+      currentDelegations: tokenDelegators(
+        where: {
+          amount_gt: 0
+          blockStarted_lte: $blocknumber
+          blockEnded: null
+        }
+      ) {
+        ...TokenDelegateFragment
+        delegatee {
           id
         }
       }
     }
-    inflationMultipliers(first: 1, orderBy: blockNumber, orderDirection: desc) {
+    inflationMultipliers(
+      first: 1
+      orderBy: blockNumber
+      orderDirection: desc
+      where: { blockNumber_lte: $blocknumber }
+    ) {
       value
     }
+  }
+
+  fragment TokenDelegateFragment on TokenDelegate {
+    token {
+      id
+    }
+    amount
+    blockStarted
+    blockEnded
   }
 `;

@@ -35,7 +35,6 @@ export const VotingProgress: React.FC<VotingProgressProps> = ({
   const yesVotes = tokensToNumber(yesVotesBig);
   const noVotes = tokensToNumber(noVotesBig);
   const total = tokensToNumber(totalBig);
-  const majority = total / 2;
   const yesPercentage = yesVotes / total;
   const noPercentage = noVotes / total;
 
@@ -48,10 +47,7 @@ export const VotingProgress: React.FC<VotingProgressProps> = ({
         color={["success", "primary"]}
         label={[
           <Typography key={1} variant="body1">
-            {numberFormatter(yesVotes)} votes For{" "}
-            <Typography variant="body1" color="secondary">
-              (of {numberFormatter(majority)} needed to pass)
-            </Typography>
+            {numberFormatter(yesVotes)} votes For
           </Typography>,
           <Typography key={2} variant="body1">
             {numberFormatter(noVotes)} votes Against

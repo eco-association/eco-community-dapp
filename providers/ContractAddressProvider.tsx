@@ -1,7 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { Address, ContractAddressesInterface } from "../types";
+import { ContractAddressesInterface } from "../types";
 import { CONTRACT_ADDRESSES, ContractAddressQueryResult } from "../queries";
+import { AddressZero } from "@ethersproject/constants";
 
 /**
  * @name ContractAddressContext
@@ -26,20 +27,29 @@ export const ContractAddressProvider: React.FC<React.PropsWithChildren> = ({
 
   const contractAddresses = contracts
     ? {
-        eco: new Address(contracts.eco),
-        ecoX: new Address(contracts.ecox),
-        wEco: new Address(contracts.weco),
-        sEcoX: new Address(contracts.ecoxStaking),
-        trustedNodes: new Address(contracts.trustedNodes),
-        policyVotes: new Address(contracts.policyVotes),
-        timedPolicies: new Address(contracts.timedPolicies),
-        policyProposals: new Address(contracts.policyProposals),
+        eco: contracts.eco,
+        ecoX: contracts.ecox,
+        wEco: contracts.weco,
+        sEcoX: contracts.ecoxStaking,
+        trustedNodes: contracts.trustedNodes,
+        policyVotes: contracts.policyVotes,
+        timedPolicies: contracts.timedPolicies,
+        policyProposals: contracts.policyProposals,
       }
-    : null;
+    : {
+        eco: AddressZero,
+        ecoX: AddressZero,
+        wEco: AddressZero,
+        sEcoX: AddressZero,
+        trustedNodes: AddressZero,
+        policyVotes: AddressZero,
+        timedPolicies: AddressZero,
+        policyProposals: AddressZero,
+      };
 
   return (
     <ContractAddressContext.Provider value={contractAddresses}>
-      {contractAddresses ? children : null}
+      {children}
     </ContractAddressContext.Provider>
   );
 };

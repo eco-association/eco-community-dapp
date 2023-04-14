@@ -20,12 +20,13 @@ import {
 } from "../queries/CURRENT_GENERATION";
 import { Zero } from "@ethersproject/constants";
 import { useAccount } from "wagmi";
-import { PolicyVote } from "../types/CommunityInterface";
+import { BasicPolicyVote, PolicyVote } from "../types/CommunityInterface";
 import { toast as nativeToast } from "react-toastify";
 import { adjustVotingPower } from "../utilities/adjustVotingPower";
 import { convertDate } from "../utilities/convertDate";
-import { PastProposalsQuery } from "../queries/PAST_PROPOSALS_QUERY";
-import { ProposalQueryResult } from "../queries/PROPOSAL_QUERY";
+import { formatLockup } from "../utilities";
+import { formatPolicyVotes } from "../queries/fragments/PolicyVotesFragment";
+import { formatRandomInflation } from "../utilities/randomInflationTools";
 
 const defaultValue: CommunityInterface = {
   generation: null,
@@ -40,7 +41,11 @@ const defaultValue: CommunityInterface = {
   majorityReachedAt: null,
   nextGenerationStartsAt: new Date(Number.MAX_SAFE_INTEGER),
 
-  currentGeneration: { blockNumber: 0, number: 0 },
+  currentGeneration: {
+    blockNumber: 0,
+    number: 0,
+    createdAt: new Date(Number.MAX_SAFE_INTEGER),
+  },
   stage: { name: null, endsAt: null },
 };
 
@@ -154,18 +159,11 @@ class Community {
       }
 
       return {
+        ...formatPolicyVotes(policyVote),
         voted,
-        policyId: policyVote.id,
-        yesStake: adjustVotingPower(policyVote.yesVoteAmount),
-        requiredStake: adjustVotingPower(policyVote.totalVoteAmount),
-        totalVotingPower: adjustVotingPower(policyVote.totalVotingPower),
         enactionDelay: parseInt(policyVote.ENACTION_DELAY) * 1000,
+        totalVotingPower: adjustVotingPower(policyVote.totalVotingPower),
         selectedProposal: Community.formatProposal(policyVote.proposal),
-        majorityReachedAt: Community.formatDate(policyVote.majorityReachedAt),
-        voteEnds: Community.formatDate(policyVote.voteEnds),
-        result: policyVote.result
-          ? GenerationStage[policyVote.result]
-          : undefined,
       };
     }
     return {
@@ -191,6 +189,7 @@ class Community {
       currentGeneration: {
         blockNumber: parseInt(this.generation.blockNumber),
         number: parseInt(this.generation.number),
+        createdAt: Community.formatDate(this.generation.createdAt),
       },
     };
   }
@@ -213,7 +212,7 @@ class Community {
         this.policyVote;
 
       // Return the result
-      if (result) return result;
+      if (result) return GenerationStage[result];
 
       if (voteEnds.getTime() > Date.now()) {
         // vote still in progress, check for early majority
@@ -249,10 +248,18 @@ function getCommunityData(
   if (!data) return defaultValue;
 
   const generation = data.generations[0];
+  const pastGeneration = data.pastGeneration[0];
 
   return {
     generation,
     proposals: getProposals(generation),
+    lockup: formatLockup(
+      parseInt(pastGeneration?.number),
+      pastGeneration?.lockup
+    ),
+    randomInflation:
+      pastGeneration?.randomInflation &&
+      formatRandomInflation(pastGeneration.randomInflation),
     ...Community.getData(generation),
   };
 }
@@ -426,28 +433,16 @@ export function isSubmittingInProgress(stage: GenerationStage) {
 }
 
 export function hasVotingStagePassed(stage: GenerationStage) {
-  return !isSubmittingInProgress(stage) && stage !== GenerationStage.Submit;
+  return !isSubmittingInProgress(stage) && stage !== GenerationStage.Vote;
 }
 
 export function getProposalResult(
-  community: CommunityInterface,
-  proposal: PastProposalsQuery | ProposalQueryResult["communityProposal"]
+  policyVote?: BasicPolicyVote
 ): SubgraphVoteResult {
-  const proposalGen = parseInt(proposal.generationNumber);
-  if (
-    proposalGen === community.currentGeneration.number &&
-    community.selectedProposal?.id === proposal.id &&
-    proposal.policyVotes.length &&
-    hasVotingStagePassed(community.stage.name)
-  ) {
-    if (community.stage.name === GenerationStage.Majority)
-      return SubgraphVoteResult.Accepted;
-
-    const { yesStake, requiredStake } = community;
-
-    if (yesStake.gte(requiredStake.div(2))) return SubgraphVoteResult.Accepted;
-    return SubgraphVoteResult.Rejected;
+  if (!policyVote) return undefined;
+  const { result, yesStake, requiredStake } = policyVote;
+  if (!result && yesStake.gt(requiredStake.div(2))) {
+    return SubgraphVoteResult.Accepted;
   }
-  if (!proposal.policyVotes.length) return undefined;
-  return proposal.policyVotes[0]?.result || SubgraphVoteResult.Rejected;
+  return result || SubgraphVoteResult.Rejected;
 }

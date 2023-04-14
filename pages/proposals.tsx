@@ -27,13 +27,8 @@ const headerStyles: HeaderProps["styles"] = {
 };
 
 const Proposals: React.FC = () => {
-  const {
-    proposals,
-    totalVotingPower,
-    selectedProposal,
-    nextGenerationStartsAt,
-    stage,
-  } = useCommunity();
+  const { proposals, totalVotingPower, selectedProposal, stage } =
+    useCommunity();
   const { active, setActive } = useProposalTabContext();
 
   const tabsContainerRef = useRef<HTMLDivElement>();
@@ -86,7 +81,6 @@ const Proposals: React.FC = () => {
   return (
     <Header
       current="proposals"
-      height={0}
       breakpoint={breakpoint}
       scrollHeader={scrollHeader}
       styles={headerStyles}
@@ -96,12 +90,7 @@ const Proposals: React.FC = () => {
             <Typography variant="h1" color="white">
               Proposals
             </Typography>
-            <HeaderInfo
-              subtitle
-              stage={stage.name}
-              endsAt={stage.endsAt}
-              nextGenStartsAt={nextGenerationStartsAt}
-            />
+            <HeaderInfo subtitle />
           </Column>
           <div ref={tabsContainerRef}>{tabs}</div>
         </Column>

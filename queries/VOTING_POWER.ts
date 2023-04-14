@@ -16,7 +16,7 @@ export const VOTING_POWER = gql`
       first: 1
       orderBy: blockNumber
       orderDirection: desc
-      where: { account: $address, token: "eco", blockNumber_lte: $blockNumber }
+      where: { account: $address, token: "eco", blockNumber_lt: $blockNumber }
     ) {
       value
     }
@@ -24,11 +24,7 @@ export const VOTING_POWER = gql`
       first: 1
       orderBy: blockNumber
       orderDirection: desc
-      where: {
-        account: $address
-        token: "secox"
-        blockNumber_lte: $blockNumber
-      }
+      where: { account: $address, token: "sEcox", blockNumber_lt: $blockNumber }
     ) {
       value
     }

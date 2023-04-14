@@ -3,43 +3,32 @@ import { Alert, Typography } from "@ecoinc/ecomponents";
 import { useBaseInflation } from "../../../hooks/useBaseInflation";
 import { useCommunity } from "../../../../providers";
 import { css } from "@emotion/react";
-
-export const { format } = new Intl.NumberFormat("en-EN", {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 1,
-});
+import { numberFormatter } from "../../../../utilities";
 
 const fontWeight = css({ fontWeight: "bold" });
 
 export const BaseInflationAlert = () => {
   const { currentGeneration } = useCommunity();
-  const inflation = useBaseInflation(currentGeneration.blockNumber) * 100;
+  const inflation = useBaseInflation(currentGeneration.blockNumber);
   return (
     <Alert
-      color={inflation === 0 ? "secondary" : "transparent"}
-      css={inflation === 0 ? { border: 0 } : ""}
+      color={!inflation ? "secondary" : "transparent"}
+      css={!inflation ? { border: 0 } : ""}
       title={
         <Typography
-          variant="body1"
-          css={fontWeight}
-          style={{ color: inflation === 0 ? "#5F869F" : "#128268" }}
+          variant="body2"
+          color={inflation === 0 ? "secondary" : "primary"}
         >
-          Base inflation rate{" "}
-          <Typography
-            inline
-            variant="body2"
-            css={fontWeight}
-            style={{
-              color:
-                inflation < 0
-                  ? "#ED575F"
-                  : inflation === 0
-                  ? "#5F869F"
-                  : "#128269",
-            }}
-          >
-            • {format(inflation)}%
-          </Typography>
+          <b>
+            Base Inflation Rate{" "}
+            {!inflation ? (
+              "• Inactive"
+            ) : (
+              <Typography variant="body2" css={fontWeight} color="active">
+                • {numberFormatter(inflation * 100)}%
+              </Typography>
+            )}
+          </b>
         </Typography>
       }
     >

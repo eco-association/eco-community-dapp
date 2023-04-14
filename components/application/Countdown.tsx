@@ -13,8 +13,8 @@ export const Countdown: React.FC<CountdownProps> = ({
   onComplete,
   ...props
 }) => {
-  if (!date || Date.now() > date.getTime())
-    return <MonoText {...props}>0 Days: 0hrs: 0mins: 0secs</MonoText>;
+  if (!date || isNaN(date.getTime()) || Date.now() > date.getTime())
+    return <MonoText {...props}>0 Days: 0 hrs: 0 mins: 0 secs</MonoText>;
 
   return (
     <ReactCountdown
@@ -22,10 +22,10 @@ export const Countdown: React.FC<CountdownProps> = ({
       onComplete={onComplete}
       renderer={({ days, hours, minutes, seconds, completed }) => {
         if (completed)
-          return <MonoText {...props}>0 Days: 0hrs: 0mins: 0secs</MonoText>;
+          return <MonoText {...props}>0 Days: 0 hrs: 0 mins: 0 secs</MonoText>;
         return (
           <MonoText {...props}>
-            {days} Days: {hours}hrs: {minutes}mins: {seconds}secs
+            {days} Days: {hours} hrs: {minutes} mins: {seconds} secs
           </MonoText>
         );
       }}

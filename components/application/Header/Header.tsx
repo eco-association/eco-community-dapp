@@ -1,38 +1,27 @@
 import React, { CSSProperties, useMemo, useRef } from "react";
 import { Column, Row, styled } from "@ecoinc/ecomponents";
 import Image from "next/image";
-import EcoLogoImg from "../../../public/images/eco-gov-logo.svg";
-import DotsBg from "../../../public/images/dots.svg";
+import EcoLogoImg from "../../../public/images/eco-logo/eco-gov-logo.svg";
 import { useScrollExceeds } from "../../hooks/useScrollExceeds";
 import { HeaderItem } from "./HeaderItem";
 import { WalletItem } from "./WalletItem";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { css } from "@emotion/react";
+import HeaderBackground from "./HeaderBackground";
 
-const linearGradient = (color: string) => `linear-gradient(${color}, ${color})`;
-
-const PageContainer = styled.div<{ height: number }>(({ theme, height }) => ({
+const PageContainer = styled.div<{ height: number }>(({ height }) => ({
   backgroundRepeat: "no-repeat",
-  backgroundImage: [
-    `url(${DotsBg.src})`,
-    linearGradient(theme.palette.primary.main),
-    linearGradient(theme.palette.background.paper),
-  ].join(", "),
   backgroundSize: [`auto ${height}px`, `100% ${height}px`, "auto"].join(", "),
   backgroundPosition: "top center",
   minHeight: "100vh",
 }));
 
-const TopContent = styled.div(({ theme }) => ({
+const TopContent = styled.div({
   backgroundRepeat: "no-repeat",
-  backgroundImage: [
-    `url(${DotsBg.src})`,
-    linearGradient(theme.palette.primary.main),
-  ].join(", "),
   backgroundSize: [`auto 100%`, `100% 100%`].join(", "),
   backgroundPosition: "top center",
-}));
+});
 
 const BottomContent = styled.div(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -189,16 +178,18 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
   if (content) {
     return (
       <React.Fragment>
-        <TopContent
-          ref={topRef}
-          css={styles.pageStyle}
-          style={{ minHeight: styles.height }}
-        >
-          {header}
-          {overlayHeader}
-          {content}
-        </TopContent>
-        <BottomContent css={styles.bodyStyle}>{children}</BottomContent>
+        <HeaderBackground>
+          <TopContent
+            ref={topRef}
+            css={styles.pageStyle}
+            style={{ minHeight: styles.height }}
+          >
+            {header}
+            {overlayHeader}
+            {content}
+          </TopContent>
+          <BottomContent css={styles.bodyStyle}>{children}</BottomContent>
+        </HeaderBackground>
       </React.Fragment>
     );
   }

@@ -17,7 +17,7 @@ import {
   useCommunity,
 } from "../../../providers/CommunityProvider";
 import { SubgraphVoteResult } from "../../../queries/CURRENT_GENERATION";
-import { convertDate } from "../../../utilities/convertDate";
+import Skeleton from "react-loading-skeleton";
 
 interface ActivityIconProps
   extends Omit<React.HTMLProps<HTMLDivElement>, "as"> {
@@ -51,7 +51,7 @@ const Line = styled.div<{ disable?: boolean }>(({ theme, disable }) => ({
 }));
 
 interface ProposalActivityCardProps {
-  proposal: ProposalFull;
+  proposal?: ProposalFull;
 }
 
 function formatDate(date?: Date | string) {
@@ -133,6 +133,15 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
   );
 };
 
+const ActivitySkeleton: React.FC = () => {
+  return (
+    <Grid columns="30px 1fr" alignItems="center" columnGap="8px">
+      <Skeleton circle width={30} height={30} />
+      <Skeleton count={2} />
+    </Grid>
+  );
+};
+
 const VoteItem: React.FC<{
   proposal: ProposalFull;
   disable?: boolean;
@@ -142,7 +151,7 @@ const VoteItem: React.FC<{
   if (!voting || !proposal.policyVote) return null;
 
   const { majorityReachedAt, voteEnds } = proposal.policyVote;
-  const endedAtDate = convertDate(majorityReachedAt || voteEnds);
+  const endedAtDate = majorityReachedAt || voteEnds;
   const votingEnded = Date.now() > endedAtDate.getTime();
 
   return (
@@ -197,7 +206,7 @@ const VoteResultItem: React.FC<{
   const title = passed ? "Vote passed" : "Vote failed";
   const endedAtDate = majorityReachedAt || voteEnds;
 
-  const votingEnded = Date.now() > convertDate(endedAtDate).getTime();
+  const votingEnded = Date.now() > endedAtDate.getTime();
   if (!votingEnded) return null;
 
   const description = activity
@@ -208,10 +217,35 @@ const VoteResultItem: React.FC<{
 
   return (
     <ActivityItem
-      last
+      last={!passed}
       icon={passed ? "checkmark" : "error"}
       title={title}
       description={description}
+    />
+  );
+};
+
+const ProposalExecutedItem: React.FC<{
+  proposal: CommunityProposal;
+}> = ({ proposal }) => {
+  const activity = getActivity(proposal, ActivityType.ProposalExecuted);
+
+  if (!proposal.policyVote) return null;
+
+  const { result, majorityReachedAt, voteEnds } = proposal.policyVote;
+
+  const passed = result === SubgraphVoteResult.Accepted || !!majorityReachedAt;
+  const endedAtDate = majorityReachedAt || voteEnds;
+
+  const votingEnded = Date.now() > endedAtDate.getTime();
+  if (!votingEnded || !passed) return null;
+
+  return (
+    <ActivityItem
+      last
+      title="Proposal Executed"
+      icon={activity ? "checkmark" : "waiting"}
+      description={activity && formatDate(activity.timestamp)}
     />
   );
 };
@@ -223,15 +257,66 @@ export const ProposalActivityCard: React.FC<ProposalActivityCardProps> = ({
 
   const [failed, setFailed] = useState(false);
 
-  const submitted = getActivity(proposal, ActivityType.ProposalSubmitted);
-  const { number, createdAt, policyProposal } = proposal.generation;
+  let content = (
+    <Column gap="md">
+      <ActivitySkeleton />
+      <ActivitySkeleton />
+      <ActivitySkeleton />
+    </Column>
+  );
 
-  const genCreatedAt = formatDate(createdAt);
-  const supportEndDate = formatDate(policyProposal.proposalEnds);
+  if (proposal) {
+    const submitted = getActivity(proposal, ActivityType.ProposalSubmitted);
+    const { number, createdAt, policyProposal } = proposal.generation;
 
-  const isSupportPhase =
-    proposal.generation.number === community.currentGeneration.number &&
-    isSubmittingInProgress(community.stage.name);
+    const genCreatedAt = formatDate(createdAt);
+    const supportEndDate = formatDate(policyProposal.proposalEnds);
+
+    const isSupportPhase =
+      proposal.generation.number === community.currentGeneration.number &&
+      isSubmittingInProgress(community.stage.name);
+
+    content = (
+      <Column>
+        <ActivityItem
+          disable={failed}
+          title="Deployed"
+          description={formatDate(submitted.timestamp)}
+        />
+        <ActivityItem
+          disable={failed}
+          title="Submitted"
+          description={
+            <Column>
+              <Typography variant="body3" color="secondary">
+                {formatDate(submitted.timestamp)} • GENERATION {number}
+              </Typography>
+              <Typography variant="body3" color="secondary">
+                Submitted by {displayAddress(proposal.proposer)}
+              </Typography>
+            </Column>
+          }
+        />
+        <ActivityItem
+          disable={failed}
+          last={isSupportPhase}
+          icon={isSupportPhase ? "waiting" : "checkmark"}
+          title="Support phase started"
+          description={`${genCreatedAt} - ${supportEndDate}`}
+        />
+        {!isSupportPhase ? (
+          <SupportResultItem
+            disable={failed}
+            proposal={proposal}
+            onFail={() => setFailed(true)}
+          />
+        ) : null}
+        <VoteItem disable={failed} proposal={proposal} />
+        <VoteResultItem proposal={proposal} onFail={() => setFailed(true)} />
+        <ProposalExecutedItem proposal={proposal} />
+      </Column>
+    );
+  }
 
   return (
     <Card>
@@ -239,43 +324,7 @@ export const ProposalActivityCard: React.FC<ProposalActivityCardProps> = ({
         <Typography variant="body3" color="secondary">
           HISTORY
         </Typography>
-        <Column>
-          <ActivityItem
-            disable={failed}
-            title="Deployed"
-            description={formatDate(submitted.timestamp)}
-          />
-          <ActivityItem
-            disable={failed}
-            title="Submitted"
-            description={
-              <Column>
-                <Typography variant="body3" color="secondary">
-                  {formatDate(submitted.timestamp)} • GENERATION {number}
-                </Typography>
-                <Typography variant="body3" color="secondary">
-                  Submitted by {displayAddress(proposal.proposer)}
-                </Typography>
-              </Column>
-            }
-          />
-          <ActivityItem
-            disable={failed}
-            last={isSupportPhase}
-            icon={isSupportPhase ? "waiting" : "checkmark"}
-            title="Support phase started"
-            description={`${genCreatedAt} - ${supportEndDate}`}
-          />
-          {!isSupportPhase ? (
-            <SupportResultItem
-              disable={failed}
-              proposal={proposal}
-              onFail={() => setFailed(true)}
-            />
-          ) : null}
-          <VoteItem disable={failed} proposal={proposal} />
-          <VoteResultItem proposal={proposal} onFail={() => setFailed(true)} />
-        </Column>
+        {content}
       </Column>
     </Card>
   );

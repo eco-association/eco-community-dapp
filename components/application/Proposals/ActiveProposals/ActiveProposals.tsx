@@ -78,11 +78,11 @@ export const ActiveProposals: React.FC<ActiveProposalsProps> = ({
             In the meantime, you can{" "}
             <Link
               href={{
-                pathname: "/proposal/[id]",
+                pathname: "/proposal",
                 query: { id: votingProposal?.id },
               }}
             >
-              <Typography link variant="body1" color="success" css={underline}>
+              <Typography link variant="body1" color="active" css={underline}>
                 vote on the current proposal
               </Typography>
             </Link>

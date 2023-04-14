@@ -57,14 +57,15 @@ export const VotingCard: React.FC<VotingCardProps> = ({ small }) => {
   }, [community]);
 
   if (
-    !isVotingInProgress(stage) &&
-    (!enactionDate || enactionDate.getTime() < Date.now())
+    !community.selectedProposal ||
+    (!isVotingInProgress(stage) &&
+      (!enactionDate || enactionDate.getTime() < Date.now()))
   )
     return null;
 
   const goToProposal = () =>
     router.push({
-      pathname: `proposal/[id]`,
+      pathname: `proposal`,
       query: { id: community.selectedProposal.id },
     });
 
@@ -78,7 +79,7 @@ export const VotingCard: React.FC<VotingCardProps> = ({ small }) => {
   ) : (
     <Column>
       {stage === GenerationStage.Majority ? (
-        <MonoText variant="body3" color="success" style={{ alignSelf: "end" }}>
+        <MonoText variant="body3" color="active" style={{ alignSelf: "end" }}>
           VOTE MAJORITY REACHED
         </MonoText>
       ) : (

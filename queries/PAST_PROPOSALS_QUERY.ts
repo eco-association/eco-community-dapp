@@ -1,7 +1,10 @@
 import { gql } from "@apollo/client";
 import { BigNumberish } from "ethers";
 import { ActivityType } from "./PROPOSAL_QUERY";
-import { SubgraphVoteResult } from "./CURRENT_GENERATION";
+import {
+  PolicyVotesFragment,
+  PolicyVotesFragmentResult,
+} from "./fragments/PolicyVotesFragment";
 
 export type Activities = {
   timestamp: string;
@@ -31,14 +34,12 @@ export type PastProposalsQuery = {
   }[];
   createdAt?: string;
 
-  policyVotes?: {
-    id: string;
-    result: SubgraphVoteResult;
+  policyVotes?: (PolicyVotesFragmentResult & {
     votes: {
       id: string;
       yesAmount: string;
     }[];
-  }[];
+  })[];
 };
 
 export type PastProposalsQueryResults = {
@@ -79,14 +80,24 @@ export const PAST_PROPOSALS_QUERY = gql`
       totalSupportAmount
       reachedSupportThreshold
       policyVotes {
-        id
-        result
+        ...PolicyVotesFragment
         votes(where: { voter: $account }) {
           yesAmount
           id
         }
       }
-      activities {
+      activities(
+        orderBy: timestamp
+        orderDirection: desc
+        where: {
+          type_not_in: [
+            ProposalSupported
+            ProposalUnsupported
+            ProposalVoteFor
+            ProposalVoteAgainst
+          ]
+        }
+      ) {
         timestamp
         type
       }
@@ -96,4 +107,5 @@ export const PAST_PROPOSALS_QUERY = gql`
       }
     }
   }
+  ${PolicyVotesFragment}
 `;

@@ -1,11 +1,23 @@
-import { styled, Typography } from "@ecoinc/ecomponents";
+import { pxToRem, styled, Typography } from "@ecoinc/ecomponents";
 import React from "react";
+import { breakpoints, mq } from "../../../utilities";
 
 const BlockBase = styled.div({
-  padding: 16,
+  padding: "8px 12px",
   minWidth: 126,
   borderRadius: 8,
   backgroundColor: "#FFFFFF19",
+
+  [mq(breakpoints.md)]: {
+    padding: 16,
+  },
+});
+
+const BodyText = styled(Typography)({
+  fontSize: pxToRem(10),
+  [mq(breakpoints.md)]: {
+    fontSize: pxToRem(11),
+  },
 });
 
 interface BlockProps {
@@ -17,9 +29,9 @@ export const Block: React.FC<BlockProps> = ({ content, title }) => {
   return (
     <BlockBase>
       {content}
-      <Typography variant="body3" color="success">
+      <BodyText variant="body3" color="success">
         {title}
-      </Typography>
+      </BodyText>
     </BlockBase>
   );
 };

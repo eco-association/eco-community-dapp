@@ -2,17 +2,21 @@
  * List of options can be found here: https://codemirror.net/doc/manual.html#styling
  */
 
- .CodeMirror {
-    height: auto !important;
-    text-align: left;
-    z-index: 0;
+.CodeMirror {
+  height: auto !important;
+  text-align: left;
+  z-index: 0;
 }
 
 /* IDE height */
 .CodeMirror-scroll {
-    max-height: 900px;
+  max-height: 900px;
 }
 
 .ReactCollapse--collapse {
-    transition: height 250ms;
+  transition: height 250ms;
+}
+
+.body-fixed {
+  overflow: hidden;
 }

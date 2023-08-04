@@ -1,15 +1,19 @@
 import { Card, Column, Typography } from "@ecoinc/ecomponents";
 import { SupportPhaseAlert } from "./SupportPhaseAlert";
+import { css } from "@emotion/react";
+
 import { useCommunity } from "../../../../providers";
 import { isSubmittingInProgress } from "../../../../providers/CommunityProvider";
-import { css } from "@emotion/react";
 import { useActivities } from "../../../hooks/useActivities";
 import ActivityItem from "../../Account/AccountActivity/ActivityItem";
 import { Scrollable } from "../../commons/Scrollable";
+import { breakpoints, mq } from "../../../../utilities";
 
 const setMaxHeight = css({
-  maxHeight: 600,
-  overflow: "hidden",
+  [mq(breakpoints.md)]: {
+    maxHeight: 600,
+    overflow: "hidden",
+  },
 });
 
 export const ActivityCard = () => {

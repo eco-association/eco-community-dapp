@@ -21,20 +21,12 @@ const PageContainer = styled.div<{ height: number }>(({ height }) => ({
   minHeight: "100vh",
 }));
 
-const TopContent = styled.div({
+const TopContent = styled.div<{ height: number }>(({ height }) => ({
   backgroundRepeat: "no-repeat",
   backgroundSize: [`auto 100%`, `100% 100%`].join(", "),
   backgroundPosition: "top center",
-  minHeight: 360,
-
-  [mq(breakpoints.md)]: {
-    minHeight: 356,
-  },
-
-  [mq(breakpoints.lg)]: {
-    minHeight: 372,
-  },
-});
+  minHeight: height,
+}));
 
 const BottomContent = styled.div(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -226,7 +218,11 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
     return (
       <React.Fragment>
         <HeaderBackground>
-          <TopContent ref={topRef} css={styles.pageStyle}>
+          <TopContent
+            ref={topRef}
+            height={styles.height}
+            css={styles.pageStyle}
+          >
             {header}
             {overlayHeader}
             {content}

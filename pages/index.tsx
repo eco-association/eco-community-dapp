@@ -26,7 +26,12 @@ const StyledGrid = styled(Grid)({
 
 const Home: React.FC = () => {
   return (
-    <Header current="home" breakpoint={16} content={<HeaderContent />}>
+    <Header
+      current="home"
+      breakpoint={16}
+      height={360}
+      content={<HeaderContent />}
+    >
       <Container items="center" gap="xl">
         <VotingCard />
         <StyledGrid gap="24px">

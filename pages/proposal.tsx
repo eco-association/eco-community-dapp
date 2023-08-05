@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { Column, Grid, styled, Typography } from "@ecoinc/ecomponents";
-import { Header } from "../components/application/Header/Header";
+import { css } from "@emotion/react";
 import { useRouter } from "next/router";
+import { Textfit } from "react-textfit";
+
+import { Header } from "../components/application/Header/Header";
 import { BackButton } from "../components/application/commons/BackButton";
 import { ProposalActivityCard } from "../components/application/Proposals/ProposalActivityCard";
 import { ContractCard } from "../components/application/Proposals/ContractCard";
@@ -18,14 +21,48 @@ import {
   Support,
 } from "../providers/CommunityProvider";
 import { useVotingPower } from "../components/hooks/useVotingPower";
-import { Textfit } from "react-textfit";
 import { WalletBlock } from "../components/application/commons/WalletBlock";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import { truncateText } from "../utilities";
+import { breakpoints, mq, truncateText } from "../utilities";
 
+const createdByStyle = css({
+  textAlign: "center",
+
+  [mq(breakpoints.md)]: {
+    textAlign: "left",
+  },
+});
+
+const StyledTextFit = styled(Textfit)({
+  [mq(breakpoints.md)]: {
+    height: 157,
+  },
+});
 const Content = styled(Column)({
-  maxWidth: 780,
+  maxWidth: "90%",
   margin: "0 auto",
+
+  [mq(breakpoints.md)]: {
+    maxWidth: 780,
+  },
+});
+
+const GridWrap = styled(Grid)({
+  gridTemplateColumns: "1fr",
+
+  [mq(breakpoints.md)]: {
+    gridTemplateColumns: "1fr 288px",
+  },
+});
+
+const ProposalHeaderGrid = styled(Grid)({
+  gridTemplateColumns: "1fr",
+  placeItems: "center",
+
+  [mq(breakpoints.md)]: {
+    gridTemplateColumns: "1fr auto",
+    placeItems: "unset",
+  },
 });
 
 const ActionCardContainer = styled.div({ marginTop: -24 });
@@ -46,9 +83,9 @@ const Title: React.FC<{ title?: string }> = ({ title }) => {
 
   return (
     <Typography variant="h1" color="white">
-      <Textfit mode="multi" min={15} max={32} style={{ height: 157 }}>
+      <StyledTextFit mode="multi" min={15} max={32}>
         {truncateText(title, 720)}
-      </Textfit>
+      </StyledTextFit>
     </Typography>
   );
 };
@@ -88,6 +125,7 @@ const Proposal: React.FC = () => {
   const showSupportCard =
     currentGeneration.number === proposal?.generation.number &&
     isSubmittingInProgress(stage.name);
+
   const showVotingCard =
     isVotingInProgress(stage.name) && proposal?.id === selectedProposal?.id;
 
@@ -120,15 +158,19 @@ const Proposal: React.FC = () => {
         >
           <Content gap="lg">
             <BackButton />
-            <Grid columns="1fr auto" gap="64px">
+            <ProposalHeaderGrid gap="64px">
               <Title title={proposal?.name} />
               <Column gap="sm" style={{ alignSelf: "center" }}>
-                <Typography color="success" variant="body1">
+                <Typography
+                  css={createdByStyle}
+                  color="success"
+                  variant="body1"
+                >
                   Created by
                 </Typography>
                 <WalletBlock address={proposal?.proposer} />
               </Column>
-            </Grid>
+            </ProposalHeaderGrid>
           </Content>
         </SkeletonTheme>
       }
@@ -144,12 +186,14 @@ const Proposal: React.FC = () => {
               />
             </ActionCardContainer>
           ) : null}
+
           {showVotingCard ? (
             <ActionCardContainer>
               <VotingCard small />
             </ActionCardContainer>
           ) : null}
-          <Grid columns="1fr 288px" gap="48px" style={{ height: "100%" }}>
+
+          <GridWrap gap="48px" style={{ height: "100%" }}>
             <Column gap="lg" style={{ overflowY: "auto", paddingTop: 32 }}>
               <Typography variant="h4">Description</Typography>
               <Description
@@ -172,7 +216,7 @@ const Proposal: React.FC = () => {
               <ProposalActivityCard proposal={proposal} />
               <ContractCard address={proposal?.address} />
             </Column>
-          </Grid>
+          </GridWrap>
         </Content>
       </SkeletonTheme>
     </Header>

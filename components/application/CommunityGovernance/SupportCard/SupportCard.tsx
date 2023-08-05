@@ -277,6 +277,7 @@ const SupportCard: React.FC<SupportCardProps> = ({
           <ProgressContainer>
             <LimitBar />
             <ProgressBar
+              fullWidth
               color="success"
               textRight
               text="15% needed"

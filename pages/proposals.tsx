@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Column, Row, Typography } from "@ecoinc/ecomponents";
+import { Column, Row, Typography, styled } from "@ecoinc/ecomponents";
 import { Header, HeaderProps } from "../components/application/Header/Header";
 import { HeaderInfo } from "../components/application/Header/HeaderInfo";
 import {
@@ -25,6 +25,10 @@ const headerStyles: HeaderProps["styles"] = {
     gap: "48px",
   },
 };
+const TabContainer = styled.div({
+  width: "100%",
+  maxWidth: "500px",
+});
 
 const Proposals: React.FC = () => {
   const { proposals, totalVotingPower, selectedProposal, stage } =
@@ -84,6 +88,7 @@ const Proposals: React.FC = () => {
       breakpoint={breakpoint}
       scrollHeader={scrollHeader}
       styles={headerStyles}
+      height={250}
       content={
         <Column gap="xl" items="center" justify="end">
           <Column gap="lg" items="center">
@@ -92,7 +97,7 @@ const Proposals: React.FC = () => {
             </Typography>
             <HeaderInfo subtitle />
           </Column>
-          <div ref={tabsContainerRef}>{tabs}</div>
+          <TabContainer ref={tabsContainerRef}>{tabs}</TabContainer>
         </Column>
       }
     >

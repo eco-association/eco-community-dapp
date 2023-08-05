@@ -32,7 +32,11 @@ export const BasicInfoCard: React.FC<BasicInfoCardProps> = ({
       <Column gap="lg" items="center">
         <Column gap="md" items="center">
           {subtitle ? (
-            <Typography variant="body3" color="secondary">
+            <Typography
+              css={{ textAlign: "center" }}
+              variant="body3"
+              color="secondary"
+            >
               {subtitle}
             </Typography>
           ) : null}

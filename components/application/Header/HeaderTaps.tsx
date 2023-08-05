@@ -31,7 +31,7 @@ export const HeaderTaps: React.FC<React.PropsWithChildren<TapsProps>> = ({
   ...props
 }) => {
   return (
-    <Row css={{ gap: 64 }} {...props}>
+    <Row content="space-between" {...props}>
       {React.Children.map(children, (child) => {
         if (!React.isValidElement(child) || !isHeaderTab(child)) return null;
         return React.cloneElement<HeaderTapProps>(child, {
@@ -92,8 +92,10 @@ export const HeaderTap: React.FC<HeaderTapProps> = ({
     <HeaderTapContainer
       gap="sm"
       items="center"
+      justify="center"
       active={active}
       onClick={onClick}
+      css={{ flexBasis: "calc(100%/3)", textAlign: "center" }}
     >
       {label}
       {stage.name === GenerationStage.Submit && name === ProposalsTab.Active ? (

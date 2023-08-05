@@ -35,7 +35,7 @@ const buttonVariant = css({
   width: "76px",
   color: "#ffffff",
   opacity: "0.6",
-  padding: 0,
+  padding: "0 !important",
   fontSize: "13px",
 });
 
@@ -44,7 +44,7 @@ const disconnectButton = css({
   width: "100%",
   color: "#22313A",
   opacity: "0.6",
-  padding: 0,
+  padding: "0 !important",
   fontSize: "13px",
   marginTop: 12,
 });

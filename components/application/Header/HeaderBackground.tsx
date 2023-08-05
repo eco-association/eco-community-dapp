@@ -93,7 +93,7 @@ const HeaderBackground: React.FC<React.PropsWithChildren> = ({ children }) => {
           fpsLimit: 5,
           retina_detect: true,
           background: {
-            color: "#112733",
+            color: "#000",
           },
         }}
       />

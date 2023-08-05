@@ -53,10 +53,20 @@ const DisconnectButton = styled(Button)({
   color: "#22313A",
 });
 
+const Dot = styled.span({
+  width: "7px",
+  height: "7px",
+  borderRadius: "50%",
+  background: "#56D9B6",
+  display: "inline-block",
+  marginRight: "4px",
+});
+
 const styles = {
   colorMed: { color: "#5F869F !important" },
   outerPadding: { padding: "32px 44px" },
   spaceRight: { marginRight: "10px" },
+  alignCenter: { display: "flex", placeItems: "center" },
   innerPadding: {
     padding: "32px 44px",
     background: "rgba(255, 255, 255, 0.05)",
@@ -113,8 +123,12 @@ const MobileNav = ({ show, navLinks, onClick }) => {
           </TextContainer>
 
           <TextContainer>
-            <Typography color="white" variant="body2" css={styles.spaceRight}>
-              ETH
+            <Typography
+              color="white"
+              variant="body2"
+              css={{ ...styles.spaceRight, ...styles.alignCenter }}
+            >
+              <Dot /> ETH
             </Typography>
             <Typography variant="body2" css={styles.colorMed}>
               Network

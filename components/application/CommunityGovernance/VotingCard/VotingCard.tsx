@@ -1,25 +1,49 @@
+import React, { useEffect, useState } from "react";
 import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
+import Image from "next/image";
+import { css } from "@emotion/react";
+import { useRouter } from "next/router";
+
 import { VotingProgress } from "./VotingProgress";
 import { useCommunity } from "../../../../providers";
 import { VoteDate } from "./VoteDate";
 import { CommunityInterface, GenerationStage } from "../../../../types";
 import { VoteAlert } from "./VoteAlert";
 import { VoteExecCountdown } from "./VoteExecCountdown";
-import { css } from "@emotion/react";
 import { ExternalButton } from "../../commons/ExternalButton";
-import React, { useEffect, useState } from "react";
-import { Countdown } from "../../Countdown";
-import { useRouter } from "next/router";
-import { MonoText } from "../../commons/MonoText";
 import { isVotingInProgress } from "../../../../providers/CommunityProvider";
-
-const Title = styled(Typography)({ maxWidth: 573, letterSpacing: "-0.015em" });
+import { breakpoints, mq } from "../../../../utilities";
+import ExternalIcon from "../../../../public/images/external-icon.svg";
 
 const moreButtonStyle = css({
   position: "absolute",
   top: 16,
   right: 20,
   borderRadius: 21,
+});
+
+const StyledCard = styled(Card)({
+  position: "relative",
+  width: "100%",
+  border: "1px solid #56D9B6 ",
+
+  [mq(breakpoints.md)]: {
+    border: "none",
+  },
+});
+
+const Title = styled(Typography)({ maxWidth: 573, letterSpacing: "-0.015em" });
+
+const ProposalDetails = styled(Title)({
+  color: "#5F869F",
+
+  span: {
+    fontWeight: 600,
+  },
+
+  [mq(breakpoints.md)]: {
+    display: "none",
+  },
 });
 
 interface VotingCardProps {
@@ -72,32 +96,34 @@ export const VotingCard: React.FC<VotingCardProps> = ({ small }) => {
   const top = !small ? (
     <Column gap="md">
       <VoteDate stage={stage} date={community.stage.endsAt} />
-      <Title variant="h3" css={{ textAlign: "center", alignSelf: "center" }}>
-        {community.selectedProposal.name}
+      <Title variant="h3">
+        {community.selectedProposal.name?.slice(0, 122)}...
       </Title>
+
+      <ProposalDetails variant="body2">
+        {community.selectedProposal?.description?.slice(0, 69)}...{" "}
+        <span style={{ position: "relative" }}>
+          read more about it
+          <span style={{ position: "absolute", top: 5, marginLeft: 3 }}>
+            <Image
+              src={ExternalIcon}
+              alt="external"
+              layout="fixed"
+              width={16}
+              height={16}
+            />
+          </span>
+        </span>
+      </ProposalDetails>
     </Column>
   ) : (
     <Column>
-      {stage === GenerationStage.Majority ? (
-        <MonoText variant="body3" color="active" style={{ alignSelf: "end" }}>
-          VOTE MAJORITY REACHED
-        </MonoText>
-      ) : (
-        <Countdown
-          date={community.stage.endsAt}
-          variant="body3"
-          color="secondary"
-          style={{ alignSelf: "end" }}
-        />
-      )}
-      <Title variant="h3" style={{ lineHeight: 1 }}>
-        Vote
-      </Title>
+      <VoteDate stage={stage} date={community.stage.endsAt} />
     </Column>
   );
 
   return (
-    <Card css={{ position: "relative", width: "100%" }}>
+    <StyledCard>
       {!small ? (
         <ExternalButton css={moreButtonStyle} onClick={goToProposal}>
           MORE
@@ -119,6 +145,6 @@ export const VotingCard: React.FC<VotingCardProps> = ({ small }) => {
           />
         )}
       </Column>
-    </Card>
+    </StyledCard>
   );
 };

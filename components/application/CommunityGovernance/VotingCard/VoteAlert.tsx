@@ -3,6 +3,7 @@ import {
   Button,
   formatNumber,
   Row,
+  styled,
   Typography,
 } from "@ecoinc/ecomponents";
 import React, { useState } from "react";
@@ -22,6 +23,14 @@ interface VoteAlertProps {
   block: number;
   voted?: Vote;
 }
+
+const ButtonGrid = styled(Row)`
+  @media screen and (min-width: 576px) {
+    display: flex;
+    justify-content: end;
+    gap: 8px;
+  }
+`;
 
 export const VoteAlert: React.FC<VoteAlertProps> = ({ block, voted }) => {
   const { isConnected } = useAccount();
@@ -92,21 +101,21 @@ export const VoteAlert: React.FC<VoteAlertProps> = ({ block, voted }) => {
     }
     if (!isConnected)
       return (
-        <Row gap="md" justify="end">
+        <ButtonGrid gap="md">
           <Button color="success" onClick={() => setDisplay(true)}>
             Yes
           </Button>
           <Button color="primary" onClick={() => setDisplay(true)}>
             No
           </Button>
-        </Row>
+        </ButtonGrid>
       );
 
     if (votingPower.isZero()) return null;
 
     if (voted) {
       return (
-        <Row gap="md" justify="end">
+        <ButtonGrid gap="md">
           <Button
             color="secondary"
             variant="outline"
@@ -114,12 +123,12 @@ export const VoteAlert: React.FC<VoteAlertProps> = ({ block, voted }) => {
           >
             Change Vote
           </Button>
-        </Row>
+        </ButtonGrid>
       );
     }
 
     return (
-      <Row gap="md" justify="end">
+      <ButtonGrid gap="md">
         <Button
           color="success"
           onClick={() => setAction(VotingModalAction.For)}
@@ -132,7 +141,7 @@ export const VoteAlert: React.FC<VoteAlertProps> = ({ block, voted }) => {
         >
           Reject
         </Button>
-      </Row>
+      </ButtonGrid>
     );
   };
 

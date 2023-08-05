@@ -8,8 +8,8 @@ import HeaderContent from "../components/application/Header/HeaderContent";
 import { breakpoints, mq } from "../utilities";
 
 const Container = styled(Column)({
+  margin: "-48px auto 0 auto",
   [mq(breakpoints.md)]: {
-    margin: "-48px auto 0 auto",
     maxWidth: 980,
   },
 });

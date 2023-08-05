@@ -3,13 +3,15 @@ import React from "react";
 import { breakpoints, mq } from "../../../utilities";
 
 const BlockBase = styled.div({
-  padding: "8px 12px",
-  minWidth: 126,
+  padding: "12px 8px",
+  width: 116,
   borderRadius: 8,
   backgroundColor: "#FFFFFF19",
 
-  [mq(breakpoints.md)]: {
+  [mq(breakpoints.sm)]: {
     padding: 16,
+    minWidth: 126,
+    width: "fit-content",
   },
 });
 

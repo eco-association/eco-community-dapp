@@ -1,20 +1,29 @@
 import { ProgressBar, styled, Typography } from "@ecoinc/ecomponents";
 import React, { CSSProperties } from "react";
 import { BigNumber } from "ethers";
-import { tokensToNumber } from "../../../../utilities";
+import { breakpoints, mq, tokensToNumber } from "../../../../utilities";
 import { numberFormatter } from "../../../../utilities/numberFormatter";
 
-const Container = styled.div({ position: "relative" });
+const Container = styled.div({
+  position: "relative",
+  [mq(breakpoints.md)]: {
+    marginBottom: 8,
+  },
+});
 
 const Division = styled.div(({ theme }) => ({
-  position: "absolute",
-  top: 0,
-  left: "50%",
-  zIndex: 1,
-  height: 13,
-  width: 2,
-  transform: "translate(-1px, -4px)",
-  backgroundColor: theme.palette.secondary.main,
+  display: "none",
+  [mq(breakpoints.sm)]: {
+    display: "block",
+    position: "absolute",
+    top: 0,
+    left: "50%",
+    zIndex: 1,
+    height: 13,
+    width: 2,
+    transform: "translate(-1px, -4px)",
+    backgroundColor: theme.palette.secondary.main,
+  },
 }));
 
 interface VotingProgressProps {
@@ -42,7 +51,6 @@ export const VotingProgress: React.FC<VotingProgressProps> = ({
     <Container>
       <Division />
       <ProgressBar
-        LabelsStyle={{ justifyContent: "space-between" }}
         position={["left", "right"]}
         color={["success", "primary"]}
         label={[

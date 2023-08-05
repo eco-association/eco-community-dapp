@@ -10,8 +10,13 @@ import { Scrollable } from "../../commons/Scrollable";
 import { breakpoints, mq } from "../../../../utilities";
 
 const setMaxHeight = css({
+  margin: "0 -16px",
+  height: "max-content",
+
   [mq(breakpoints.md)]: {
     maxHeight: 600,
+    margin: 0,
+
     overflow: "hidden",
   },
 });

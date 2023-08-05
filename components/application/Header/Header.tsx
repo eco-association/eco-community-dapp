@@ -25,7 +25,7 @@ const TopContent = styled.div({
   backgroundRepeat: "no-repeat",
   backgroundSize: [`auto 100%`, `100% 100%`].join(", "),
   backgroundPosition: "top center",
-  minHeight: 315,
+  minHeight: 360,
 
   [mq(breakpoints.md)]: {
     minHeight: 356,
@@ -140,9 +140,7 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
         ...customStyles?.headerStyle,
       },
       bodyStyle: {
-        [mq(breakpoints.md)]: {
-          padding: 16,
-        },
+        padding: 16,
         ...customStyles?.bodyStyle,
       },
       scrollHeader: customStyles?.scrollHeader,

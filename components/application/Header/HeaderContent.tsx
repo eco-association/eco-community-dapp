@@ -7,8 +7,10 @@ import { breakpoints, mq } from "../../../utilities";
 
 const Container = styled(Row)({
   padding: "24px",
+  paddingTop: 0,
 
   [mq(breakpoints.sm)]: {
+    paddingTop: "24px",
     alignItems: "center",
     flexDirection: "column",
   },

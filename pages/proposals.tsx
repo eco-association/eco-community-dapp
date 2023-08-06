@@ -95,7 +95,8 @@ const Proposals: React.FC = () => {
             <Typography variant="h1" color="white">
               Proposals
             </Typography>
-            <HeaderInfo subtitle />
+
+            <HeaderInfo centralize subtitle />
           </Column>
           <TabContainer ref={tabsContainerRef}>{tabs}</TabContainer>
         </Column>

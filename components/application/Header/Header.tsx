@@ -44,6 +44,21 @@ const HeaderContainer = styled(Row)(({ theme, showBg, fixed }) => ({
     ? { backgroundColor: theme.palette.primary.main }
     : { backgroundColor: "transparent" }),
 
+  ".overlay-logo": {
+    display: "none",
+
+    [mq(breakpoints.md)]: {
+      display: "block",
+      position: "fixed",
+      left: 16,
+      top: 16,
+    },
+
+    [mq(breakpoints.lg)]: {
+      left: 64,
+    },
+  },
+
   [mq(breakpoints.lg)]: {
     padding: "32px 52px 16px 64px",
   },
@@ -209,7 +224,7 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
         display={showBg}
         showBg={showBg}
       >
-        <div style={{ position: "fixed", marginTop: 8 }}>{logo}</div>
+        <div className="overlay-logo">{logo}</div>
         {scrollHeader}
       </HeaderContainer>
     ) : null;

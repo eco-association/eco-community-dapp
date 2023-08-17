@@ -15,9 +15,12 @@ import {
   ProposalsTab,
   useProposalTabContext,
 } from "../providers/ProposalTabProvider";
+import { breakpoints, mq } from "../utilities";
 
 const headerStyles: HeaderProps["styles"] = {
-  scrollHeader: { height: 48, padding: "0 64px" },
+  scrollHeader: {
+    padding: "0",
+  },
   pageStyle: {
     display: "flex",
     flexDirection: "column",
@@ -25,9 +28,21 @@ const headerStyles: HeaderProps["styles"] = {
     gap: "48px",
   },
 };
+
 const TabContainer = styled.div({
   width: "100%",
   maxWidth: "500px",
+});
+
+const ScrollRow = styled(Row)({
+  "> div": {
+    width: "100%",
+
+    [mq(breakpoints.md)]: {
+      maxWidth: "500px",
+      height: 60,
+    },
+  },
 });
 
 const Proposals: React.FC = () => {
@@ -74,14 +89,15 @@ const Proposals: React.FC = () => {
   );
 
   const scrollHeader = (
-    <Row items="end" justify="center" style={{ width: "100%" }}>
+    <ScrollRow items="end" justify="center" style={{ width: "100%" }}>
       {tabs}
-    </Row>
+    </ScrollRow>
   );
 
   const breakpoint = tabsContainerRef.current?.offsetTop
     ? tabsContainerRef.current?.offsetTop - 9
     : undefined;
+
   return (
     <Header
       current="proposals"

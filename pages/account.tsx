@@ -1,4 +1,4 @@
-import { Column, Grid, Typography } from "@ecoinc/ecomponents";
+import { Column, Grid, Typography, styled } from "@ecoinc/ecomponents";
 import { useAccount } from "wagmi";
 import { Header, HeaderProps } from "../components/application/Header/Header";
 import React, { useEffect } from "react";
@@ -9,10 +9,29 @@ import { EcoCard } from "../components/application/Account/EcoCard/EcoCard";
 import AccountActivityCard from "../components/application/Account/AccountActivity/AccountActivityCard";
 import { HeaderInfo } from "../components/application/Header/HeaderInfo";
 import { MonoText } from "../components/application/commons/MonoText";
+import { breakpoints, mq } from "../utilities";
 
 const headerStyle: HeaderProps["styles"] = {
   scrollHeader: { padding: "8px 64px 0 64px" },
 };
+
+const StyledMonoText = styled(MonoText)({
+  padding: "0 16px",
+  textAlign: "center",
+});
+
+const StyledGrid = styled(Grid)({
+  width: "100%",
+  gridTemplateColumns: "1fr",
+
+  [mq(breakpoints.lg)]: {
+    gridTemplateColumns: "1fr 450px",
+    width: 980,
+    margin: "-48px auto 0 auto",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+});
 
 const Account = () => {
   const router = useRouter();
@@ -36,31 +55,22 @@ const Account = () => {
           </Typography>
           <Column items="center">
             <HeaderInfo />
-            <MonoText variant="subtitle1" color="success">
+            <StyledMonoText variant="subtitle1" color="success">
               See your account activity, and manage your balances and voting
               power.
-            </MonoText>
+            </StyledMonoText>
           </Column>
         </Column>
       }
     >
-      <Grid
-        columns="1fr 450px"
-        gap="24px"
-        style={{
-          width: 980,
-          margin: "-48px auto 0 auto",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-        }}
-      >
+      <StyledGrid gap="24px">
         <Column gap="xl">
           <EcoCard />
           <EcoXCard />
           <VotingPowerCard />
         </Column>
         <AccountActivityCard />
-      </Grid>
+      </StyledGrid>
     </Header>
   );
 };

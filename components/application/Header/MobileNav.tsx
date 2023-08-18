@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
-import { Button, Column, Typography, styled } from "@ecoinc/ecomponents";
+import { useEffect } from "react";
+import { Column, styled } from "@ecoinc/ecomponents";
 import Image from "next/image";
 import Link from "next/link";
 
 import { breakpoints, mq } from "../../../utilities";
 import EcoLogoImg from "../../../public/images/eco-logo/eco-logo-white-outline.svg";
 import CloseImg from "../../../public/images/close.svg";
-import CopyIcon from "../../../public/images/Copy.svg";
-import ShareIcon from "../../../public/images/Share-colored.svg";
+import { WalletItem } from "./WalletItem";
 
 const NavContainer = styled.div(({ show }: { show: boolean }) => ({
   width: "100%",
@@ -41,25 +40,6 @@ const Divider = styled.div({
   width: "100%",
   borderTop: "1px solid #fff",
   marginTop: "48px",
-});
-
-const TextContainer = styled.div({
-  display: "flex",
-  alignItems: "center",
-});
-
-const DisconnectButton = styled(Button)({
-  backgroundColor: "#DEE6EB",
-  color: "#22313A",
-});
-
-const Dot = styled.span({
-  width: "7px",
-  height: "7px",
-  borderRadius: "50%",
-  background: "#56D9B6",
-  display: "inline-block",
-  marginRight: "4px",
 });
 
 const styles = {
@@ -108,34 +88,7 @@ const MobileNav = ({ show, navLinks, onClick }) => {
 
       <Column css={styles.outerPadding}>
         <Column css={styles.innerPadding} gap="xxl">
-          <TextContainer>
-            <Typography color="white" variant="body2" css={styles.spaceRight}>
-              0x830s38•••6cl28cf1
-            </Typography>
-            <Image src={CopyIcon} alt="copy" />
-          </TextContainer>
-
-          <TextContainer>
-            <Typography color="white" variant="body2" css={styles.spaceRight}>
-              View on Explorer
-            </Typography>
-            <Image src={ShareIcon} alt="share" />
-          </TextContainer>
-
-          <TextContainer>
-            <Typography
-              color="white"
-              variant="body2"
-              css={{ ...styles.spaceRight, ...styles.alignCenter }}
-            >
-              <Dot /> ETH
-            </Typography>
-            <Typography variant="body2" css={styles.colorMed}>
-              Network
-            </Typography>
-          </TextContainer>
-
-          <DisconnectButton>Disconnect</DisconnectButton>
+          <WalletItem />
         </Column>
       </Column>
     </NavContainer>

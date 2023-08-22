@@ -23,6 +23,7 @@ import { BigNumber } from "ethers";
 import { Zero } from "@ethersproject/constants";
 import { GasFee } from "../../commons/GasFee";
 import { Steps } from "../VotingPowerCard/ManageDelegationModal/Steps";
+import useResponsiveDialog from "../../../hooks/useResponsiveDialog";
 
 interface StakingModalProps {
   open: boolean;
@@ -52,6 +53,8 @@ const StakingModal: React.FC<StakingModalProps> = ({
   balances,
 }) => {
   const account = useAccount();
+  const dialogStyles = useResponsiveDialog();
+
   const { increaseStake, decreaseStake, loading } = useStaking();
 
   const [txStatus, setTxStatus] = useState<{
@@ -100,7 +103,7 @@ const StakingModal: React.FC<StakingModalProps> = ({
   return (
     <Dialog
       isOpen={open}
-      style={{ card: { maxWidth: 540 } }}
+      style={dialogStyles}
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}

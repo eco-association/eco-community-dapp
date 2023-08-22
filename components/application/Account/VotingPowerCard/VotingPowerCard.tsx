@@ -32,6 +32,7 @@ const VotingPowerCard = () => {
         open={modalOpen}
         onRequestClose={() => setModalOpen(false)}
       />
+
       <Column gap="xl">
         <VotingPowerSources />
         <Grid columns="1fr auto" gap="24px" alignItems="center">

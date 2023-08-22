@@ -15,6 +15,7 @@ import {
   CommunityActionType,
   Vote,
 } from "../../../../providers/CommunityProvider";
+import useResponsiveDialog from "../../../hooks/useResponsiveDialog";
 
 interface VotingModalProps {
   action: VotingModalAction;
@@ -54,6 +55,8 @@ const VotingModal: React.FC<VotingModalProps> = ({
   onRequestClose,
 }) => {
   const community = useCommunity();
+  const dialogStyles = useResponsiveDialog(500);
+
   const { votingPower } = useVotingPower(
     community.currentGeneration.blockNumber
   );
@@ -69,7 +72,7 @@ const VotingModal: React.FC<VotingModalProps> = ({
     <Dialog
       isOpen={action !== VotingModalAction.None}
       onRequestClose={onRequestClose}
-      style={{ card: { maxWidth: 500 } }}
+      style={dialogStyles}
     >
       <Column gap="xl">
         <Top gap="lg">

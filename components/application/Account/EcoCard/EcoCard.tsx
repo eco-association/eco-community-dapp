@@ -56,6 +56,7 @@ export const EcoCard = () => {
           onRequestClose={() => setSelected(undefined)}
         />
       ) : null}
+
       <Column gap="lg">
         {!lockups.length ? (
           <Typography variant="body1">

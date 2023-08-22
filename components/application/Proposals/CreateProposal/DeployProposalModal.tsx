@@ -17,6 +17,7 @@ import { useBlockExit } from "../../../hooks/useBlockExit";
 import { SelectContract } from "./SelectContract";
 import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
+import useResponsiveDialog from "../../../hooks/useResponsiveDialog";
 
 interface DeployProposalModalProps {
   action: ProposalAction;
@@ -66,6 +67,8 @@ const DeployProposalModal: React.FC<DeployProposalModalProps> = ({
   onRequestClose,
   address: resubmitAddress,
 }) => {
+  const dialogStyles = useResponsiveDialog(500);
+
   const [contract, setContract] = useState<keyof typeof compilation>();
 
   const {
@@ -129,7 +132,7 @@ const DeployProposalModal: React.FC<DeployProposalModalProps> = ({
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}
       onRequestClose={onRequestClose}
-      style={{ card: { maxWidth: 500 } }}
+      style={dialogStyles}
     >
       <Column gap="xl">
         <Top gap="lg">

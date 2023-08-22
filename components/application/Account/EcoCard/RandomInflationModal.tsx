@@ -17,6 +17,7 @@ import {
 import { useWallet } from "../../../../providers";
 import { WalletActionType } from "../../../../providers/WalletProvider";
 import { Zero } from "@ethersproject/constants";
+import useResponsiveDialog from "../../../hooks/useResponsiveDialog";
 
 const Content = styled(Column)({ padding: "0 24px" });
 
@@ -29,6 +30,7 @@ export const RandomInflationModal = () => {
     claimableAmount,
     claimableRandomInflations: claimRIs,
   } = useRandomInflation();
+  const dialogStyles = useResponsiveDialog(524);
 
   const { dispatch: dispatchWallet } = useWallet();
 
@@ -47,7 +49,11 @@ export const RandomInflationModal = () => {
   };
 
   return (
-    <Dialog isOpen={isModalOpen} onRequestClose={() => setModalOpen(false)}>
+    <Dialog
+      isOpen={isModalOpen}
+      onRequestClose={() => setModalOpen(false)}
+      style={dialogStyles}
+    >
       <Column gap="xl">
         <Content gap="lg">
           <Typography variant="h2">Random inflation</Typography>

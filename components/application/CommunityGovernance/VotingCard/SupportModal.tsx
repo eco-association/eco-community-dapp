@@ -18,6 +18,7 @@ import {
 } from "../../../../providers/CommunityProvider";
 import { ProposalType } from "../../../../types";
 import { useVotingPower } from "../../../hooks/useVotingPower";
+import useResponsiveDialog from "../../../hooks/useResponsiveDialog";
 
 interface SupportModalProps {
   action: SupportModalAction;
@@ -79,6 +80,8 @@ const SupportModal: React.FC<SupportModalProps> = ({
   onSupport,
 }) => {
   const community = useCommunity();
+  const dialogStyles = useResponsiveDialog(500);
+
   const { votingPower } = useVotingPower(
     community.currentGeneration.blockNumber
   );
@@ -111,7 +114,7 @@ const SupportModal: React.FC<SupportModalProps> = ({
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}
-      style={{ card: { maxWidth: 500 } }}
+      style={dialogStyles}
     >
       <Column gap="xl">
         <Top gap="lg">

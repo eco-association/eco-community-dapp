@@ -8,15 +8,16 @@ import {
   Typography,
 } from "@ecoinc/ecomponents";
 import { BigNumber } from "ethers";
+import { WeiPerEther, Zero } from "@ethersproject/constants";
 import React, { useMemo, useState } from "react";
+
 import { tokensToNumber } from "../../../../utilities";
 import useConvertECOX from "../../../hooks/useConvertECOX";
-import { WeiPerEther, Zero } from "@ethersproject/constants";
-
 import LoaderAnimation from "../../Loader";
 import TextLoader from "../../commons/TextLoader";
 import { GasFee } from "../../commons/GasFee";
 import InputTokenAmount from "../../commons/InputTokenAmount";
+import useResponsiveDialog from "../../../hooks/useResponsiveDialog";
 
 interface ConvertModalProps {
   ecoXBalance: BigNumber;
@@ -46,6 +47,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   onClose,
 }) => {
   const { convertEcoX, loading } = useConvertECOX();
+  const dialogStyles = useResponsiveDialog();
 
   const [toConvert, setToConvert] = useState(Zero);
 
@@ -59,7 +61,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   return (
     <Dialog
       isOpen={open}
-      style={{ card: { maxWidth: 540 } }}
+      style={dialogStyles}
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}

@@ -36,6 +36,7 @@ import InputTokenAmount from "../../../commons/InputTokenAmount";
 import { toast as nativeToast } from "react-toastify";
 import { toastOpts } from "../../../../../utilities/toastUtils";
 import { Steps } from "../../../Account/VotingPowerCard/ManageDelegationModal/Steps";
+import useResponsiveDialog from "../../../../hooks/useResponsiveDialog";
 
 interface LockupModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockup;
@@ -57,6 +58,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
   const account = useAccount();
   const wallet = useWallet();
   const eco = useECO();
+  const dialogStyles = useResponsiveDialog();
 
   const lockupContract = useLockup(lockup.address);
 
@@ -135,7 +137,7 @@ const LockupDepositModal: React.FC<LockupModalProps> = ({
   return (
     <Dialog
       isOpen={isOpen}
-      style={{ card: { maxWidth: 540 } }}
+      style={dialogStyles}
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}

@@ -17,6 +17,7 @@ import { useGasFee } from "../../hooks/useGasFee";
 import { useAccount, useSigner } from "wagmi";
 import { PolicyProposals__factory } from "../../../types/contracts";
 import { truncateText } from "../../../utilities";
+import useResponsiveDialog from "../../hooks/useResponsiveDialog";
 
 const Box = styled(Column)(({ theme }) => ({
   padding: "16px 24px",
@@ -28,6 +29,8 @@ const REFUND_GAS_LIMIT = 149_038;
 
 export const RefundNotification: React.FC = () => {
   const account = useAccount();
+  const dialogStyles = useResponsiveDialog(524);
+
   const { proposals, reset, remove } = useProposalRefund();
 
   const gasFee = useGasFee(REFUND_GAS_LIMIT);
@@ -71,6 +74,7 @@ export const RefundNotification: React.FC = () => {
         shouldShowCloseButton={!loading}
         shouldCloseOnOverlayClick={!loading}
         onRequestClose={() => setOpen(false)}
+        style={dialogStyles}
       >
         <Column gap="xl">
           <Content gap="lg">

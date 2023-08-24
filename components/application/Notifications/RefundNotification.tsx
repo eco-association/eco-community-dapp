@@ -11,7 +11,12 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import { displayAddress, tokensToNumber } from "../../../utilities";
+import {
+  breakpoints,
+  displayAddress,
+  mq,
+  tokensToNumber,
+} from "../../../utilities";
 import React, { useState } from "react";
 import { useGasFee } from "../../hooks/useGasFee";
 import { useAccount, useSigner } from "wagmi";
@@ -24,6 +29,12 @@ const Box = styled(Column)(({ theme }) => ({
   backgroundColor: theme.palette.disabled.bg,
 }));
 const Content = styled(Column)({ padding: "0 24px" });
+const StyledRow = styled(Row)({
+  flexDirection: "column",
+  [mq(breakpoints.md)]: {
+    flexDirection: "row",
+  },
+});
 
 const REFUND_GAS_LIMIT = 149_038;
 
@@ -98,12 +109,12 @@ export const RefundNotification: React.FC = () => {
             </Typography>
           </Content>
           <Box gap="lg">
-            <Row gap="sm">
+            <StyledRow gap="sm">
               <Typography variant="body1">Move to your wallet </Typography>
               <Typography variant="body1" color="secondary">
                 Eth Address {displayAddress(account.address)}
               </Typography>
-            </Row>
+            </StyledRow>
             <Column gap="md" items="start">
               <Button color="success" onClick={claim} disabled={loading}>
                 {!loading ? "Claim" : "Claiming..."}

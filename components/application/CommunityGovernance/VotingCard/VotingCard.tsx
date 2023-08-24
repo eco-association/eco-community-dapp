@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
+import { Card, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
 import Image from "next/image";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
@@ -36,9 +36,24 @@ const Title = styled(Typography)({ maxWidth: 573, letterSpacing: "-0.015em" });
 
 const ProposalDetails = styled(Title)({
   color: "#5F869F",
+  display: " -webkit-box",
+  "-webkit-box-orient": "vertical",
+  overflow: "hidden",
 
   span: {
-    fontWeight: 600,
+    "&.read-more": {
+      fontWeight: 600,
+      display: "inline",
+      position: "relative",
+
+      ".external-icon": {
+        position: "absolute",
+        bottom: 0,
+        marginLeft: "2px",
+        width: "16px",
+        height: "16px",
+      },
+    },
   },
 
   [mq(breakpoints.md)]: {
@@ -96,22 +111,16 @@ export const VotingCard: React.FC<VotingCardProps> = ({ small }) => {
   const top = !small ? (
     <Column gap="md">
       <VoteDate stage={stage} date={community.stage.endsAt} />
-      <Title variant="h3">
-        {community.selectedProposal.name?.slice(0, 122)}...
-      </Title>
+      <Title variant="h3">{community.selectedProposal.name}</Title>
 
       <ProposalDetails variant="body2">
-        {community.selectedProposal?.description?.slice(0, 69)}...{" "}
-        <span style={{ position: "relative" }}>
+        <span className="desc">
+          {community.selectedProposal?.description?.slice(0, 69)}...{" "}
+        </span>{" "}
+        <span className="read-more">
           read more about it
-          <span style={{ position: "absolute", top: 5, marginLeft: 3 }}>
-            <Image
-              src={ExternalIcon}
-              alt="external"
-              layout="fixed"
-              width={16}
-              height={16}
-            />
+          <span className="external-icon">
+            <Image src={ExternalIcon} alt="external" layout="fill" />
           </span>
         </span>
       </ProposalDetails>

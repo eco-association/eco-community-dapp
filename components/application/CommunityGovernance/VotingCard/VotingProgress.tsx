@@ -1,5 +1,5 @@
-import { ProgressBar, styled, Typography } from "@ecoinc/ecomponents";
-import React, { CSSProperties } from "react";
+import { Color, ProgressBar, styled, Typography } from "@ecoinc/ecomponents";
+import React from "react";
 import { BigNumber } from "ethers";
 import { breakpoints, mq, tokensToNumber } from "../../../../utilities";
 import { numberFormatter } from "../../../../utilities/numberFormatter";
@@ -32,10 +32,6 @@ interface VotingProgressProps {
   total: BigNumber;
 }
 
-const transitionStyle: CSSProperties = {
-  transition: "width ease 1s",
-};
-
 export const VotingProgress: React.FC<VotingProgressProps> = ({
   yesVotes: yesVotesBig,
   noVotes: noVotesBig,
@@ -43,38 +39,40 @@ export const VotingProgress: React.FC<VotingProgressProps> = ({
 }) => {
   const yesVotes = tokensToNumber(yesVotesBig);
   const noVotes = tokensToNumber(noVotesBig);
+
   const total = tokensToNumber(totalBig);
   const yesPercentage = yesVotes / total;
   const noPercentage = noVotes / total;
 
+  const bars = [
+    {
+      percentage: yesPercentage,
+      type: "solid" as const,
+      position: "left" as const,
+      color: "success" as Color,
+      label: (
+        <Typography key={1} variant="body1">
+          {numberFormatter(yesVotes)} votes For
+        </Typography>
+      ),
+    },
+    {
+      percentage: noPercentage,
+      type: "solid" as const,
+      position: "right" as const,
+      color: "primary" as Color,
+      label: (
+        <Typography key={2} variant="body1">
+          {numberFormatter(noVotes)} votes Against
+        </Typography>
+      ),
+    },
+  ];
+
   return (
     <Container>
       <Division />
-      <ProgressBar
-        position={["left", "right"]}
-        color={["success", "primary"]}
-        label={[
-          <Typography key={1} variant="body1">
-            {numberFormatter(yesVotes)} votes For
-          </Typography>,
-          <Typography key={2} variant="body1">
-            {numberFormatter(noVotes)} votes Against
-          </Typography>,
-        ]}
-        percentage={[yesPercentage, noPercentage]}
-        BarStyle={[
-          {
-            ...transitionStyle,
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0,
-          },
-          {
-            ...transitionStyle,
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-          },
-        ]}
-      />
+      <ProgressBar bars={bars} />
     </Container>
   );
 };

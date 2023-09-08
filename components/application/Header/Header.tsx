@@ -143,7 +143,7 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
       height,
       pageStyle: { paddingTop: fixed ? 80 : 0, ...customStyles?.pageStyle },
       headerStyle: {
-        padding: "32px 64px 16px 64px",
+        padding: "16px 0px 16px 16px",
         ...customStyles?.headerStyle,
       },
       bodyStyle: {

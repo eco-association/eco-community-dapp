@@ -1,14 +1,18 @@
-import React, { CSSProperties, useMemo, useRef } from "react";
+import React, { CSSProperties, useMemo, useRef, useState } from "react";
 import { Column, Row, styled } from "@ecoinc/ecomponents";
 import Image from "next/image";
+import { useAccount } from "wagmi";
+import { css } from "@emotion/react";
+import Link from "next/link";
+
 import EcoLogoImg from "../../../public/images/eco-logo/eco-gov-logo.svg";
+import Menu from "../../../public/images/menu.svg";
 import { useScrollExceeds } from "../../hooks/useScrollExceeds";
 import { HeaderItem } from "./HeaderItem";
 import { WalletItem } from "./WalletItem";
-import Link from "next/link";
-import { useAccount } from "wagmi";
-import { css } from "@emotion/react";
 import HeaderBackground from "./HeaderBackground";
+import MobileNav from "./MobileNav";
+import { mq, breakpoints } from "../../../utilities";
 
 const PageContainer = styled.div<{ height: number }>(({ height }) => ({
   backgroundRepeat: "no-repeat",
@@ -17,11 +21,12 @@ const PageContainer = styled.div<{ height: number }>(({ height }) => ({
   minHeight: "100vh",
 }));
 
-const TopContent = styled.div({
+const TopContent = styled.div<{ height: number }>(({ height }) => ({
   backgroundRepeat: "no-repeat",
   backgroundSize: [`auto 100%`, `100% 100%`].join(", "),
   backgroundPosition: "top center",
-});
+  minHeight: height,
+}));
 
 const BottomContent = styled.div(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -29,7 +34,7 @@ const BottomContent = styled.div(({ theme }) => ({
 
 const HeaderContainer = styled(Row)(({ theme, showBg, fixed }) => ({
   width: "100%",
-  padding: "32px 52px 16px 64px",
+  padding: "16px 0px 16px 16px",
   top: 0,
   left: 0,
   zIndex: 10,
@@ -38,7 +43,33 @@ const HeaderContainer = styled(Row)(({ theme, showBg, fixed }) => ({
   ...(showBg
     ? { backgroundColor: theme.palette.primary.main }
     : { backgroundColor: "transparent" }),
+
+  ".overlay-logo": {
+    display: "none",
+
+    [mq(breakpoints.md)]: {
+      display: "block",
+      position: "fixed",
+      left: 16,
+      top: 16,
+    },
+
+    [mq(breakpoints.lg)]: {
+      left: 64,
+    },
+  },
+
+  [mq(breakpoints.lg)]: {
+    padding: "32px 52px 16px 64px",
+  },
 }));
+
+const NavLinks = styled(Row)({
+  display: "none",
+  [mq(breakpoints.lg)]: {
+    display: "flex",
+  },
+});
 
 const BodyContainer = styled.div({
   maxWidth: 980,
@@ -100,6 +131,11 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
   const showBg = useScrollExceeds(breakpoint);
   const headerFixed = useScrollExceeds(topRef.current?.offsetTop || 0);
 
+  const [showNav, setShowNav] = useState(false);
+
+  const openMobileNav = () => setShowNav(true);
+  const closeMobileNav = () => setShowNav(false);
+
   const fixed = !content && headerFixed;
 
   const styles = useMemo(() => {
@@ -107,11 +143,19 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
       height,
       pageStyle: { paddingTop: fixed ? 80 : 0, ...customStyles?.pageStyle },
       headerStyle: {
-        padding: "32px 64px 16px 64px",
+        padding: "16px 0px 16px 16px",
         ...customStyles?.headerStyle,
       },
-      bodyStyle: { padding: 16, ...customStyles?.bodyStyle },
+      bodyStyle: {
+        padding: 16,
+        ...customStyles?.bodyStyle,
+      },
       scrollHeader: customStyles?.scrollHeader,
+      menuStyle: {
+        [mq(breakpoints.lg)]: {
+          display: "none",
+        },
+      },
     };
   }, [customStyles, fixed, height]);
 
@@ -129,35 +173,45 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
     </Column>
   );
 
+  const menu = (
+    <Column css={styles.menuStyle} justify="center" onClick={openMobileNav}>
+      <Image css={Logo} alt="Eco Logo" width={80} height={30} src={Menu} />
+    </Column>
+  );
+
+  const navLinks = links.map((item) => {
+    if (!account.isConnected && item.name === "account") return null;
+    if (item.external) {
+      return (
+        <HeaderItem
+          key={item.name}
+          active={item.name === current}
+          href={item.href}
+          target="_blank"
+        >
+          {item.label}
+        </HeaderItem>
+      );
+    }
+
+    return (
+      <Link key={item.name} href={item.href}>
+        <HeaderItem active={item.name === current}>{item.label}</HeaderItem>
+      </Link>
+    );
+  });
+
   const header = (
     <HeaderContainer css={styles.headerStyle} showBg={showBg} fixed={fixed}>
       {logo}
       <Space />
-      <Row gap="xxl" items="center">
-        {links.map((item) => {
-          if (!account.isConnected && item.name === "account") return null;
-          if (item.external) {
-            return (
-              <HeaderItem
-                key={item.name}
-                active={item.name === current}
-                href={item.href}
-                target="_blank"
-              >
-                {item.label}
-              </HeaderItem>
-            );
-          }
-          return (
-            <Link key={item.name} href={item.href}>
-              <HeaderItem active={item.name === current}>
-                {item.label}
-              </HeaderItem>
-            </Link>
-          );
-        })}
+      {menu}
+      <NavLinks gap="xxl" items="center">
+        {navLinks}
         <WalletItem />
-      </Row>
+      </NavLinks>
+
+      <MobileNav show={showNav} navLinks={navLinks} onClick={closeMobileNav} />
     </HeaderContainer>
   );
 
@@ -170,7 +224,7 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
         display={showBg}
         showBg={showBg}
       >
-        <div style={{ position: "fixed", marginTop: 8 }}>{logo}</div>
+        <div className="overlay-logo">{logo}</div>
         {scrollHeader}
       </HeaderContainer>
     ) : null;
@@ -181,8 +235,8 @@ export const Header: React.FC<React.PropsWithChildren<HeaderProps>> = ({
         <HeaderBackground>
           <TopContent
             ref={topRef}
+            height={styles.height}
             css={styles.pageStyle}
-            style={{ minHeight: styles.height }}
           >
             {header}
             {overlayHeader}

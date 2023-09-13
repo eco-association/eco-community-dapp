@@ -1,4 +1,4 @@
-import { Column, Row } from "@ecoinc/ecomponents";
+import { Column, Row, styled } from "@ecoinc/ecomponents";
 import { MonoText } from "../commons/MonoText";
 import { Countdown } from "../Countdown";
 import { GenerationStage } from "../../../types";
@@ -9,13 +9,46 @@ import {
   useCommunity,
 } from "../../../providers/CommunityProvider";
 import { useTimeFlag } from "../../hooks/useTimeFlag";
+import { breakpoints, mq } from "../../../utilities";
 
 interface HeaderInfoProps {
   subtitle?: boolean;
   home?: boolean;
+  centralize?: boolean;
 }
 
-export const HeaderInfo: React.FC<HeaderInfoProps> = ({ home, subtitle }) => {
+const styles = {
+  spaceRight: { marginRight: "2px" },
+};
+
+const Container = styled(Column)(({ centralize }) => ({
+  alignItems: centralize ? "center" : "flex-start",
+
+  [mq(breakpoints.sm)]: {
+    alignItems: "center",
+  },
+}));
+
+const CountdownContainer = styled(Column)(({ centralize }) => ({
+  alignItems: centralize ? "center" : "flex-start",
+
+  [mq(breakpoints.sm)]: {
+    alignItems: "center",
+  },
+}));
+
+const StyleMonoText = styled(MonoText)<{ centralize?: boolean }>(
+  ({ centralize }) => ({
+    padding: centralize ? "0 20px" : "0",
+    textAlign: centralize ? "center" : "left",
+  })
+);
+
+export const HeaderInfo: React.FC<HeaderInfoProps> = ({
+  home,
+  subtitle,
+  centralize,
+}) => {
   const {
     stage: { name: stage, endsAt },
     nextGenerationStartsAt: nextGenStartsAt,
@@ -45,23 +78,35 @@ export const HeaderInfo: React.FC<HeaderInfoProps> = ({ home, subtitle }) => {
 
   if (isSubmittingInProgress(stage)) {
     return (
-      <Column gap="sm" items="center">
-        <Row gap="sm">
+      <Container centralize={centralize} gap="sm" items="center">
+        <CountdownContainer centralize={centralize} gap="sm">
           <Countdown date={endsAt} variant="subtitle1" color="success" />
-          <MonoText inline variant="subtitle1" color="success">
-            •
-          </MonoText>
-          <MonoText inline variant="subtitle1" color="success">
-            Remain to Submit & Support
-          </MonoText>
-        </Row>
+          <Row align="center">
+            <MonoText
+              css={styles.spaceRight}
+              inline
+              variant="subtitle1"
+              color="success"
+            >
+              •
+            </MonoText>
+            <MonoText inline variant="subtitle1" color="success">
+              Remain to Submit & Support
+            </MonoText>
+          </Row>
+        </CountdownContainer>
+
         {subtitle ? (
-          <MonoText variant="subtitle1" color="secondary">
+          <StyleMonoText
+            centralize={centralize}
+            variant="subtitle1"
+            color="secondary"
+          >
             First proposal to reach 15% support triggers the voting stage for
             that proposal
-          </MonoText>
+          </StyleMonoText>
         ) : null}
-      </Column>
+      </Container>
     );
   }
 
@@ -76,14 +121,16 @@ export const HeaderInfo: React.FC<HeaderInfoProps> = ({ home, subtitle }) => {
   }
 
   return (
-    <Row gap="sm" items="center">
+    <CountdownContainer gap="sm" items="center">
       <Countdown date={nextGenStartsAt} variant="subtitle1" color="success" />
-      <MonoText variant="subtitle1" color="success">
-        •
-      </MonoText>
-      <MonoText variant="subtitle1" color="success">
-        Until next generation
-      </MonoText>
-    </Row>
+      <Row align="center">
+        <MonoText css={styles.spaceRight} variant="subtitle1" color="success">
+          •
+        </MonoText>
+        <MonoText variant="subtitle1" color="success">
+          Until next generation
+        </MonoText>
+      </Row>
+    </CountdownContainer>
   );
 };

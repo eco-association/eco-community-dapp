@@ -11,21 +11,34 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
+import { WeiPerEther } from "@ethersproject/constants";
+import { useAccount } from "wagmi";
+
 import DeployProposalModal, { ProposalAction } from "./DeployProposalModal";
 import CodeMirror from "./CodeMirror";
 import sampleProposal from "../../../../assets/sampleProposal";
 import { useConnectContext } from "../../../../providers/ConnectModalProvider";
-import { useAccount } from "wagmi";
 import { useCommunity, useWallet } from "../../../../providers";
 import { GenerationStage } from "../../../../types";
 import EcoLogo from "../../../../public/images/eco-logo/eco-logo-grey.svg";
-import { WeiPerEther } from "@ethersproject/constants";
-import { tokensToNumber } from "../../../../utilities";
+import { breakpoints, mq, tokensToNumber } from "../../../../utilities";
+
+const whiteBoxColumn = css({
+  [mq(breakpoints.md)]: {
+    position: "sticky",
+    top: 64,
+  },
+});
 
 const deployBox = css({
   backgroundColor: "#f6f9fb",
   padding: "12px 16px",
   borderRadius: "8px",
+  gridTemplateColumns: "1fr",
+
+  [mq(breakpoints.md)]: {
+    gridTemplateColumns: "auto 156px",
+  },
 });
 
 const card = css({
@@ -41,6 +54,14 @@ const WhiteBox = styled.div({
 
 const SubmitButton = styled(Button)({
   padding: "10px 18px",
+});
+
+const GridWrap = styled(Grid)({
+  gridTemplateColumns: "1fr",
+
+  [mq(breakpoints.md)]: {
+    gridTemplateColumns: "388px auto",
+  },
 });
 
 const Content = styled(Column)({
@@ -87,8 +108,8 @@ const CreateProposal: React.FC = () => {
         code={code}
         onRequestClose={() => setAction(ProposalAction.None)}
       />
-      <Grid columns="388px auto" gap="44px" alignItems="start">
-        <Column gap="lg" style={{ position: "sticky", top: 64 }}>
+      <GridWrap gap="44px" alignItems="start">
+        <Column gap="lg" style={whiteBoxColumn}>
           <Card css={card}>
             <Column gap="xl">
               <Column gap="xl" style={{ padding: "0 8px" }}>
@@ -136,12 +157,7 @@ const CreateProposal: React.FC = () => {
                   </Typography>
                 </Column>
               </Column>
-              <Grid
-                gap="24px"
-                columns="auto 156px"
-                alignItems="center"
-                css={deployBox}
-              >
+              <Grid gap="24px" alignItems="center" css={deployBox}>
                 <Column>
                   {!isSubmitPhase ? (
                     <Typography variant="body2" color="secondary">
@@ -222,7 +238,7 @@ const CreateProposal: React.FC = () => {
             <CodeMirror value={code} setValue={setCode} />
           </WhiteBox>
         </Column>
-      </Grid>
+      </GridWrap>
     </Content>
   );
 };

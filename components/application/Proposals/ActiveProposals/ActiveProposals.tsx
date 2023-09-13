@@ -1,12 +1,13 @@
 import { Column, Typography } from "@ecoinc/ecomponents";
 import { ProposalCard } from "../ProposalCard";
 import React from "react";
-import { GenerationStage, ProposalType, Stage } from "../../../../types";
 import { BigNumber } from "ethers";
-import { BasicInfoCard } from "../BasicCard";
-import { css } from "@emotion/react";
-import { SubmitProposalCard } from "./SubmitProposalCard";
 import Link from "next/link";
+import { css } from "@emotion/react";
+
+import { BasicInfoCard } from "../BasicCard";
+import { SubmitProposalCard } from "./SubmitProposalCard";
+import { GenerationStage, ProposalType, Stage } from "../../../../types";
 import {
   isSubmittingInProgress,
   isVotingInProgress,

@@ -14,6 +14,7 @@ import {
 } from "../../../../../utilities/votingPower";
 import Image from "next/image";
 import chevronDown from "../../../../../public/images/chevron-down.svg";
+import useResponsiveDialog from "../../../../hooks/useResponsiveDialog";
 
 export enum ManageDelegationOption {
   None = "None",
@@ -60,6 +61,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
   open,
   onRequestClose,
 }) => {
+  const dialogStyles = useResponsiveDialog();
   const { state } = useDelegationState();
   const [advanced, setAdvanced] = useState(isAdvancedDelegation(state));
   const [openDelegation, setOpenDelegation] = useState(false);
@@ -85,7 +87,7 @@ const ManageDelegationModal: React.FC<ManageDelegationModal> = ({
       shouldCloseOnOverlayClick={!loading}
       style={{
         card: {
-          width: 540,
+          ...dialogStyles.card,
           padding: advanced
             ? "44px 40px"
             : !(openDelegation && !delegationEnabled) && delegationEnabled

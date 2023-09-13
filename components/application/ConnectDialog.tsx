@@ -8,15 +8,25 @@ import {
 } from "@ecoinc/ecomponents";
 import { css } from "@emotion/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import useResponsiveDialog from "../hooks/useResponsiveDialog";
+import { breakpoints, mq } from "../../utilities";
 
-const text = css({ width: 400, textAlign: "center" });
+const text = css({
+  textAlign: "center",
+  [mq(breakpoints.sm)]: {
+    width: 400,
+  },
+});
 
 export const ConnectDialog: React.FC<DialogProps> = (props) => {
+  const dialogStyles = useResponsiveDialog(524);
+
   return (
     <Dialog
       {...props}
       style={{
         ...props.style,
+        ...dialogStyles,
         overlay: { ...props.style?.overlay, zIndex: 10000 },
       }}
     >

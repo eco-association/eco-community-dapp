@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Column, Row, Typography } from "@ecoinc/ecomponents";
+import { Column, Row, Typography, styled } from "@ecoinc/ecomponents";
 import { Header, HeaderProps } from "../components/application/Header/Header";
 import { HeaderInfo } from "../components/application/Header/HeaderInfo";
 import {
@@ -15,9 +15,12 @@ import {
   ProposalsTab,
   useProposalTabContext,
 } from "../providers/ProposalTabProvider";
+import { breakpoints, mq } from "../utilities";
 
 const headerStyles: HeaderProps["styles"] = {
-  scrollHeader: { height: 48, padding: "0 64px" },
+  scrollHeader: {
+    padding: "0",
+  },
   pageStyle: {
     display: "flex",
     flexDirection: "column",
@@ -25,6 +28,22 @@ const headerStyles: HeaderProps["styles"] = {
     gap: "48px",
   },
 };
+
+const TabContainer = styled.div({
+  width: "100%",
+  maxWidth: "500px",
+});
+
+const ScrollRow = styled(Row)({
+  "> div": {
+    width: "100%",
+
+    [mq(breakpoints.md)]: {
+      maxWidth: "500px",
+      height: 60,
+    },
+  },
+});
 
 const Proposals: React.FC = () => {
   const { proposals, totalVotingPower, selectedProposal, stage } =
@@ -70,29 +89,32 @@ const Proposals: React.FC = () => {
   );
 
   const scrollHeader = (
-    <Row items="end" justify="center" style={{ width: "100%" }}>
+    <ScrollRow items="end" justify="center" style={{ width: "100%" }}>
       {tabs}
-    </Row>
+    </ScrollRow>
   );
 
   const breakpoint = tabsContainerRef.current?.offsetTop
     ? tabsContainerRef.current?.offsetTop - 9
     : undefined;
+
   return (
     <Header
       current="proposals"
       breakpoint={breakpoint}
       scrollHeader={scrollHeader}
       styles={headerStyles}
+      height={250}
       content={
         <Column gap="xl" items="center" justify="end">
           <Column gap="lg" items="center">
             <Typography variant="h1" color="white">
               Proposals
             </Typography>
-            <HeaderInfo subtitle />
+
+            <HeaderInfo centralize subtitle />
           </Column>
-          <div ref={tabsContainerRef}>{tabs}</div>
+          <TabContainer ref={tabsContainerRef}>{tabs}</TabContainer>
         </Column>
       }
     >

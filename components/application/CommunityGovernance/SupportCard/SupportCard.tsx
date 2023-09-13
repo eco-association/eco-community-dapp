@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
+  Color,
   Column,
   formatNumber,
   ProgressBar,
@@ -252,6 +253,24 @@ const SupportCard: React.FC<SupportCardProps> = ({
   const percentage =
     tokensToNumber(proposal.totalStake) / tokensToNumber(totalVotingPower);
 
+  const bars = [
+    {
+      percentage: percentage,
+      type: "solid" as const,
+      position: "left" as const,
+      color: "success" as Color,
+      label: (
+        <Typography variant="body1">
+          {formatNumber(tokensToNumber(proposal.totalStake))} support For{" "}
+          <Typography variant="body1" color="secondary">
+            (of {formatNumber(tokensToNumber(totalVotingPower) * 0.15)} needed
+            to reach threshold)
+          </Typography>
+        </Typography>
+      ),
+    },
+  ];
+
   return (
     <Card css={{ position: "relative", width: "100%" }}>
       <SupportModal
@@ -277,20 +296,10 @@ const SupportCard: React.FC<SupportCardProps> = ({
           <ProgressContainer>
             <LimitBar />
             <ProgressBar
-              color="success"
+              textColor="primary"
               textRight
               text="15% needed"
-              percentage={percentage}
-              label={
-                <Typography variant="body1">
-                  {formatNumber(tokensToNumber(proposal.totalStake))} support
-                  For{" "}
-                  <Typography variant="body1" color="secondary">
-                    (of {formatNumber(tokensToNumber(totalVotingPower) * 0.15)}{" "}
-                    needed to reach threshold)
-                  </Typography>
-                </Typography>
-              }
+              bars={bars}
               BarContainerProps={{
                 style: { borderTopRightRadius: 0, borderBottomRightRadius: 0 },
               }}

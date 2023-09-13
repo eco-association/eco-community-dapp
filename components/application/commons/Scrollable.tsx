@@ -1,8 +1,11 @@
 import { styled } from "@ecoinc/ecomponents";
+import { breakpoints, mq } from "../../../utilities";
 
 export const Scrollable = styled.div`
-  overflow: scroll;
-  max-height: 500px;
+  ${mq(breakpoints.md)} {
+    overflow: scroll;
+    max-height: 500px;
+  }
 
   ::-webkit-scrollbar {
     background: white;

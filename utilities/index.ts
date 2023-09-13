@@ -13,3 +13,4 @@ export * from "./truncateText";
 export * from "./numberFormatter";
 export * from "./convertDate";
 export * from "./adjustVotingPower";
+export * from "./mediaQueries";

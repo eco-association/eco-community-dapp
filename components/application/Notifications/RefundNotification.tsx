@@ -11,23 +11,37 @@ import {
   styled,
   Typography,
 } from "@ecoinc/ecomponents";
-import { displayAddress, tokensToNumber } from "../../../utilities";
+import {
+  breakpoints,
+  displayAddress,
+  mq,
+  tokensToNumber,
+} from "../../../utilities";
 import React, { useState } from "react";
 import { useGasFee } from "../../hooks/useGasFee";
 import { useAccount, useSigner } from "wagmi";
 import { PolicyProposals__factory } from "../../../types/contracts";
 import { truncateText } from "../../../utilities";
+import useResponsiveDialog from "../../hooks/useResponsiveDialog";
 
 const Box = styled(Column)(({ theme }) => ({
   padding: "16px 24px",
   backgroundColor: theme.palette.disabled.bg,
 }));
 const Content = styled(Column)({ padding: "0 24px" });
+const StyledRow = styled(Row)({
+  flexDirection: "column",
+  [mq(breakpoints.md)]: {
+    flexDirection: "row",
+  },
+});
 
 const REFUND_GAS_LIMIT = 149_038;
 
 export const RefundNotification: React.FC = () => {
   const account = useAccount();
+  const dialogStyles = useResponsiveDialog(524);
+
   const { proposals, reset, remove } = useProposalRefund();
 
   const gasFee = useGasFee(REFUND_GAS_LIMIT);
@@ -71,6 +85,7 @@ export const RefundNotification: React.FC = () => {
         shouldShowCloseButton={!loading}
         shouldCloseOnOverlayClick={!loading}
         onRequestClose={() => setOpen(false)}
+        style={dialogStyles}
       >
         <Column gap="xl">
           <Content gap="lg">
@@ -94,12 +109,12 @@ export const RefundNotification: React.FC = () => {
             </Typography>
           </Content>
           <Box gap="lg">
-            <Row gap="sm">
+            <StyledRow gap="sm">
               <Typography variant="body1">Move to your wallet </Typography>
               <Typography variant="body1" color="secondary">
                 Eth Address {displayAddress(account.address)}
               </Typography>
-            </Row>
+            </StyledRow>
             <Column gap="md" items="start">
               <Button color="success" onClick={claim} disabled={loading}>
                 {!loading ? "Claim" : "Claiming..."}

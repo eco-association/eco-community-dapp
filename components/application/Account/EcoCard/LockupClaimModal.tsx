@@ -36,6 +36,7 @@ import { useAccount } from "wagmi";
 import { WalletActionType } from "../../../../providers/WalletProvider";
 import { toast as nativeToast } from "react-toastify";
 import { toastOpts } from "../../../../utilities/toastUtils";
+import useResponsiveDialog from "../../../hooks/useResponsiveDialog";
 
 interface LockupClaimModalProps extends Pick<DialogProps, "isOpen"> {
   lockup: FundsLockupWithDeposit;
@@ -223,6 +224,7 @@ export const LockupClaimModal: React.FC<LockupClaimModalProps> = ({
   onRequestClose,
 }) => {
   const wallet = useWallet();
+  const dialogStyles = useResponsiveDialog();
   const hasEnded = useTimeFlag(lockup.endsAt);
   const lockupContract = useLockup(lockup.address);
 
@@ -259,7 +261,7 @@ export const LockupClaimModal: React.FC<LockupClaimModalProps> = ({
   return (
     <Dialog
       isOpen={isOpen}
-      style={{ card: { maxWidth: 540 } }}
+      style={dialogStyles}
       shouldCloseOnEsc={!loading}
       shouldShowCloseButton={!loading}
       shouldCloseOnOverlayClick={!loading}

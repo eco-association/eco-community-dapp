@@ -1,47 +1,44 @@
 import React from "react";
-import { Column, Grid, Typography } from "@ecoinc/ecomponents";
-import { InfoBlocks } from "../components/application/CommunityGovernance/InfoBlocks";
+import { Column, Grid, styled } from "@ecoinc/ecomponents";
 import { Header } from "../components/application/Header/Header";
 import { MonetaryPolicyCard } from "../components/application/CommunityGovernance/MonetaryPolicyCard/MonetaryPolicyCard";
 import { ActivityCard } from "../components/application/CommunityGovernance/ActivityCard/ActivityCard";
 import { VotingCard } from "../components/application/CommunityGovernance/VotingCard/VotingCard";
-import { HeaderInfo } from "../components/application/Header/HeaderInfo";
+import HeaderContent from "../components/application/Header/HeaderContent";
+import { breakpoints, mq } from "../utilities";
+
+const Container = styled(Column)({
+  margin: "-48px auto 0 auto",
+  [mq(breakpoints.md)]: {
+    maxWidth: 980,
+  },
+});
+
+const StyledGrid = styled(Grid)({
+  width: "100%",
+  gridTemplateColumns: "1fr",
+
+  [mq(breakpoints.md)]: {
+    gridTemplateColumns: "calc(50% - 12px) calc(50% - 12px)",
+    justifyContent: "space-between",
+  },
+});
 
 const Home: React.FC = () => {
   return (
     <Header
       current="home"
       breakpoint={16}
-      content={
-        <Column items="center" gap="xl">
-          <Column items="center" gap="md" css={{ marginTop: 16 }}>
-            <Typography variant="h1" color="white">
-              Eco Community Governance
-            </Typography>
-            <HeaderInfo home />
-          </Column>
-          <InfoBlocks />
-        </Column>
-      }
+      height={360}
+      content={<HeaderContent />}
     >
-      <Column
-        items="center"
-        gap="xl"
-        style={{ maxWidth: 980, margin: "-48px auto 0 auto" }}
-      >
+      <Container items="center" gap="xl">
         <VotingCard />
-        <Grid
-          columns="calc(50% - 12px) calc(50% - 12px)"
-          gap="24px"
-          style={{
-            width: "100%",
-            justifyContent: "space-between",
-          }}
-        >
+        <StyledGrid gap="24px">
           <MonetaryPolicyCard />
           <ActivityCard />
-        </Grid>
-      </Column>
+        </StyledGrid>
+      </Container>
     </Header>
   );
 };

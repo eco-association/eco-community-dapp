@@ -16,7 +16,7 @@ import {
   WalletProvider,
 } from "../providers";
 
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { createConfig, WagmiConfig, configureChains, mainnet } from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
@@ -39,31 +39,38 @@ import { VotingPowerSourcesProvider } from "../providers/VotingPowerSourcesProvi
 import { ManageDelegationProvider } from "../components/application/Account/VotingPowerCard/ManageDelegationModal/provider/ManageDelegationProvider";
 
 const PAGE_TITLE = process.env.NEXT_PUBLIC_DAPP_NAME;
+const PROJECT_ID = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 
-const { chains, provider, webSocketProvider } = configureChains(
-  [chain[process.env.NEXT_PUBLIC_CHAIN]],
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [mainnet],
   [
     infuraProvider({
       apiKey: process.env.NEXT_PUBLIC_INFURA_ID,
-      stallTimeout: 1_000,
+      // stallTimeout: 1_000,
     }),
     alchemyProvider({
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
     }),
     publicProvider(),
-  ]
+  ],
+  {
+    batch: {
+      multicall: true,
+    },
+  }
 );
 
 const { connectors } = getDefaultWallets({
   appName: "ECOx Community",
-  chains,
+  projectId: PROJECT_ID,
+  chains: [mainnet],
 });
 
-const wagmiClient = createClient({
+const wagmiClient = createConfig({
   autoConnect: true,
-  provider,
+  publicClient,
+  webSocketPublicClient,
   connectors,
-  webSocketProvider,
 });
 
 const apolloClient = new ApolloClient({
@@ -83,7 +90,7 @@ const App = ({ Component, pageProps }) => {
   if (unsecure) return null;
 
   return (
-    <WagmiConfig client={wagmiClient}>
+    <WagmiConfig config={wagmiClient}>
       <GoogleAnalytics gaMeasurementId="G-G60X13DNC2" />
       <Head>
         <link rel="icon" type="image/png" href={Favicon.src} />

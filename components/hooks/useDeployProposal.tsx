@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { BigNumber, ethers } from "ethers";
 import { toast } from "@ecoinc/ecomponents-old";
 import { StatusCodes } from "http-status-codes";
-import { useAccount, useProvider, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 import { tokensToNumber, txError } from "../../utilities";
 import { useECO } from "./contract/useECO";
 import { toast as nativeToast } from "react-toastify";
@@ -24,6 +24,8 @@ import { ToastOptions } from "react-toastify/dist/types";
 import { useCommunity, useContractAddresses } from "../../providers";
 import { CommunityActionType } from "../../providers/CommunityProvider";
 import { formatNumber } from "@ecoinc/ecomponents";
+import { useEthersProvider } from "../../providers/EthersProvider";
+import { useEthersSigner } from "../../providers/EthSigners";
 
 export enum Status {
   Deploying = "Deploying...",
@@ -34,11 +36,14 @@ export enum Status {
 class SubmitProposal {
   private readonly policyProposal: PolicyProposals;
   private registerCost: BigNumber;
+  private signer: ethers.Signer | ethers.providers.JsonRpcSigner;
 
   constructor(
     private readonly address: string,
     public readonly provider: ethers.providers.BaseProvider,
-    public readonly signer: ethers.Signer,
+    public readonly signerPromise:
+      | ethers.Signer
+      | ethers.providers.JsonRpcSigner,
     private readonly eco: ECO,
     policyProposals: string
   ) {
@@ -195,8 +200,8 @@ const successToast: ToastOptions = {
 const useDeployProposal = () => {
   const eco = useECO();
   const account = useAccount();
-  const provider = useProvider();
-  const { data: signer } = useSigner();
+  const provider = useEthersProvider();
+  const signer = useEthersSigner();
   const { dispatch } = useCommunity();
   const { policyProposals } = useContractAddresses();
 

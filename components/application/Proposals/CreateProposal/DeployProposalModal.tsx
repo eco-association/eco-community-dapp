@@ -91,6 +91,7 @@ const DeployProposalModal: React.FC<DeployProposalModalProps> = ({
     control,
     handleSubmit,
     formState: { isValid },
+    getValues,
   } = useForm<{ proposalAddress: string }>({
     defaultValues: { proposalAddress: "" },
     mode: "onChange",
@@ -104,7 +105,7 @@ const DeployProposalModal: React.FC<DeployProposalModalProps> = ({
     if (action === ProposalAction.Resubmit) {
       submitProposal(resubmitAddress);
     } else if (action === ProposalAction.Submit) {
-      handleSubmit(({ proposalAddress }) => submitProposal(proposalAddress))();
+      handleSubmit(() => submitProposal(getValues().proposalAddress))();
     } else {
       deployAndSubmitProposal(compilation[contract]);
     }

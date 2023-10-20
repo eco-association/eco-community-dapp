@@ -2,7 +2,7 @@ import { useQuery } from "react-query";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import { ECO__factory, ECOxStaking__factory } from "../../types/contracts";
 import { useContractAddresses } from "../../providers";
-import { useAccount, useProvider } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import { AddressZero } from "@ethersproject/constants";
 
 function getPayload(
@@ -50,16 +50,17 @@ function getPayload(
 
 export const useDelegates = () => {
   const account = useAccount();
-  const provider = useProvider();
+  const provider = usePublicClient();
   const { eco, sEcoX } = useContractAddresses();
 
   return useQuery(
     "token-delegates-" + account.address,
     async () => {
       const multicall = new Multicall({
-        ethersProvider: provider,
+        web3Instance: provider,
         tryAggregate: true,
       });
+
       const payload = getPayload(account.address, eco, sEcoX);
 
       const { results } = await multicall.call(payload);

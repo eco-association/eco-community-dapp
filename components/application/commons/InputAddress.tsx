@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useProvider } from "wagmi";
+import { useEnsName } from "wagmi";
 import { Color, Input, InputProps } from "@ecoinc/ecomponents";
 import { ethers } from "ethers";
 
@@ -25,13 +25,13 @@ const InputAddress: React.FC<InputAddressProps> = ({
   ...props
 }) => {
   const [idle, setIdle] = useState(false);
-
-  const provider = useProvider();
-  const { data } = useQuery(
-    ["ens", address],
-    async () => [address, await provider.resolveName(address)],
-    { enabled: !idle && !ethers.utils.isAddress(address) }
-  );
+  const ensAddString = address.startsWith("0x")
+    ? address.split("0x")[1]
+    : address;
+  const { data: ensName } = useEnsName({ address: `0x${ensAddString}` });
+  const { data } = useQuery(["ens", address], async () => [address, ensName], {
+    enabled: !idle && !ethers.utils.isAddress(address),
+  });
 
   const [ens, ensAddress] = data || [];
 

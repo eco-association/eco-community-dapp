@@ -19,10 +19,11 @@ import {
 } from "../../../utilities";
 import React, { useState } from "react";
 import { useGasFee } from "../../hooks/useGasFee";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 import { PolicyProposals__factory } from "../../../types/contracts";
 import { truncateText } from "../../../utilities";
 import useResponsiveDialog from "../../hooks/useResponsiveDialog";
+import { useEthersSigner } from "../../../providers/EthSigners";
 
 const Box = styled(Column)(({ theme }) => ({
   padding: "16px 24px",
@@ -43,9 +44,8 @@ export const RefundNotification: React.FC = () => {
   const dialogStyles = useResponsiveDialog(524);
 
   const { proposals, reset, remove } = useProposalRefund();
-
+  const signer = useEthersSigner();
   const gasFee = useGasFee(REFUND_GAS_LIMIT);
-  const { data: signer } = useSigner();
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);

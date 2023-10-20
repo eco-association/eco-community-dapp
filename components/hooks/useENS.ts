@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useProvider } from "wagmi";
+import { useEthersProvider } from "../../providers/EthersProvider";
 
 export const useENS = (address?: string): string | null => {
-  const provider = useProvider();
+  const provider = useEthersProvider();
   const [name, setName] = useState<string>(null);
 
   useEffect(() => {

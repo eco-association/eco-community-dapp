@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Column, Row, styled, Typography } from "@ecoinc/ecomponents";
+import { Card, Column, styled, Typography } from "@ecoinc/ecomponents";
 import Image from "next/image";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";

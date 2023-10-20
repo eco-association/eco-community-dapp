@@ -28,6 +28,7 @@ const ActivityInfoBlocks: React.FC<ActivityInfoBlocksProps> = ({ data }) => {
         parseInt(data?.tokens[2].totalSupply)
       }`
     );
+    return data;
   }, [data]);
 
   return (
